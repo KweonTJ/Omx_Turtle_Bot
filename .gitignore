@@ -1,0 +1,14 @@
+# IDE
+.vscode/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# ROS 2
+build/
+install/
+log/
+
+
