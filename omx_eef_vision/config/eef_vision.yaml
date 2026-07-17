@@ -19,7 +19,7 @@ eef_vision_node:
     dictionary: DICT_APRILTAG_36h11
     marker_id: 0
     accept_any_marker: true
-    marker_size_m: 0.05
+    marker_size_m: 0.04
 
     # Marker-frame transform from marker center to the box grasp target.
     # Calibrate this after fixing the marker on the 6 x 5.5 x 5.5 cm box.
