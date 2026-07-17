@@ -1,5 +1,10 @@
 # Arm-Only RL Delivery Runtime Plan
 
+> 구현 상태(2026-07-17): 정책 배포, 33D parity, reference+residual 제어,
+> 결정론적 그리퍼, fake Pick-Place, Gazebo 물리 배치, E-Stop,
+> Vision timeout 검증 완료.
+> 현재 실행값과 다음 단계는 워크스페이스 `docs/OMX RL 제어 계획서.md`를 기준으로 한다.
+
 작성 기준일: 2026-07-16
 
 이 문서는 배송로봇의 인식, 이동, 팔 제어, 그리퍼 제어를 하나의 임무 흐름으로 연결하기 위한 런타임 기준안이다. PPO 정책은 OpenMANIPULATOR-X의 `joint1`~`joint4`만 제어한다. TurtleBot3 이동과 그리퍼 개폐는 정책 밖의 상태 머신이 담당한다.
@@ -286,3 +291,25 @@ omx_rl_control/
 6. 저속 실기기에서 `REACH_PICK -> RETURN_STAY_HOLD`만 먼저 시험한다.
 7. 배송 위치 도착 이후 `REACH_PLACE -> RETURN_STAY_EMPTY`를 별도로 시험한다.
 8. 마지막에 TurtleBot3 이동을 사이에 연결해 전체 임무를 반복 평가한다.
+
+## 13. Gazebo 검증 기준
+
+2026-07-17 arm-only 시험에서 접촉 파지, 물체를 유지한 Stay 복귀, 배송
+자세 전개, 릴리스, 빈 팔 Stay 복귀를 실행했다. 상태 문자열만으로 성공을
+판정하지 않고 Gazebo의 `delivery_box` 엔티티 최종 위치를 확인했다.
+
+| 항목 | 최종값 |
+|---|---:|
+| 상자 폭 기반 파지 명령 | `0.0045 m` |
+| joint state timeout | `1.0 s`, Gazebo override |
+| trajectory 시간 | `0.25 s`, Gazebo override |
+| 릴리스 안정화 | `0.75 s`, Gazebo override |
+| 보정된 EEF 배송 X | `0.293 m` |
+| 최종 상자 위치 | `(0.271851, 0.000003, 0.197500) m` |
+
+학습 관측 정규화의 close `-0.010 m`는 변경하지 않는다. 폭 기반 물리
+명령은 별도 `gripper_grasp_position`으로 전달한다. Gazebo 보정값은 실기
+기본 설정으로 복사하지 않고 실측 후 다시 결정한다.
+
+변경 원인, 중간 실패, 적용 파일은 프로젝트 공용
+`docs/변경 이력.md`에서 관리한다.

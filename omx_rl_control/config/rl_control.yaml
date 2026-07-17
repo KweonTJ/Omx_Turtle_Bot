@@ -1,0 +1,96 @@
+rl_control_node:
+  ros__parameters:
+    # Empty uses the versioned artifact installed with this package.
+    artifact_dir: ''
+    policy_device: cpu
+    policy_torch_threads: 1
+    policy_warmup_runs: 3
+    control_rate_hz: 50.0
+    trajectory_time_s: 0.08
+    inference_deadline_s: 0.018
+    inference_deadline_miss_limit: 3
+    status_period_s: 0.5
+
+    joint_names: [joint1, joint2, joint3, joint4]
+    gripper_joint_name: gripper_left_joint
+    target_frame_id: base_link
+    joint_low: [-2.82743, -1.79071, -0.942478, -1.79071]
+    joint_high: [2.82743, 1.57080, 1.38230, 2.04204]
+    joint_velocity_scale: [2.0, 2.0, 2.0, 2.0]
+    max_joint_velocity: [0.70, 0.70, 0.70, 0.70]
+    max_joint_acceleration: [8.0, 8.0, 8.0, 8.0]
+
+    # The policy was trained in base_footprint; Vision publishes base_link.
+    workspace_min: [0.10, -0.18, 0.08]
+    workspace_max: [0.42, 0.18, 0.52]
+    arm_base_xy: [-0.08, 0.0]
+    policy_frame_offset: [0.0, 0.0, 0.016]
+
+    action_scale: [0.014, 0.014, 0.014, 0.014]
+    action_filter_coefficient: 0.18
+    residual_action_scale: 0.10
+    stay_joint_positions: [0.0, 0.0, 1.38, -1.38]
+    initialize_to_policy_stay: true
+    initialization_timeout_s: 8.0
+    ik_initial_guess: [0.0, 1.15968, -0.48813, -0.67155]
+    approach_waypoint_1: [0.0, -0.5, 0.5, 0.0]
+    approach_waypoint_2: [0.0, 0.5, 0.2, -0.7]
+    approach_waypoint_tolerance: 0.08
+    pregrasp_height_offset: 0.025
+    reference_action_limit: 1.0
+    final_approach_action_limit: 1.0
+    target_update_min_m: 0.001
+
+    gripper_open: 0.019
+    # Policy observation normalization limit; do not tune per object.
+    gripper_close: -0.010
+    # Physical close command. Gazebo overrides this for the 5.5 cm box.
+    gripper_grasp_position: -0.010
+    gripper_velocity_scale: 0.25
+    gripper_max_effort: 0.0
+    gripper_timeout_s: 4.0
+    # Matches 12 release-settle steps at the 50 Hz training control rate.
+    release_settle_time_s: 0.24
+    require_gripper_server: true
+    require_external_grasp_confirmation: false
+    grasp_confirmation_timeout_s: 2.0
+
+    joint_state_timeout_s: 0.25
+    target_pose_timeout_s: 0.50
+    base_arrival_timeout_s: 2.0
+    odom_timeout_s: 0.50
+    require_base_arrived: true
+    require_odom_stopped: true
+    stopped_linear_speed_mps: 0.01
+    stopped_angular_speed_radps: 0.05
+
+    close_distance_m: 0.042
+    close_xy_distance_m: 0.035
+    close_z_tolerance_m: 0.030
+    close_bearing_tolerance_rad: 0.35
+    close_roll_tolerance_rad: 0.35
+    gate_stable_count: 4
+    stay_tolerance_rad: 0.050
+    stay_stable_count: 8
+
+    delivery_pose_required: false
+    # 0.1975 m training height minus the 0.016 m base_link offset.
+    fallback_delivery_position: [0.27, 0.0, 0.1815]
+    fallback_delivery_yaw: 0.0
+    publish_every_n_cycles: 1
+
+    image_target_topic: /target/object_pose
+    target_valid_topic: /target/valid
+    delivery_pose_topic: /target/delivery_pose
+    joint_states_topic: /joint_states
+    odom_topic: /odom
+    base_arrived_topic: /turtlebot3_control/base_arrived
+    safety_stop_topic: /safety_stop
+    grasp_confirmed_topic: /rl_control/grasp_confirmed
+    command_topic: /rl_control/command
+    compat_start_topic: /mp_control/start
+    arm_trajectory_topic: /arm_controller/joint_trajectory
+    gripper_action_name: /gripper_controller/gripper_cmd
+    base_hold_topic: /target/base_hold
+    status_topic: /rl_control/status
+    compat_status_topic: /mp_control/status

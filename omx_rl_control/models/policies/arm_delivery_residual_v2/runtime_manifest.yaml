@@ -1,0 +1,24 @@
+manifest_version: 1
+policy_version: arm_delivery_residual_v2
+policy_file: policy.zip
+source:
+  workspace: /home/ktj/omx_train_ws
+  relative_path: policies/latest/arm_delivery_residual_v2/arm_grasp_latest.zip
+  selected_counter: 537088
+files:
+  policy.zip: d838bab2c6b034252cdf10e52d52a9a77de3bc80f7c9c41ea82554f1b8aa50f2
+  policy_metadata.yaml: 06a4db14fb2c1502617608269a8dcdc326e5755787ce4171a6bd54a56ceb24a1
+  training_config.yaml: 4b3b81c94fb288970332c4058d762885be7ece1acf53122c5be0e3911dd96565
+  evaluation/full_tower_100.yaml: d348f0dac738d6c9820cb3179c31fadfc56ba807b224eaa8f4971f4754c2cfa3
+  evaluation/place_full_tower_100.yaml: 086e9c60919dcceef5ffd09e4f3489e2b29bbc90a358955c1f6b4d434ace74f6
+  evaluation/pick_place_mixed_100.yaml: cac09c6dfc99e70f8122ade57466e7e74d483e24763f9ff3f1542a0f0d553fdb
+  evaluation/sim2real_robust_100.yaml: 1aabd2c3d205598db1221b260e9999406d5b36344ec8c6f43ea10537b421133d
+contract:
+  observation_size: 33
+  action_size: 4
+  joint_names: [joint1, joint2, joint3, joint4]
+  control_mode: reference_plus_residual
+  training_frame: base_footprint
+  ros_target_frame: base_link
+  ros_to_training_offset_xyz: [0.0, 0.0, 0.016]
+

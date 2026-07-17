@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<sdf version="1.8">
+  <world name="default">
+    <gravity>0 0 -9.8</gravity>
+    <physics name="rl_physics" type="ode">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>1000</real_time_update_rate>
+    </physics>
+
+    <plugin filename="ignition-gazebo-physics-system"
+            name="gz::sim::systems::Physics"/>
+    <plugin filename="ignition-gazebo-user-commands-system"
+            name="gz::sim::systems::UserCommands"/>
+    <plugin filename="ignition-gazebo-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster"/>
+
+    <light name="sun" type="directional">
+      <pose>0 0 8 0 0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>0.9</intensity>
+      <direction>-0.4 0.3 -1.0</direction>
+      <diffuse>0.85 0.85 0.82 1</diffuse>
+      <specular>0.15 0.15 0.15 1</specular>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="ground_link">
+        <collision name="ground_collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>8 8</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="ground_visual">
+          <cast_shadows>false</cast_shadows>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>8 8</size>
+            </plane>
+          </geometry>
+          <material>
+            <ambient>0.48 0.50 0.52 1</ambient>
+            <diffuse>0.48 0.50 0.52 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 13 x 13 x 17 cm pickup tower. -->
+    <model name="pickup_tower">
+      <static>true</static>
+      <pose>0.27 0 0.085 0 0 0</pose>
+      <link name="tower_link">
+        <collision name="tower_collision">
+          <geometry>
+            <box><size>0.13 0.13 0.17</size></box>
+          </geometry>
+        </collision>
+        <visual name="tower_visual">
+          <geometry>
+            <box><size>0.13 0.13 0.17</size></box>
+          </geometry>
+          <material>
+            <ambient>0.20 0.24 0.28 1</ambient>
+            <diffuse>0.26 0.31 0.36 1</diffuse>
+            <specular>0.10 0.10 0.10 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 6 x 5.5 x 5.5 cm delivery box centered on the tower. -->
+    <model name="delivery_box">
+      <static>false</static>
+      <pose>0.27 0 0.1975 0 0 0</pose>
+      <link name="box_link">
+        <inertial>
+          <mass>0.05</mass>
+          <inertia>
+            <ixx>0.0000252</ixx>
+            <iyy>0.0000276</iyy>
+            <izz>0.0000276</izz>
+            <ixy>0</ixy><ixz>0</ixz><iyz>0</iyz>
+          </inertia>
+        </inertial>
+        <collision name="box_collision">
+          <geometry>
+            <box><size>0.06 0.055 0.055</size></box>
+          </geometry>
+          <surface>
+            <friction>
+              <ode><mu>2.0</mu><mu2>2.0</mu2></ode>
+            </friction>
+            <contact>
+              <ode><kp>1000000</kp><kd>10</kd></ode>
+            </contact>
+          </surface>
+        </collision>
+        <visual name="box_visual">
+          <geometry>
+            <box><size>0.06 0.055 0.055</size></box>
+          </geometry>
+          <material>
+            <ambient>0.82 0.18 0.12 1</ambient>
+            <diffuse>0.92 0.24 0.16 1</diffuse>
+            <specular>0.18 0.18 0.18 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <scene>
+      <ambient>0.45 0.45 0.45 1</ambient>
+      <background>0.72 0.76 0.80 1</background>
+      <shadows>true</shadows>
+    </scene>
+  </world>
+</sdf>

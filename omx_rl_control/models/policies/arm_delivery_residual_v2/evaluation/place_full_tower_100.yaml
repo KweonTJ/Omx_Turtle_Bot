@@ -1,0 +1,53 @@
+policy: /home/ktj/omx_train_ws/policies/latest/arm_delivery_residual_v2/arm_grasp_latest.zip
+stage: place_full_tower
+episodes: 100
+success_rate: 0.99
+grasped_final_rate: 0.01
+released_final_rate: 0.99
+collision_rate: 0.01
+mean_reward: 66.58119487350345
+mean_episode_steps: 301.12
+task_breakdown:
+  place:
+    episodes: 100
+    success_rate: 0.99
+    collision_rate: 0.01
+    grasped_final_rate: 0.01
+    released_final_rate: 0.99
+position_buckets:
+  x_mid__y_mid:
+    episodes: 6
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_neg:
+    episodes: 10
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_pos:
+    episodes: 14
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_mid:
+    episodes: 14
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_neg:
+    episodes: 8
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_pos:
+    episodes: 14
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_mid:
+    episodes: 7
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_neg:
+    episodes: 16
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_pos:
+    episodes: 11
+    success_rate: 0.9090909090909091
+    collision_rate: 0.09090909090909091

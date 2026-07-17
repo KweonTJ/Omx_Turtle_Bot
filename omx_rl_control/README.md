@@ -1,10 +1,23 @@
 # omx_rl_control
 
-상자 목표 자세와 OpenMANIPULATOR-X의 현재 상태를 관측값으로 구성해 **PPO 정책을 추론하고 안전한 관절 명령으로 변환하는 ROS 2 패키지**다. 학습 모델의 원시 출력을 하드웨어에 바로 전달하지 않고, 관절 한계·속도·통신 상태를 검사하는 실행 계층을 둔다.
+OpenMANIPULATOR-X의 `joint1`~`joint4`를 학습된 PPO residual
+정책으로 제어하는 ROS 2 패키지다. 베이스 이동과 그리퍼 개폐는 정책 밖의
+결정론적 상태 머신이 담당한다.
 
-> **구현 상태:** `ament_python` 패키지 구조만 생성됨. 노드, launch, 설정값, PPO 모델은 미구현 상태다.
+## 현재 구현
 
-상세 임무 흐름과 팔 전용 정책 경계는 [`docs/arm_delivery_runtime_plan.md`](./docs/arm_delivery_runtime_plan.md)를 기준으로 한다. PPO는 `joint1`~`joint4`만 제어하고, 베이스 이동과 그리퍼 개폐는 상태 머신이 담당한다.
+| 영역 | 내용 |
+|---|---|
+| 정책 | `arm_delivery_residual_v2`, checksum 검증 후 로딩 |
+| 관측 | 학습과 동일한 33차원 순서·정규화 |
+| 행동 | 기준 경로 + PPO 10% residual + EMA + 관절 제한 |
+| 기준 경로 | 접근 waypoint, numerical pregrasp IK, Stay 복귀 |
+| 그리퍼 | `/gripper_controller/gripper_cmd` Action |
+| 안전 | 입력 timeout, 추론 deadline, NaN, 관절 제한, E-Stop |
+| 상태 | Stay 정렬, Pick, grasp, Place, Hold, Fault, E-Stop |
+
+상세 계약과 단계별 검증 기준은
+[`docs/OMX RL 제어 계획서.md`](../docs/OMX%20RL%20제어%20계획서.md)를 따른다.
 
 ## 제어 루프
 
@@ -35,17 +48,55 @@ flowchart LR
 | 관절·속도·주기·타임아웃 제한 | 중앙 서버 임무 스케줄링 |
 | 상태와 오류 코드 발행 | UWB 위치 계산 |
 
-## 인터페이스 초안
+## 주요 인터페이스
 
 | 구분 | 이름 | 타입 | 설명 |
 |---|---|---|---|
 | 입력 | `/target/object_pose` | `geometry_msgs/msg/PoseStamped` | Vision이 생성한 상자 목표 자세 |
 | 입력 | `/joint_states` | `sensor_msgs/msg/JointState` | 현재 관절 위치와 속도 |
-| 입력 | `/safety_stop` | `std_msgs/msg/Bool` | 비상 정지 및 상위 안전 차단 |
-| 출력 | 컨트롤러 명령 인터페이스 | `trajectory_msgs/msg/JointTrajectory` | 제한을 적용한 관절 목표 |
+| 입력 | `/target/valid` | `std_msgs/msg/Bool` | Vision 자세 유효성 |
+| 입력 | `/rl_control/command` | `std_msgs/msg/String` | `PICK`, `PLACE`, `HOLD`, `RESET`, `E_STOP` |
+| 입력 | `/safety_stop` | `std_msgs/msg/Bool` | 비상 정지 |
+| 출력 | `/arm_controller/joint_trajectory` | `trajectory_msgs/msg/JointTrajectory` | 제한된 관절 목표 |
+| Action | `/gripper_controller/gripper_cmd` | `control_msgs/action/GripperCommand` | 그리퍼 제어 |
+| 출력 | `/target/base_hold` | `std_msgs/msg/Bool` | 팔 동작 중 베이스 정지 |
 | 출력 | `/rl_control/status` | `std_msgs/msg/String` | 준비·실행·정지·오류 상태 |
 
-실제 컨트롤러의 토픽 또는 Action 이름은 OpenMANIPULATOR-X bringup 구성에 맞춰 확정한다. README의 임의 이름에 하드웨어 구성을 맞추지 않는다.
+## 빌드
+
+```bash
+cd /home/ktj/omx_turtle_ws
+source /opt/ros/humble/setup.bash
+colcon build --symlink-install --packages-select omx_rl_control
+source install/setup.bash
+```
+
+Stable-Baselines3와 PyTorch는 ROS Python에서 import 가능해야 한다.
+
+## Fake hardware 실행
+
+```bash
+ros2 launch omx_rl_control rl_control.launch.py \
+  start_hardware:=true use_fake_hardware:=true
+```
+
+노드는 joint state와 그리퍼 Action server가 준비될 때까지 `NOT_READY`를
+유지하고, 학습 Stay `[0, 0, 1.38, -1.38]` 정렬 후 `STAY_EMPTY`가 된다.
+실제 팔에서는 EEF 카메라 보정 전 `PICK` 명령을 보내지 않는다.
+
+## Gazebo 실행
+
+```bash
+ros2 launch omx_rl_control rl_gazebo.launch.py
+```
+
+전용 world는 로봇 전방 `0.27 m`에 `13 x 13 x 17 cm` 타워와
+`6 x 5.5 x 5.5 cm` 상자를 배치한다. Gazebo에서는 기존 `mp_control`을
+시작하지 않고 RL 노드만 팔 trajectory를 소유한다.
+
+Gazebo launch는 5.5 cm 상자용 파지 위치 `0.0045 m`, 250 ms trajectory,
+0.75초 릴리스 안정화와 EEF-상자 중심 오프셋을 시뮬레이션 override로
+적용한다. 정책 관측 정규화와 실기 기본값은 변경하지 않는다.
 
 ## 모델 계약
 
@@ -60,23 +111,24 @@ flowchart LR
 | 종료 조건 | 성공, 실패, 타임아웃 판정 |
 | Sim2Real | 지연·노이즈·마찰·질량 랜덤화 범위 |
 
-관측값 순서나 정규화 범위가 학습 시점과 다르면 모델 파일이 정상이어도 제어는 실패한다. 노드 시작 시 메타데이터를 검사하고 계약이 맞지 않으면 추론을 시작하지 않는 방향으로 구현한다.
+관측값 순서나 정규화 범위가 학습 시점과 다르면 모델 파일이 정상이어도 제어는 실패한다. 노드 시작 시 checksum·메타데이터·SB3 공간을 검사하고 계약이 맞지 않으면 추론을 시작하지 않는다.
 
 ## 안전 조건
 
 ```mermaid
 stateDiagram-v2
     [*] --> NOT_READY
-    NOT_READY --> READY: 모델·입력 검증 완료
-    READY --> RUNNING: 제어 요청
-    RUNNING --> READY: 목표 도달
-    RUNNING --> HOLD: 입력 타임아웃
-    RUNNING --> FAULT: 한계 초과 / 추론 오류
-    READY --> E_STOP: safety_stop=true
-    RUNNING --> E_STOP: safety_stop=true
+    NOT_READY --> ALIGN_STAY: 모델·입력 검증 완료
+    ALIGN_STAY --> STAY_EMPTY: 학습 Stay 도달
+    STAY_EMPTY --> PICK_REACH: PICK gate 통과
+    PICK_REACH --> WAIT_DELIVERY: 파지 후 Stay
+    WAIT_DELIVERY --> PLACE_REACH: PLACE gate 통과
+    PLACE_REACH --> COMPLETE: 해제 후 Stay
+    PICK_REACH --> HOLD: 입력 타임아웃
+    PLACE_REACH --> FAULT: 출력 오류
+    PICK_REACH --> E_STOP: safety_stop=true
     HOLD --> E_STOP: safety_stop=true
-    E_STOP --> NOT_READY: 수동 해제 및 재검증
-    FAULT --> NOT_READY: 오류 초기화
+    E_STOP --> NOT_READY: safety 해제 + RESET
 ```
 
 | 조건 | 기본 동작 |
@@ -84,29 +136,19 @@ stateDiagram-v2
 | 목표 자세 또는 관절 상태 타임아웃 | 새 명령 발행 중단 |
 | NaN·Inf 또는 출력 차원 불일치 | `FAULT` 전환 |
 | 관절 위치·속도 한계 초과 | 명령 거부 후 정지 |
-| 추론 주기 지연 | 해당 주기 명령 폐기 |
-| E-Stop 수신 | 즉시 출력 차단, 자동 재시작 금지 |
+| 추론 주기 지연 | 늦은 출력 폐기, 연속 3회면 `HOLD` |
+| E-Stop 수신 | 현재 관절 hold, gripper goal 취소, 자동 재시작 금지 |
 
-## 디렉터리
+## 명령 예시
 
-```text
-omx_rl_control/
-├── config/rl_control.yaml          # 모델·관측·출력·안전 파라미터
-├── launch/rl_control.launch.py     # 노드 및 컨트롤러 연결
-├── models/                         # PPO 가중치와 모델 메타데이터
-└── omx_rl_control/
-    └── rl_control_node.py          # ROS 2 추론 노드
+```bash
+ros2 topic pub --once /rl_control/command std_msgs/msg/String "{data: PICK}"
+ros2 topic pub --once /rl_control/command std_msgs/msg/String "{data: PLACE}"
+ros2 topic echo /rl_control/status
 ```
 
-구현 후에는 `setup.py`에 실행 진입점과 `launch/`, `config/`, `models/` 설치 규칙을 추가해야 한다.
-
-## 검증 기준
-
-| 단계 | 통과 조건 |
-|---|---|
-| 모델 로딩 | 잘못된 경로·버전·입력 차원을 명확한 오류로 거부 |
-| 오프라인 추론 | 고정 관측값에서 동일한 행동값 재현 |
-| 제한기 시험 | 범위를 벗어난 정책 출력을 하드웨어 한계 안으로 처리 |
-| Fake hardware | 실제 모터 없이 명령 형식과 상태 전이 확인 |
-| 저속 실기기 | 무부하·저속 조건에서 E-Stop과 타임아웃 우선 검증 |
-| 파지 통합 | Vision 목표 변화에 따라 접근·파지 동작 반복 확인 |
+colcon 테스트는 `19 passed, 1 skipped`이며, fake ros2_control에서 정상
+Pick-Place 전체 사이클, 동작 중 E-Stop, Vision pose timeout, 베이스 이동
+interlock을 확인했다. Gazebo에서는 최종 상자 중심
+`(0.271851, 0.000003, 0.197500) m`를 확인해 타워 상판 물리 배치까지
+검증했다.

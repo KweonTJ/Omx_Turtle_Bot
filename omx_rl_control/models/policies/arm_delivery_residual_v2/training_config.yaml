@@ -1,0 +1,302 @@
+experiment:
+  name: arm_grasp_randomized_ppo
+  seed: 42
+
+model:
+  path: assets/mjcf/turtlebot3_manipulator/scene.xml
+  expected_observation_size: 33
+  expected_action_size: 4
+
+environment:
+  frame_skip: 10
+  max_episode_steps: 400
+  action_scale: [0.014, 0.014, 0.014, 0.014]
+  action_filter_coefficient: 0.18
+  reference_control_enabled: true
+  residual_action_scale: 0.10
+  reference_action_limit: 1.0
+  final_approach_action_limit: 1.0
+
+  # The center is the top of the 13 x 13 x 17 cm tower plus half the box height.
+  object_center: [0.27, 0.0, 0.1975]
+  object_position_range: [0.024, 0.024, 0.0]
+  object_yaw_range: 3.141592653589793
+  edge_sample_probability: 0.40
+  edge_min_fraction: 0.70
+  support_clearance: 0.001
+  initial_joint_noise: [0.01, 0.01, 0.01, 0.01]
+
+  # These values model the filtered /target/object_pose consumed on the robot.
+  vision_position_noise_std: [0.0, 0.0, 0.0]
+  vision_yaw_noise_std: 0.0
+  vision_update_interval_steps: 1
+  vision_dropout_probability: 0.0
+  vision_filter_coefficient: 0.35
+  start_grasped_probability: 0.0
+  place_episode_probability: 0.0
+  start_released_probability: 0.0
+  grasped_start_joint_positions: [0.0, 1.15968, -0.48813, -0.67155]
+
+  # Joint references define a collision-free EEF corridor; joint1 follows bearing.
+  approach_joint_waypoints:
+    - [0.0, -0.5, 0.5, 0.0]
+    - [0.0, 0.5, 0.2, -0.7]
+  approach_waypoint_tolerance: 0.08
+
+  # EEF site stays above the box center so the fingers do not hit the tower.
+  pregrasp_height_offset: 0.025
+  gripper_open: 0.019
+  gripper_close: -0.010
+  gripper_open_tolerance: 0.003
+  close_distance: 0.042
+  close_xy_distance: 0.035
+  close_z_tolerance: 0.030
+  close_bearing_tolerance: 0.35
+  close_roll_tolerance: 0.35
+  close_stable_steps: 4
+  close_settle_steps: 12
+  max_closing_steps: 60
+  attach_distance: 0.048
+  attach_xy_distance: 0.040
+  attach_z_tolerance: 0.035
+  release_stable_steps: 4
+  release_settle_steps: 12
+  placement_tolerance: 0.015
+
+  stay_tolerance: 0.050
+  minimum_lift_height: 0.025
+  minimum_object_clearance: 0.015
+  success_stable_steps: 8
+  collision_termination_depth: 0.004
+  joint_velocity_scale: [2.0, 2.0, 2.0, 2.0]
+  workspace_min: [0.10, -0.18, 0.08]
+  workspace_max: [0.42, 0.18, 0.52]
+
+  # Episode-level geometry, dynamics, and command-latency randomization.
+  tower_position_range: [0.0, 0.0]
+  tower_height_range: 0.0
+  object_size_scale_range: [1.0, 1.0]
+  arm_damping_scale_range: [1.0, 1.0]
+  actuator_gain_scale_range: [1.0, 1.0]
+  friction_scale_range: [1.0, 1.0]
+  maximum_action_delay_steps: 0
+
+  reward:
+    reach_progress: 120.0
+    reach_distance: 2.0
+    bearing_error: 0.20
+    roll_error: 0.50
+    approach_joint_progress: 12.0
+    approach_joint_error: 0.50
+    approach_waypoint_bonus: 5.0
+    close_ready_bonus: 2.0
+    grasp_bonus: 15.0
+    release_bonus: 15.0
+    placed: 0.20
+    stay_progress: 30.0
+    stay_error: 1.5
+    holding: 0.20
+    lift_progress: 20.0
+    action_delta: 3.0
+    action_jerk: 4.0
+    residual_action: 0.05
+    joint_velocity: 0.003
+    joint_limit: 0.25
+    collision: 8.0
+    collision_failure: 1500.0
+    failed_close: 3.0
+    time: 0.01
+    success: 200.0
+
+ppo:
+  n_envs: 8
+  total_timesteps: 400000
+  learning_rate: 0.0001
+  n_steps: 512
+  batch_size: 256
+  n_epochs: 10
+  gamma: 0.99
+  gae_lambda: 0.95
+  clip_range: 0.2
+  ent_coef: 0.0
+  vf_coef: 0.5
+  max_grad_norm: 0.5
+  target_kl: 0.02
+  device: cpu
+  torch_threads: 8
+  policy:
+    net_arch: [256, 256]
+    activation: tanh
+
+evaluation:
+  frequency: 20000
+  episodes: 50
+  final_episodes: 100
+  deterministic: true
+  checkpoint_frequency: 50000
+
+curriculum:
+  stages:
+    - name: center_reach
+      timesteps: 60000
+      environment:
+        object_position_range: [0.004, 0.004, 0.0]
+        object_yaw_range: 0.20
+        edge_sample_probability: 0.0
+        initial_joint_noise: [0.003, 0.003, 0.003, 0.003]
+
+    - name: grasp_return_center
+      timesteps: 60000
+      environment:
+        object_position_range: [0.004, 0.004, 0.0]
+        object_yaw_range: 0.20
+        edge_sample_probability: 0.0
+        initial_joint_noise: [0.005, 0.005, 0.005, 0.005]
+        start_grasped_probability: 1.0
+
+    - name: center_mixed
+      timesteps: 100000
+      environment:
+        object_position_range: [0.004, 0.004, 0.0]
+        object_yaw_range: 0.20
+        edge_sample_probability: 0.0
+        initial_joint_noise: [0.005, 0.005, 0.005, 0.005]
+        start_grasped_probability: 0.50
+
+    - name: full_tower
+      timesteps: 180000
+      environment:
+        object_position_range: [0.024, 0.024, 0.0]
+        object_yaw_range: 3.141592653589793
+        edge_sample_probability: 0.40
+        initial_joint_noise: [0.01, 0.01, 0.01, 0.01]
+        start_grasped_probability: 0.25
+
+    - name: aruco_robust
+      timesteps: 160000
+      environment:
+        object_position_range: [0.024, 0.024, 0.0]
+        object_yaw_range: 3.141592653589793
+        edge_sample_probability: 0.50
+        initial_joint_noise: [0.015, 0.015, 0.015, 0.015]
+        vision_position_noise_std: [0.002, 0.002, 0.002]
+        vision_yaw_noise_std: 0.035
+        vision_update_interval_steps: 2
+        vision_dropout_probability: 0.02
+        start_grasped_probability: 0.25
+
+    - name: place_center
+      timesteps: 50000
+      environment:
+        object_position_range: [0.004, 0.004, 0.0]
+        object_yaw_range: 0.20
+        edge_sample_probability: 0.0
+        initial_joint_noise: [0.005, 0.005, 0.005, 0.005]
+        place_episode_probability: 1.0
+        start_released_probability: 0.0
+
+    - name: place_return_center
+      timesteps: 40000
+      environment:
+        object_position_range: [0.004, 0.004, 0.0]
+        object_yaw_range: 0.20
+        edge_sample_probability: 0.0
+        initial_joint_noise: [0.005, 0.005, 0.005, 0.005]
+        place_episode_probability: 1.0
+        start_released_probability: 1.0
+
+    - name: place_full_tower
+      timesteps: 80000
+      environment:
+        max_episode_steps: 500
+        reference_action_limit: 0.90
+        final_approach_action_limit: 1.0
+        object_position_range: [0.024, 0.024, 0.0]
+        object_yaw_range: 3.141592653589793
+        edge_sample_probability: 0.50
+        initial_joint_noise: [0.012, 0.012, 0.012, 0.012]
+        place_episode_probability: 1.0
+        start_released_probability: 0.25
+
+    - name: pick_place_mixed
+      timesteps: 100000
+      environment:
+        max_episode_steps: 500
+        reference_action_limit: 0.85
+        final_approach_action_limit: 1.0
+        object_position_range: [0.024, 0.024, 0.0]
+        object_yaw_range: 3.141592653589793
+        edge_sample_probability: 0.50
+        initial_joint_noise: [0.015, 0.015, 0.015, 0.015]
+        place_episode_probability: 0.50
+        start_grasped_probability: 0.15
+        start_released_probability: 0.15
+        vision_position_noise_std: [0.002, 0.002, 0.002]
+        vision_yaw_noise_std: 0.035
+        vision_update_interval_steps: 2
+        vision_dropout_probability: 0.02
+
+    - name: base_stop_robust
+      timesteps: 100000
+      environment:
+        max_episode_steps: 550
+        reference_action_limit: 0.80
+        final_approach_action_limit: 1.0
+        object_position_range: [0.024, 0.024, 0.0]
+        object_yaw_range: 3.141592653589793
+        edge_sample_probability: 0.50
+        tower_position_range: [0.012, 0.020]
+        initial_joint_noise: [0.018, 0.018, 0.018, 0.018]
+        place_episode_probability: 0.50
+        start_grasped_probability: 0.10
+        start_released_probability: 0.10
+        vision_position_noise_std: [0.0025, 0.0025, 0.0025]
+        vision_yaw_noise_std: 0.040
+        vision_update_interval_steps: 2
+        vision_dropout_probability: 0.03
+
+    - name: height_robust
+      timesteps: 100000
+      environment:
+        max_episode_steps: 600
+        reference_action_limit: 0.75
+        final_approach_action_limit: 1.0
+        object_position_range: [0.024, 0.024, 0.0]
+        object_yaw_range: 3.141592653589793
+        edge_sample_probability: 0.50
+        tower_position_range: [0.012, 0.020]
+        tower_height_range: 0.015
+        object_size_scale_range: [0.95, 1.05]
+        initial_joint_noise: [0.018, 0.018, 0.018, 0.018]
+        place_episode_probability: 0.50
+        start_grasped_probability: 0.10
+        start_released_probability: 0.10
+        vision_position_noise_std: [0.0025, 0.0025, 0.0025]
+        vision_yaw_noise_std: 0.040
+        vision_update_interval_steps: 2
+        vision_dropout_probability: 0.03
+
+    - name: sim2real_robust
+      timesteps: 160000
+      environment:
+        max_episode_steps: 650
+        reference_action_limit: 0.65
+        final_approach_action_limit: 1.0
+        object_position_range: [0.024, 0.024, 0.0]
+        object_yaw_range: 3.141592653589793
+        edge_sample_probability: 0.55
+        tower_position_range: [0.012, 0.020]
+        tower_height_range: 0.015
+        object_size_scale_range: [0.90, 1.10]
+        arm_damping_scale_range: [0.80, 1.20]
+        actuator_gain_scale_range: [0.85, 1.15]
+        friction_scale_range: [0.70, 1.30]
+        maximum_action_delay_steps: 2
+        initial_joint_noise: [0.020, 0.020, 0.020, 0.020]
+        place_episode_probability: 0.50
+        start_grasped_probability: 0.10
+        start_released_probability: 0.10
+        vision_position_noise_std: [0.003, 0.003, 0.003]
+        vision_yaw_noise_std: 0.050
+        vision_update_interval_steps: 3
+        vision_dropout_probability: 0.05
