@@ -1,0 +1,104 @@
+experiment:
+  stage: sim2real_robust
+  trials: 50
+  trial_definition: pick episode plus place episode
+  master_seed: 20260717
+  seeds:
+  - 200545144
+  - 941319530
+  - 138107925
+  - 363817036
+  - 294791400
+  - 939326391
+  - 1131288637
+  - 4259131
+  - 1768469080
+  - 319935350
+  - 1446422873
+  - 1197380708
+  - 909397601
+  - 1050608959
+  - 1789815469
+  - 558160547
+  - 677753507
+  - 1592325382
+  - 1791472581
+  - 895268166
+  - 1488382292
+  - 1028113186
+  - 1932053901
+  - 1354357233
+  - 1856556549
+  - 1792490129
+  - 319615542
+  - 791743123
+  - 1982470409
+  - 272244289
+  - 139022388
+  - 1325685220
+  - 886121101
+  - 103378583
+  - 1409222576
+  - 1248227006
+  - 420309234
+  - 424123665
+  - 694158663
+  - 82024922
+  - 116404134
+  - 2116430715
+  - 1938575456
+  - 2106556908
+  - 1346870169
+  - 468808106
+  - 1076144798
+  - 1038461579
+  - 1741197189
+  - 402208636
+  policy: /home/ktj/omx_train_ws/policies/latest/arm_delivery_residual_v2/arm_grasp_latest.zip
+  config: /home/ktj/omx_train_ws/configs/arm_grasp_randomized_ppo.yaml
+  classical_definition: reference controller with zero PPO residual
+  classical_limitation: proxy only; not C++ mp_control ROS replay
+  control_timestep_s: 0.02
+controllers:
+  mp_reference_proxy:
+    trials: 50
+    cycle_successes: 45
+    cycle_success_rate: 0.9
+    pick_success_rate: 0.9
+    place_success_rate: 0.94
+    cycle_collision_rate: 0.06
+    mean_all_trial_time_s: 19.436
+    mean_successful_cycle_time_s: 19.769777777777776
+    median_successful_cycle_time_s: 19.8
+    p95_successful_cycle_time_s: 20.848
+    mean_successful_pick_time_s: 9.884888888888888
+    mean_successful_place_time_s: 9.877872340425533
+    mean_inference_ms: 0.0
+  rl_residual:
+    trials: 50
+    cycle_successes: 45
+    cycle_success_rate: 0.9
+    pick_success_rate: 0.9
+    place_success_rate: 0.94
+    cycle_collision_rate: 0.06
+    mean_all_trial_time_s: 17.9036
+    mean_successful_cycle_time_s: 18.141333333333332
+    median_successful_cycle_time_s: 18.12
+    p95_successful_cycle_time_s: 18.956
+    mean_successful_pick_time_s: 9.107111111111111
+    mean_successful_place_time_s: 9.028085106382978
+    mean_inference_ms: 0.17909952918143543
+paired_successful_trials:
+  common_successful_trials: 44
+  classical_mean_time_s: 19.77090909090909
+  rl_mean_time_s: 18.144545454545458
+  mean_rl_minus_classical_time_s: -1.6263636363636367
+  median_rl_minus_classical_time_s: -1.5900000000000016
+  mean_delta_95ci_low_s: -1.6984383742540798
+  mean_delta_95ci_high_s: -1.5542888984731935
+  rl_time_reduction_percent: 8.226043774140154
+  classical_to_rl_speed_ratio: 1.0896337491858308
+  rl_faster_count: 44
+  classical_faster_count: 0
+  ties: 0
+  two_sided_sign_test_p: 1.1368683772161603e-13

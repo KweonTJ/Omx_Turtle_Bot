@@ -9,6 +9,7 @@ OpenMANIPULATOR-X의 `joint1`~`joint4`를 학습된 PPO residual
 | 영역 | 내용 |
 |---|---|
 | 정책 | `arm_delivery_residual_v2`, checksum 검증 후 로딩 |
+| 추론 장치 | NVIDIA CUDA GPU (`policy_device: cuda`) |
 | 관측 | 학습과 동일한 33차원 순서·정규화 |
 | 행동 | 기준 경로 + PPO 10% residual + EMA + 관절 제한 |
 | 기준 경로 | 접근 waypoint, numerical pregrasp IK, Stay 복귀 |
@@ -71,7 +72,9 @@ colcon build --symlink-install --packages-select omx_rl_control
 source install/setup.bash
 ```
 
-Stable-Baselines3와 PyTorch는 ROS Python에서 import 가능해야 한다.
+Stable-Baselines3와 CUDA 지원 PyTorch는 ROS Python에서 import 가능해야 한다.
+현재 기본 설정은 NVIDIA GPU를 요구하며, GPU가 없는 장치에서는
+`config/rl_control.yaml`의 `policy_device`를 `cpu`로 변경해야 한다.
 
 ## Fake hardware 실행
 
@@ -97,6 +100,20 @@ ros2 launch omx_rl_control rl_gazebo.launch.py
 Gazebo launch는 5.5 cm 상자용 파지 위치 `0.0045 m`, 250 ms trajectory,
 0.75초 릴리스 안정화와 EEF-상자 중심 오프셋을 시뮬레이션 override로
 적용한다. 정책 관측 정규화와 실기 기본값은 변경하지 않는다.
+
+GPU server 기반 시험은 다음 환경으로 실행한다.
+
+```bash
+export __NV_PRIME_RENDER_OFFLOAD=1
+export __GLX_VENDOR_LIBRARY_NAME=nvidia
+ros2 launch omx_rl_control rl_gazebo.launch.py \
+  start_rviz:=false \
+  gz_args:="-r -s --headless-rendering --render-engine-server ogre2 \
+  /home/ktj/omx_turtle_ws/src/omx_rl_control/worlds/rl_pick_place.world"
+```
+
+이 구성에서 PPO와 server-side OGRE2 Sensors는 NVIDIA GPU를 사용한다.
+Gazebo ODE 물리와 ROS 2 executor는 CPU에서 실행된다.
 
 ## 모델 계약
 

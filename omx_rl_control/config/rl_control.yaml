@@ -2,7 +2,7 @@ rl_control_node:
   ros__parameters:
     # Empty uses the versioned artifact installed with this package.
     artifact_dir: ''
-    policy_device: cpu
+    policy_device: cuda
     policy_torch_threads: 1
     policy_warmup_runs: 3
     control_rate_hz: 50.0
@@ -29,6 +29,8 @@ rl_control_node:
     action_scale: [0.014, 0.014, 0.014, 0.014]
     action_filter_coefficient: 0.18
     residual_action_scale: 0.10
+    # -1 uses the value in the artifact contract. Zero is for A/B tests only.
+    residual_action_scale_override: -1.0
     stay_joint_positions: [0.0, 0.0, 1.38, -1.38]
     initialize_to_policy_stay: true
     initialization_timeout_s: 8.0

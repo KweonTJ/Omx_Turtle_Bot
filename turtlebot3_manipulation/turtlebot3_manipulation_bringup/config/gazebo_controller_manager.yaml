@@ -101,3 +101,7 @@ gripper_controller:
   ros__parameters:
     use_sim_time: True
     joint: gripper_left_joint
+    # Gazebo contact jitter stays above the controller's 0.001 rad/s default
+    # and can leave a valid grasp action active until the runtime timeout.
+    stall_velocity_threshold: 0.02
+    stall_timeout: 1.0

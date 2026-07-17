@@ -161,3 +161,28 @@ def test_one_action_step_matches_training_environment():
         _array('arm_target_after_one_step'),
         atol=1.0e-12,
     )
+
+
+def test_zero_residual_ignores_policy_action():
+    """Reference-only A/B mode must not depend on the PPO output."""
+    config = ActionLimitConfig(
+        joint_low=JOINT_LOW,
+        joint_high=JOINT_HIGH,
+        action_scale=ACTION_SCALE,
+        filter_coefficient=0.18,
+        residual_scale=0.0,
+        control_period_s=0.02,
+        max_velocity=np.full(4, 0.70),
+        max_acceleration=np.full(4, 8.0),
+    )
+    with_policy = ActionLimiter(config)
+    without_policy = ActionLimiter(config)
+    initial = _array('arm_target_before')
+    reference = _array('reference_action')
+    with_policy.reset(initial)
+    without_policy.reset(initial)
+
+    actual = with_policy.step(_array('raw_policy_action'), reference)
+    expected = without_policy.step(np.zeros(4), reference)
+
+    np.testing.assert_allclose(actual, expected, atol=1.0e-12)

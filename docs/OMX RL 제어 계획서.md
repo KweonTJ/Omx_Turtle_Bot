@@ -300,6 +300,77 @@ omx_rl_control/
 타워 배치를 재검증했다. 상세 원인과 변경 파일은
 [변경 이력](<./변경 이력.md>)에 기록한다.
 
+### `mp_control` 대비 시간 비교
+
+비교는 RL의 Gazebo 성공 로그와 현재 통합 설정의
+`mp_control_aruco_integrated_params.yaml` 및 `mp_control_node.cpp`를 기준으로
+했다. `mp_control`의 같은 world 실행 로그가 없으므로 아래 값은 구성상
+최소 시간이며, 동일 조건의 실측 A/B 결과가 아니다.
+
+| 비교 항목 | `mp_control` | `omx_rl_control` | 판정 |
+|---|---:|---:|---|
+| 제어 주기 | 20 Hz, 50 ms | 50 Hz, 20 ms | RL이 2.5배 촘촘함 |
+| PPO 추론 지연 | 해당 없음 | 평균 0.124 ms, p99 0.182 ms | RL 20 ms 주기에서 병목 아님 |
+| Pick + 파지 Stay | 동일 조건 로그 없음 | 8.639 s | RL 실측값만 확보 |
+| Place + 빈 팔 Stay | 동일 조건 로그 없음 | 9.268 s | RL 실측값만 확보 |
+| 팔 능동 동작 합계 | 파지 후부터만 최소 24.600 s | 17.907 s | 현재 설정에서 RL 우위 |
+| 명령 간격 포함 RL wall time | - | 19.971 s | 배송 명령 대기 2.064 s 포함 |
+
+`mp_control`의 24.600 s는 파지 완료 후 `grasp settle 0.5 + lift
+1.0 + settle 0.4 + rotate 7.0 + settle 0.4 + release 0.5 + place 7.0 +
+settle 0.4 + Stay 7.0 + settle 0.4`만 합산한 값이다. 아로코 정렬,
+관절 pregrasp, EEF 전진과 재시도 시간은 포함하지 않았다.
+
+보수적으로 이 최소값만 비교해도 RL은 6.693 s, 27.2% 짧고 속도는
+1.37배다. 단, C++ 조건식 계산만 하는 `mp_control`이 순수 CPU 연산량은
+더 작다. 현재 시간 차이는 신경망 추론 비용보다 `mp_control`의 7초 관절
+trajectory와 고정 settle 구간에서 발생한다.
+
+최종 선정 전에는 같은 상자 좌표·관절 초기 자세·속도 제한으로 각 30회
+실행하고, `start -> grasp`, `grasp -> Stay`, `place start -> release`,
+`release -> Stay`를 동일 상태 경계로 계측한다.
+
+#### MuJoCo matched-seed 50회 A/B
+
+2026-07-17에 `sim2real_robust`에서 고전 reference-only와 PPO residual을
+동일 50개 seed로 비교했다. 각 trial은 독립된 Pick episode와 Place
+episode를 하나의 cycle로 집계했다.
+
+| 지표 | 고전 reference | RL residual |
+|---|---:|---:|
+| Cycle 성공 | 45/50 | 45/50 |
+| Cycle 충돌 | 3/50 | 3/50 |
+| 성공 cycle 평균 | 19.770 s | 18.141 s |
+| 성공 cycle p95 | 20.848 s | 18.956 s |
+
+공통 성공 44개 seed에서 RL이 44회 모두 빨랐고, 평균 1.626 s,
+8.23% 단축했다. 단, 고전군은 학습 환경의 reference-only 대리군이며
+실제 ROS C++ `mp_control_node` 재생은 아니다. 상세 조건, 실패 seed,
+그래프와 원본은 [`mp_control`-RL 50회 비교 결과](<./mp_control RL 50회 비교 결과.md>)에
+기록했다. 동일 Gazebo world의 실제 `mp_control_node` 50회 비교는 별도로
+남아 있다.
+
+#### GPU Gazebo server 독립 50회 A/B
+
+동일 50개 Pick 위치·yaw에서 reference-only와 PPO residual을 실제 ROS 2
+런타임으로 비교했다. 각 trial마다 Gazebo server, ros2_control, PPO node를
+새로 시작했으며 server-side OGRE2 Sensors와 PPO는 RTX 4050을 사용했다.
+ODE 물리와 ROS 2 executor는 CPU에서 실행됐다.
+
+| 지표 | Reference only | RL residual |
+|---|---:|---:|
+| Cycle 성공 | 27/50 | 28/50 |
+| 상태 완료 | 37/50 | 45/50 |
+| 완료 후 물리 실패 | 10 | 17 |
+| 성공 cycle 평균 | 19.615 s | 20.202 s |
+| 성공 cycle p95 | 24.470 s | 25.527 s |
+| 완료 XY 오차 중앙값 | 15.9 mm | 18.5 mm |
+
+공통 성공 15회에서 RL은 5회만 빨랐고 평균 `0.691 s` 느렸다. Gazebo
+접촉 물리에서는 RL이 상태 완료를 더 자주 만들었지만 상자를 타워에 안정적으로
+남기는 비율이 낮아 최종 cycle 성공률은 2%p 차이에 그쳤다. 실기기 적용 전
+Place residual 축소, release 위치 gate 강화, 물리 파지 확인이 필요하다.
+
 ### 실기기
 
 1. 무부하 Stay와 관절 limit 시험

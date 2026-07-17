@@ -1,0 +1,92 @@
+experiment:
+  master_seed: 20260717
+  trials_per_controller: 50
+  independent_gazebo_server_per_trial: true
+  gpu: NVIDIA GeForce RTX 4050 Laptop GPU
+  physics: Gazebo ODE on CPU
+  rendering: Gazebo server OGRE2 headless on NVIDIA GPU
+  policy_device: cuda:0
+  final_xy_tolerance_m: 0.025
+  final_z_tolerance_m: 0.012
+controllers:
+  reference:
+    trials: 50
+    state_success_count: 37
+    physics_success_count: 28
+    cycle_success_count: 27
+    cycle_success_rate: 0.54
+    physical_failure_after_complete_count: 10
+    failure_states:
+      FAULT: 12
+      PLACE_REACH: 1
+    successful_cycle_time_s:
+      mean: 19.615490590815575
+      median: 18.83051023700682
+      p95: 24.470015067701752
+      min: 17.73214477399597
+      max: 26.556426490002195
+    successful_pick_time_s_mean: 9.590844062815044
+    successful_place_time_s_mean: 10.02464652800053
+    completed_final_xy_error_mm:
+      mean: 24.11778332315187
+      median: 15.885599515401399
+      p95: 51.81932505767373
+  rl:
+    trials: 50
+    state_success_count: 45
+    physics_success_count: 32
+    cycle_success_count: 28
+    cycle_success_rate: 0.56
+    physical_failure_after_complete_count: 17
+    failure_states:
+      PLACE_REACH: 4
+      FAULT: 1
+    successful_cycle_time_s:
+      mean: 20.20185373450035
+      median: 19.540717402502196
+      p95: 25.527279261803777
+      min: 17.71655899299367
+      max: 29.157610028996714
+    successful_pick_time_s_mean: 10.373601064892032
+    successful_place_time_s_mean: 9.828252669608316
+    completed_final_xy_error_mm:
+      mean: 46.98527788148126
+      median: 18.5209297344862
+      p95: 160.30409467411926
+paired:
+  both_success_count: 15
+  reference_only_success_count: 12
+  rl_only_success_count: 13
+  neither_success_count: 10
+  rl_minus_reference_cycle_time_s:
+    mean: 0.6914884108671697
+    median: 0.15983819800021593
+    p95: 4.405589841406621
+  rl_faster_count_on_both_success: 5
+  reference_faster_count_on_both_success: 10
+  tie_count_on_both_success: 0
+gpu:
+  reference:
+    samples: 1736
+    active_samples: 1378
+    active_definition: memory_mib >= 300
+    overall_utilization_mean_pct: 12.41647465437788
+    active_utilization_mean_pct: 15.355587808417997
+    active_utilization_p95_pct: 34.0
+    utilization_max_pct: 64.0
+    memory_max_mib: 520.0
+    active_power_mean_w: 10.810079825834544
+    power_max_w: 13.58
+    temperature_max_c: 55.0
+  rl:
+    samples: 1816
+    active_samples: 1455
+    active_definition: memory_mib >= 300
+    overall_utilization_mean_pct: 5.381607929515418
+    active_utilization_mean_pct: 6.5731958762886595
+    active_utilization_p95_pct: 8.0
+    utilization_max_pct: 35.0
+    memory_max_mib: 520.0
+    active_power_mean_w: 12.986934707903782
+    power_max_w: 13.79
+    temperature_max_c: 55.0

@@ -14,6 +14,10 @@
             name="gz::sim::systems::UserCommands"/>
     <plugin filename="ignition-gazebo-scene-broadcaster-system"
             name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="ignition-gazebo-sensors-system"
+            name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
 
     <light name="sun" type="directional">
       <pose>0 0 8 0 0 0</pose>

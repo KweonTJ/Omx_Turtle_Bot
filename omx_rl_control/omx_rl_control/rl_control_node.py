@@ -87,6 +87,23 @@ class RlControlNode(Node):
             if self.contract is not None
             else float(self._parameter('residual_action_scale'))
         )
+        residual_override = float(
+            self._parameter('residual_action_scale_override'))
+        if residual_override < 0.0:
+            if abs(residual_override + 1.0) > 1.0e-9:
+                raise ValueError(
+                    'residual_action_scale_override must be -1 or in [0, 1]')
+        elif residual_override <= 1.0:
+            residual_scale = residual_override
+        else:
+            raise ValueError(
+                'residual_action_scale_override must be -1 or in [0, 1]')
+        self.residual_scale = residual_scale
+        self.control_mode = (
+            'reference_only'
+            if self.residual_scale <= 1.0e-12
+            else 'reference_plus_residual'
+        )
         stay_joints = (
             np.asarray(self.contract.stay_joint_positions, dtype=np.float64)
             if self.contract is not None
@@ -198,7 +215,9 @@ class RlControlNode(Node):
             self.control_period_s, self._on_control_timer)
         self.get_logger().info(
             f'RL control initialized; policy_ready={self.policy is not None} '
-            f'period={self.control_period_s:.3f}s')
+            f'period={self.control_period_s:.3f}s '
+            f'control_mode={self.control_mode} '
+            f'residual_scale={self.residual_scale:.3f}')
 
     def _declare_parameters(self) -> None:
         defaults = {
@@ -224,6 +243,8 @@ class RlControlNode(Node):
             'action_scale': [0.014, 0.014, 0.014, 0.014],
             'action_filter_coefficient': 0.18,
             'residual_action_scale': 0.10,
+            # -1 keeps the policy artifact contract. Zero is benchmark-only.
+            'residual_action_scale_override': -1.0,
             'max_joint_velocity': [0.70, 0.70, 0.70, 0.70],
             'max_joint_acceleration': [8.0, 8.0, 8.0, 8.0],
             'stay_joint_positions': [0.0, 0.0, 1.38, -1.38],
@@ -713,31 +734,34 @@ class RlControlNode(Node):
             int(phase),
             self.previous_action,
         )
-        started = time.perf_counter()
-        raw_action, _ = self.policy.predict(
-            observation, deterministic=True)
-        elapsed = time.perf_counter() - started
-        raw_action = np.asarray(raw_action, dtype=np.float64).reshape((-1,))
-        if raw_action.shape != (4,) or not np.isfinite(raw_action).all():
-            raise RuntimeError(f'invalid policy action: {raw_action}')
-        if elapsed > self.inference_deadline_s:
-            self.inference_deadline_misses += 1
-            if self.inference_deadline_misses == 1:
-                self.get_logger().warning(
-                    'Dropping late policy output: '
-                    f'{elapsed:.4f}s > {self.inference_deadline_s:.4f}s'
-                )
-            if (
-                self.inference_deadline_misses
-                >= self.inference_deadline_miss_limit
-            ):
-                self._enter_hold(
-                    'policy inference deadline exceeded '
-                    f'{self.inference_deadline_misses} consecutive cycles; '
-                    f'latest={elapsed:.4f}s'
-                )
-            return
-        self.inference_deadline_misses = 0
+        raw_action = np.zeros(4, dtype=np.float64)
+        if self.residual_scale > 1.0e-12:
+            started = time.perf_counter()
+            raw_action, _ = self.policy.predict(
+                observation, deterministic=True)
+            elapsed = time.perf_counter() - started
+            raw_action = np.asarray(
+                raw_action, dtype=np.float64).reshape((-1,))
+            if raw_action.shape != (4,) or not np.isfinite(raw_action).all():
+                raise RuntimeError(f'invalid policy action: {raw_action}')
+            if elapsed > self.inference_deadline_s:
+                self.inference_deadline_misses += 1
+                if self.inference_deadline_misses == 1:
+                    self.get_logger().warning(
+                        'Dropping late policy output: '
+                        f'{elapsed:.4f}s > {self.inference_deadline_s:.4f}s'
+                    )
+                if (
+                    self.inference_deadline_misses
+                    >= self.inference_deadline_miss_limit
+                ):
+                    self._enter_hold(
+                        'policy inference deadline exceeded '
+                        f'{self.inference_deadline_misses} consecutive cycles; '
+                        f'latest={elapsed:.4f}s'
+                    )
+                return
+            self.inference_deadline_misses = 0
 
         reference_action = self.reference.action(
             self.action_limiter.arm_target,
@@ -943,9 +967,17 @@ class RlControlNode(Node):
     def _publish_status(self, now: float) -> None:
         model_version = (
             self.contract.version if self.contract is not None else 'none')
+        reference_stage = (
+            f'{self.reference.stage}/{len(self.reference.waypoints)}')
+        tracking_error = float(np.linalg.norm(
+            self.arm_qpos - self.action_limiter.arm_target
+        )) if self.action_limiter.initialized else math.nan
         text = (
             f'state={self.state.value} detail={self.state_detail} '
             f'model={model_version} grasped={self.grasped} '
+            f'mode={self.control_mode} '
+            f'ref_stage={reference_stage} '
+            f'track_error={tracking_error:.4f} '
             f'pending={self.pending_command or "none"}')
         if (
             text == self.last_status_text

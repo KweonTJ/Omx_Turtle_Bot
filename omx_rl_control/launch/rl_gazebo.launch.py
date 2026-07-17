@@ -8,6 +8,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
+from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
 
 
@@ -18,6 +19,8 @@ def generate_launch_description():
     start_rviz = LaunchConfiguration('start_rviz')
     start_rl_control = LaunchConfiguration('start_rl_control')
     config_file = LaunchConfiguration('config_file')
+    residual_action_scale_override = LaunchConfiguration(
+        'residual_action_scale_override')
 
     gazebo = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -58,6 +61,10 @@ def generate_launch_description():
                 'joint_state_timeout_s': 1.0,
                 'trajectory_time_s': 0.25,
                 'release_settle_time_s': 0.75,
+                'residual_action_scale_override': ParameterValue(
+                    residual_action_scale_override,
+                    value_type=float,
+                ),
                 # 5.5 cm box with 4 mm compression:
                 # (0.055 - 0.004) / 2 - 0.021 = 0.0045 m.
                 'gripper_grasp_position': 0.0045,
@@ -82,6 +89,13 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument('start_rviz', default_value='false'),
         DeclareLaunchArgument('start_rl_control', default_value='true'),
+        DeclareLaunchArgument(
+            'residual_action_scale_override',
+            default_value='-1.0',
+            description=(
+                '-1 uses the policy contract; 0 runs reference-only A/B mode.'
+            ),
+        ),
         DeclareLaunchArgument(
             'config_file',
             default_value=PathJoinSubstitution([
