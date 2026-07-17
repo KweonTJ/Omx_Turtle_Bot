@@ -67,7 +67,7 @@ def generate_launch_description():
             'use_fake_hardware': use_fake_hardware,
             'start_rviz': start_rviz,
 
-            # RL 노드가 자체적으로 Stay 자세를 관리한다.
+            # Bringup이 실제 Stay로 정렬하고 RL 노드는 도달 여부를 검증한다.
             'move_to_stay_pose': 'true',
 
             'start_camera': start_camera,
