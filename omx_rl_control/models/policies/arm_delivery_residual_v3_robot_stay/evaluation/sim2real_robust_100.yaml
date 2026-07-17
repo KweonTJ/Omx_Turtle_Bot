@@ -1,0 +1,59 @@
+policy: /home/ktj/omx_train_ws/policies/latest/arm_delivery_residual_v3_robot_stay/arm_grasp_latest.zip
+stage: sim2real_robust
+episodes: 100
+success_rate: 0.95
+grasped_final_rate: 0.5
+released_final_rate: 0.48
+collision_rate: 0.05
+mean_reward: -62.09568766381657
+mean_episode_steps: 394.63
+task_breakdown:
+  pick:
+    episodes: 49
+    success_rate: 0.9591836734693877
+    collision_rate: 0.04081632653061224
+    grasped_final_rate: 0.9591836734693877
+    released_final_rate: 0.0
+  place:
+    episodes: 51
+    success_rate: 0.9411764705882353
+    collision_rate: 0.058823529411764705
+    grasped_final_rate: 0.058823529411764705
+    released_final_rate: 0.9411764705882353
+position_buckets:
+  x_mid__y_mid:
+    episodes: 9
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_neg:
+    episodes: 10
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_pos:
+    episodes: 8
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_mid:
+    episodes: 14
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_neg:
+    episodes: 16
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_pos:
+    episodes: 17
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_mid:
+    episodes: 6
+    success_rate: 0.6666666666666666
+    collision_rate: 0.3333333333333333
+  x_pos__y_neg:
+    episodes: 9
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_pos:
+    episodes: 11
+    success_rate: 0.7272727272727273
+    collision_rate: 0.2727272727272727

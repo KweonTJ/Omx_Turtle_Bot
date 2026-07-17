@@ -61,6 +61,7 @@ def generate_launch_description():
                 'joint_state_timeout_s': 1.0,
                 'trajectory_time_s': 0.25,
                 'release_settle_time_s': 0.75,
+                'initialize_to_policy_stay': True,
                 'residual_action_scale_override': ParameterValue(
                     residual_action_scale_override,
                     value_type=float,

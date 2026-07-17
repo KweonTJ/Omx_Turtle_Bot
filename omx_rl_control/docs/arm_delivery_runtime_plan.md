@@ -1,6 +1,6 @@
 # Arm-Only RL Delivery Runtime Plan
 
-> 구현 상태(2026-07-17): 정책 배포, 33D parity, reference+residual 제어,
+> 구현 상태(2026-07-18): 실제 Stay 기준 v3 정책 배포, 33D parity, reference+residual 제어,
 > 결정론적 그리퍼, fake Pick-Place, Gazebo 물리 배치, E-Stop,
 > Vision timeout 검증 완료.
 > 현재 실행값과 다음 단계는 워크스페이스 `docs/OMX RL 제어 계획서.md`를 기준으로 한다.
@@ -185,7 +185,7 @@ joint_target += filtered * [0.014, 0.014, 0.014, 0.014] rad
 |---|---:|---|
 | 최대 개방 | `0.019 m` | MuJoCo/실기기 설정 공통 |
 | 최대 닫기 명령 | `-0.010 m` | MuJoCo/실기기 설정 공통 |
-| Stay 팔 자세 | `[0.0, 0.0, 1.38, -1.38] rad` | MJCF `stay` keyframe |
+| Stay 팔 자세 | `[0.104311, 0.027612, -0.001534, -1.638291] rad` | 실제 bringup과 MJCF `stay` keyframe 공통 |
 | Stay 허용오차 | 관절 L2 오차 `<= 0.04 rad` | 기존 smooth-control 기준 |
 
 파지 후 Stay 복귀에서는 팔 관절만 Stay 자세로 이동한다. 그리퍼는 Stay keyframe의 그리퍼 값으로 돌아가지 않고, 물체를 잡았을 때의 닫기·유지 명령을 계속 사용한다.

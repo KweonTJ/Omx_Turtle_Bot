@@ -110,7 +110,7 @@ class OpenManipulatorKinematics:
         self,
         target: np.ndarray,
         max_iterations: int = 80,
-        tolerance_m: float = 0.001,
+        tolerance_m: float = 0.00001,
         max_position_error_m: float = 0.015,
     ) -> IKResult:
         """Solve the training reference IK without a SciPy dependency."""

@@ -1,0 +1,42 @@
+policy_version: arm_delivery_residual_v3_robot_stay
+policy_name: arm_grasp_randomized_ppo
+framework: stable-baselines3 PPO
+completed_stages:
+- center_reach
+- grasp_return_center
+- center_mixed
+- full_tower
+- aruco_robust
+- place_center
+- place_return_center
+- place_full_tower
+- pick_place_mixed
+- base_stop_robust
+- height_robust
+- sim2real_robust
+total_timesteps: 660000
+observation_schema_version: 1
+observation_size: 33
+action_schema_version: 2
+action_size: 4
+joint_names:
+- joint1
+- joint2
+- joint3
+- joint4
+control_mode: reference_plus_residual
+control_period_s: 0.02
+action_scale:
+- 0.014
+- 0.014
+- 0.014
+- 0.014
+action_filter_coefficient: 0.18
+residual_action_scale: 0.1
+stay_joint_positions:
+- 0.104311
+- 0.027612
+- -0.001534
+- -1.638291
+model_sha256: a62fb4c219f80d0a2020e8e741f5cbb0c5d77942e072200e1bf84bd3373c09af
+config_sha256: 4f816534aaeaef5feaa447f91125df5b301db50f9ae78292d9a5bda03e5da4d8

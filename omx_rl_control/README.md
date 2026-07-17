@@ -8,7 +8,7 @@ OpenMANIPULATOR-X의 `joint1`~`joint4`를 학습된 PPO residual
 
 | 영역 | 내용 |
 |---|---|
-| 정책 | `arm_delivery_residual_v2`, checksum 검증 후 로딩 |
+| 정책 | `arm_delivery_residual_v3_robot_stay`, checksum 검증 후 로딩 |
 | 추론 장치 | NVIDIA CUDA GPU (`policy_device: cuda`) |
 | 관측 | 학습과 동일한 33차원 순서·정규화 |
 | 행동 | 기준 경로 + PPO 10% residual + EMA + 관절 제한 |
@@ -84,7 +84,8 @@ ros2 launch omx_rl_control rl_control.launch.py \
 ```
 
 노드는 joint state와 그리퍼 Action server가 준비될 때까지 `NOT_READY`를
-유지하고, 학습 Stay `[0, 0, 1.38, -1.38]` 정렬 후 `STAY_EMPTY`가 된다.
+유지하고, 실제 bringup과 같은 학습 Stay
+`[0.104311, 0.027612, -0.001534, -1.638291]` 정렬 후 `STAY_EMPTY`가 된다.
 실제 팔에서는 EEF 카메라 보정 전 `PICK` 명령을 보내지 않는다.
 
 ## Gazebo 실행
@@ -164,7 +165,7 @@ ros2 topic pub --once /rl_control/command std_msgs/msg/String "{data: PLACE}"
 ros2 topic echo /rl_control/status
 ```
 
-colcon 테스트는 `19 passed, 1 skipped`이며, fake ros2_control에서 정상
+colcon 테스트는 `20 passed, 1 skipped`이며, fake ros2_control에서 정상
 Pick-Place 전체 사이클, 동작 중 E-Stop, Vision pose timeout, 베이스 이동
 interlock을 확인했다. Gazebo에서는 최종 상자 중심
 `(0.271851, 0.000003, 0.197500) m`를 확인해 타워 상판 물리 배치까지

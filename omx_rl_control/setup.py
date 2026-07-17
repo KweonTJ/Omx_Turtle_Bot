@@ -5,6 +5,19 @@ from setuptools import find_packages, setup
 
 package_name = 'omx_rl_control'
 
+
+def model_data_files():
+    """Group model payloads by install directory for symlink installs."""
+    grouped = {}
+    for path in glob('models/**/*', recursive=True):
+        if not os.path.isfile(path):
+            continue
+        destination = os.path.join(
+            'share', package_name, os.path.dirname(path))
+        grouped.setdefault(destination, []).append(path)
+    return sorted(grouped.items())
+
+
 setup(
     name=package_name,
     version='0.1.0',
@@ -19,14 +32,7 @@ setup(
             glob('launch/*.launch.py')),
         (os.path.join('share', package_name, 'worlds'),
             glob('worlds/*.world')),
-        *[
-            (
-                os.path.join('share', package_name, os.path.dirname(path)),
-                [path],
-            )
-            for path in glob('models/**/*', recursive=True)
-            if os.path.isfile(path)
-        ],
+        *model_data_files(),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

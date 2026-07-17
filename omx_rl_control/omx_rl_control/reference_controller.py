@@ -15,7 +15,7 @@ class ReferenceController:
         action_scale: np.ndarray,
         approach_waypoints: np.ndarray,
         waypoint_tolerance: float = 0.08,
-        pregrasp_height_offset: float = 0.025,
+        pregrasp_height_offset: float = 0.0225,
         action_limit: float = 1.0,
         final_action_limit: float = 1.0,
         target_update_min_m: float = 0.001,

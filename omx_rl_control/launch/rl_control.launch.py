@@ -33,7 +33,7 @@ def generate_launch_description():
             'start_eef_camera_driver': 'false',
             'start_state_relays': 'false',
             'start_lidar': 'false',
-            'move_to_stay_pose': 'false',
+            'move_to_stay_pose': 'true',
         }.items(),
         condition=IfCondition(start_hardware),
     )

@@ -38,14 +38,14 @@ def _kinematics():
 def _reference():
     return ReferenceController(
         _kinematics(),
-        np.array([0.0, 0.0, 1.38, -1.38]),
+        np.array([0.104311, 0.027612, -0.001534, -1.638291]),
         ACTION_SCALE,
         np.array([
             [0.0, -0.5, 0.5, 0.0],
             [0.0, 0.5, 0.2, -0.7],
         ]),
         waypoint_tolerance=0.08,
-        pregrasp_height_offset=0.025,
+        pregrasp_height_offset=0.0225,
         action_limit=1.0,
         final_action_limit=1.0,
     )

@@ -1,6 +1,7 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
+from launch.actions import TimerAction
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
@@ -67,7 +68,7 @@ def generate_launch_description():
             'start_rviz': start_rviz,
 
             # RL 노드가 자체적으로 Stay 자세를 관리한다.
-            'move_to_stay_pose': 'false',
+            'move_to_stay_pose': 'true',
 
             'start_camera': start_camera,
             'start_eef_camera_driver': start_eef_camera_driver,
@@ -301,7 +302,10 @@ def generate_launch_description():
 
         hardware,
         eef_vision,
-        rl_control,
+        TimerAction(
+            period=8.0,
+            actions=[rl_control],
+        ),
         cmd_vel_mux,
         coordinator,
     ])

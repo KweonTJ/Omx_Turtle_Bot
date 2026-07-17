@@ -247,14 +247,15 @@ class RlControlNode(Node):
             'residual_action_scale_override': -1.0,
             'max_joint_velocity': [0.70, 0.70, 0.70, 0.70],
             'max_joint_acceleration': [8.0, 8.0, 8.0, 8.0],
-            'stay_joint_positions': [0.0, 0.0, 1.38, -1.38],
-            'initialize_to_policy_stay': True,
+            'stay_joint_positions': [
+                0.104311, 0.027612, -0.001534, -1.638291],
+            'initialize_to_policy_stay': False,
             'initialization_timeout_s': 8.0,
             'ik_initial_guess': [0.0, 1.15968, -0.48813, -0.67155],
             'approach_waypoint_1': [0.0, -0.5, 0.5, 0.0],
             'approach_waypoint_2': [0.0, 0.5, 0.2, -0.7],
             'approach_waypoint_tolerance': 0.08,
-            'pregrasp_height_offset': 0.025,
+            'pregrasp_height_offset': 0.0225,
             'reference_action_limit': 1.0,
             'final_approach_action_limit': 1.0,
             'target_update_min_m': 0.001,
@@ -336,7 +337,8 @@ class RlControlNode(Node):
             else:
                 artifact_dir = (
                     Path(get_package_share_directory('omx_rl_control'))
-                    / 'models' / 'policies' / 'arm_delivery_residual_v2'
+                    / 'models' / 'policies'
+                    / 'arm_delivery_residual_v3_robot_stay'
                 )
             self.contract = load_policy_contract(artifact_dir)
             if tuple(self.joint_names) != self.contract.joint_names:
@@ -562,6 +564,15 @@ class RlControlNode(Node):
                 'aligning arm to policy Stay',
             )
         else:
+            stay_error = float(np.linalg.norm(
+                self.arm_qpos - self.reference.stay_joints
+            ))
+            if stay_error > float(self._parameter('stay_tolerance_rad')):
+                self.state_detail = (
+                    'waiting for external policy Stay alignment; '
+                    f'error={stay_error:.4f}rad'
+                )
+                return
             self._set_state(RuntimeState.STAY_EMPTY, 'runtime ready')
 
     def _handle_align_stay(self, now: float) -> None:

@@ -12,7 +12,7 @@ import yaml
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT = (
-    PACKAGE_ROOT / 'models/policies/arm_delivery_residual_v2'
+    PACKAGE_ROOT / 'models/policies/arm_delivery_residual_v3_robot_stay'
 )
 
 
@@ -21,11 +21,14 @@ def test_deployed_policy_and_metadata_are_consistent():
     from stable_baselines3 import PPO
 
     contract = load_policy_contract(ARTIFACT)
-    assert contract.version == 'arm_delivery_residual_v2'
+    assert contract.version == 'arm_delivery_residual_v3_robot_stay'
     assert contract.observation_size == 33
     assert contract.action_size == 4
     assert contract.joint_names == ('joint1', 'joint2', 'joint3', 'joint4')
     assert contract.control_period_s == pytest.approx(0.02)
+    assert contract.stay_joint_positions == pytest.approx(
+        (0.104311, 0.027612, -0.001534, -1.638291)
+    )
     assert contract.ros_to_training_offset_xyz == (0.0, 0.0, 0.016)
     assert contract.training_frame == 'base_footprint'
     assert contract.ros_target_frame == 'base_link'
