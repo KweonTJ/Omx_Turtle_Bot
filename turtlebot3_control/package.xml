@@ -3,20 +3,18 @@
 <package format="3">
   <name>turtlebot3_control</name>
   <version>0.0.0</version>
-  <description>Integrated TurtleBot3 leader rover and ArUco pick-place control.</description>
+  <description>Integrated TurtleBot3 base arbitration and ArUco pick-place control.</description>
   <maintainer email="kweontj0701@naver.com">KweonTJ</maintainer>
   <license>Apache-2.0</license>
 
   <depend>rclpy</depend>
   <depend>geometry_msgs</depend>
   <depend>std_msgs</depend>
-  <depend>host_mission_interfaces</depend>
   <depend>launch</depend>
   <depend>launch_ros</depend>
 
-  <exec_depend>aruco_eef_tracker</exec_depend>
+  <exec_depend>omx_eef_vision</exec_depend>
   <exec_depend>aruco_mp_bridge</exec_depend>
-  <exec_depend>leader_line_follower</exec_depend>
   <exec_depend>mp_control</exec_depend>
   <exec_depend>turtlebot3_manipulation_bringup</exec_depend>
 

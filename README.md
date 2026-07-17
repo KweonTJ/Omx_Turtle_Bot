@@ -34,7 +34,7 @@ flowchart LR
 
 | 패키지 | 입력 | 핵심 처리 | 출력 | 상태 |
 |---|---|---|---|---|
-| [`omx_eef_vision`](./omx_eef_vision/) | EEF 카메라 영상 | 상자 검출, 상대 위치·자세 추정, 신뢰도 판정 | 목표 자세 | 구조 생성 |
+| [`omx_eef_vision`](./omx_eef_vision/) | EEF 카메라 영상 | ArUco 검출, 상대 위치·자세 추정, 신뢰도 판정 | 목표 자세 | 구현 |
 | [`omx_rl_control`](./omx_rl_control/) | 목표 자세, 로봇 관절 상태 | 관측값 구성, PPO 추론, 관절 명령 제한 | 관절 궤적 | 구조 생성 |
 
 두 패키지는 **인식과 제어를 분리**한다. 카메라나 검출 모델이 바뀌어도 제어 정책의 입력 계약만 유지하면 되고, 정책을 교체해도 영상 처리 코드는 영향을 받지 않는 구조다.
@@ -67,7 +67,7 @@ stateDiagram-v2
 
 | 데이터 | ROS 2 인터페이스 | 발행 → 구독 | 용도 |
 |---|---|---|---|
-| 카메라 영상 | `/camera/image_raw` · `sensor_msgs/msg/Image` | Camera → Vision | 상자 검출 원본 |
+| 카메라 영상 | `/eef_camera/image_raw` · `sensor_msgs/msg/Image` | Camera → Vision | ArUco 검출 원본 |
 | 상자 목표 자세 | `/target/object_pose` · `geometry_msgs/msg/PoseStamped` | Vision → RL Control | EEF 기준 접근 목표 |
 | 관절 상태 | `/joint_states` · `sensor_msgs/msg/JointState` | Hardware → RL Control | 정책 관측값 및 한계 검사 |
 | 관절 궤적 | 컨트롤러 명령 인터페이스 · `trajectory_msgs/msg/JointTrajectory` | RL Control → Controller | OpenMANIPULATOR-X 제어 |

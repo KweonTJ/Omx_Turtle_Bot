@@ -4,6 +4,8 @@
 
 > **구현 상태:** `ament_python` 패키지 구조만 생성됨. 노드, launch, 설정값, PPO 모델은 미구현 상태다.
 
+상세 임무 흐름과 팔 전용 정책 경계는 [`docs/arm_delivery_runtime_plan.md`](./docs/arm_delivery_runtime_plan.md)를 기준으로 한다. PPO는 `joint1`~`joint4`만 제어하고, 베이스 이동과 그리퍼 개폐는 상태 머신이 담당한다.
+
 ## 제어 루프
 
 ```mermaid

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import time
 
-import rclpy
 from geometry_msgs.msg import Twist
+import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Bool
 from std_msgs.msg import String
@@ -11,8 +11,9 @@ from std_msgs.msg import String
 class CmdVelMuxNode(Node):
     """Single writer for the real /cmd_vel topic.
 
-    NAV mode forwards /leader/cmd_vel. PICK mode forwards the manipulator-side
-    command topic, but /target/base_hold always wins and publishes zero.
+    NAV mode forwards the project navigation command. PICK mode forwards the
+    manipulator-side command topic, but /target/base_hold always wins and
+    publishes zero.
     """
 
     VALID_MODES = {'NAV', 'PICK', 'HOLD', 'STOP'}
@@ -20,7 +21,8 @@ class CmdVelMuxNode(Node):
     def __init__(self):
         super().__init__('cmd_vel_mux_node')
 
-        self.declare_parameter('nav_cmd_vel_topic', '/leader/cmd_vel')
+        self.declare_parameter(
+            'nav_cmd_vel_topic', '/turtlebot3_control/nav_cmd_vel')
         self.declare_parameter('pick_cmd_vel_topic', '/turtlebot3_control/pick_cmd_vel')
         self.declare_parameter('output_cmd_vel_topic', '/cmd_vel')
         self.declare_parameter('mode_topic', '/turtlebot3_control/mux_mode')

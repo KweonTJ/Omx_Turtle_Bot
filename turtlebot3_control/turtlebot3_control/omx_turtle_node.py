@@ -2,31 +2,31 @@
 import time
 
 import rclpy
-from host_mission_interfaces.msg import NavFeedback
 from rclpy.node import Node
 from std_msgs.msg import Bool
 from std_msgs.msg import String
 
 
-class LeaderPickCoordinatorNode(Node):
-    """Gate ArUco pick-place until rover navigation has actually arrived."""
+class OmxTurtleNode(Node):
+    """Gate ArUco pick-place until the base arrival signal is fresh."""
 
     def __init__(self):
-        super().__init__('leader_pick_coordinator_node')
+        super().__init__('omx_turtle_node')
 
-        self.declare_parameter('nav_feedback_topic', '/leader/nav_feedback')
+        self.declare_parameter(
+            'base_arrived_topic', '/turtlebot3_control/base_arrived')
         self.declare_parameter('aruco_visible_topic', '/target/aruco_visible')
         self.declare_parameter('mp_control_status_topic', '/mp_control/status')
         self.declare_parameter('mp_control_start_topic', '/mp_control/start')
         self.declare_parameter('mux_mode_topic', '/turtlebot3_control/mux_mode')
-        self.declare_parameter('status_topic', '/turtlebot3_control/coordinator_status')
-        self.declare_parameter('wait_for_nav_arrival', True)
+        self.declare_parameter(
+            'status_topic', '/turtlebot3_control/coordinator_status')
+        self.declare_parameter('wait_for_base_arrival', True)
         self.declare_parameter('require_aruco_visible', True)
-        self.declare_parameter('arrived_states', ['ARRIVED', 'HOLDING'])
         self.declare_parameter('start_publish_count', 3)
         self.declare_parameter('start_publish_period_s', 0.2)
         self.declare_parameter('aruco_visible_timeout_s', 0.8)
-        self.declare_parameter('nav_feedback_timeout_s', 2.0)
+        self.declare_parameter('base_arrival_timeout_s', 2.0)
         self.declare_parameter('done_status_keywords', [
             'handoff release complete',
             'handoff stay complete',
@@ -39,21 +39,18 @@ class LeaderPickCoordinatorNode(Node):
             'failed',
         ])
 
-        self.wait_for_nav_arrival = bool(
-            self.get_parameter('wait_for_nav_arrival').value)
+        self.wait_for_base_arrival = bool(
+            self.get_parameter('wait_for_base_arrival').value)
         self.require_aruco_visible = bool(
             self.get_parameter('require_aruco_visible').value)
-        self.arrived_states = {
-            str(state).strip().upper()
-            for state in self.get_parameter('arrived_states').value
-        }
-        self.start_publish_count = int(self.get_parameter('start_publish_count').value)
+        self.start_publish_count = int(
+            self.get_parameter('start_publish_count').value)
         self.start_publish_period_s = float(
             self.get_parameter('start_publish_period_s').value)
         self.aruco_visible_timeout_s = float(
             self.get_parameter('aruco_visible_timeout_s').value)
-        self.nav_feedback_timeout_s = float(
-            self.get_parameter('nav_feedback_timeout_s').value)
+        self.base_arrival_timeout_s = float(
+            self.get_parameter('base_arrival_timeout_s').value)
         self.done_status_keywords = [
             str(word) for word in self.get_parameter('done_status_keywords').value
         ]
@@ -61,8 +58,8 @@ class LeaderPickCoordinatorNode(Node):
             str(word) for word in self.get_parameter('error_status_keywords').value
         ]
 
-        self.nav_state = 'UNKNOWN'
-        self.nav_feedback_time = 0.0
+        self.base_arrived = False
+        self.base_arrival_time = 0.0
         self.aruco_visible = False
         self.aruco_visible_time = 0.0
         self.mp_status = ''
@@ -72,9 +69,9 @@ class LeaderPickCoordinatorNode(Node):
         self.last_status = ''
 
         self.create_subscription(
-            NavFeedback,
-            str(self.get_parameter('nav_feedback_topic').value),
-            self._on_nav_feedback,
+            Bool,
+            str(self.get_parameter('base_arrived_topic').value),
+            self._on_base_arrived,
             10,
         )
         self.create_subscription(
@@ -108,9 +105,9 @@ class LeaderPickCoordinatorNode(Node):
 
         self.create_timer(0.05, self._on_timer)
 
-    def _on_nav_feedback(self, msg):
-        self.nav_state = str(msg.state).strip().upper()
-        self.nav_feedback_time = time.monotonic()
+    def _on_base_arrived(self, msg):
+        self.base_arrived = bool(msg.data)
+        self.base_arrival_time = time.monotonic()
 
     def _on_aruco_visible(self, msg):
         self.aruco_visible = bool(msg.data)
@@ -123,9 +120,10 @@ class LeaderPickCoordinatorNode(Node):
     def _on_timer(self):
         now = time.monotonic()
 
-        nav_fresh = (
-            self.nav_feedback_time > 0.0 and
-            now - self.nav_feedback_time <= self.nav_feedback_timeout_s
+        base_arrival_fresh = (
+            self.base_arrived and
+            self.base_arrival_time > 0.0 and
+            now - self.base_arrival_time <= self.base_arrival_timeout_s
         )
         aruco_fresh = (
             self.aruco_visible and
@@ -136,8 +134,7 @@ class LeaderPickCoordinatorNode(Node):
         if self.phase == 'NAVIGATING':
             self._publish_mode('NAV')
             arrived = (
-                not self.wait_for_nav_arrival or
-                (nav_fresh and self.nav_state in self.arrived_states)
+                not self.wait_for_base_arrival or base_arrival_fresh
             )
             visible_ok = (not self.require_aruco_visible) or aruco_fresh
             if arrived and visible_ok:
@@ -161,7 +158,7 @@ class LeaderPickCoordinatorNode(Node):
             self._publish_mode('HOLD')
 
         self._publish_status(
-            nav_fresh=nav_fresh,
+            base_arrival_fresh=base_arrival_fresh,
             aruco_fresh=aruco_fresh,
         )
 
@@ -184,10 +181,12 @@ class LeaderPickCoordinatorNode(Node):
         msg.data = mode
         self.mode_pub.publish(msg)
 
-    def _publish_status(self, nav_fresh=None, aruco_fresh=None, force=False):
+    def _publish_status(
+            self, base_arrival_fresh=None, aruco_fresh=None, force=False):
         text = (
-            f'phase={self.phase} nav_state={self.nav_state} '
-            f'nav_fresh={nav_fresh} aruco_visible={self.aruco_visible} '
+            f'phase={self.phase} base_arrived={self.base_arrived} '
+            f'base_arrival_fresh={base_arrival_fresh} '
+            f'aruco_visible={self.aruco_visible} '
             f'aruco_fresh={aruco_fresh} start_sent={self.start_sent}'
         )
         if not force and text == self.last_status:
@@ -200,7 +199,7 @@ class LeaderPickCoordinatorNode(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = LeaderPickCoordinatorNode()
+    node = OmxTurtleNode()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:

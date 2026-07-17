@@ -24,7 +24,6 @@ from launch.actions import IncludeLaunchDescription
 from launch.actions import OpaqueFunction
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import EnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
 from launch.substitutions import ThisLaunchFileDir
@@ -202,12 +201,8 @@ def generate_launch_description():
             default_value=[
                 'file://',
                 PathJoinSubstitution([
-                    EnvironmentVariable('HOME'),
-                    'turtlebot3_ws',
-                    'src',
-                    'mp_control',
-                    'calibration',
-                    'eef_camera',
+                    FindPackageShare('turtlebot3_manipulation_bringup'),
+                    'config',
                     'eef_usb_camera.yaml',
                 ]),
             ],

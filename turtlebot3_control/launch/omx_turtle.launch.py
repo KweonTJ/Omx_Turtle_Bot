@@ -3,7 +3,6 @@ from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import EnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
@@ -11,16 +10,11 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    start_rover = LaunchConfiguration('start_rover')
     start_pick_place = LaunchConfiguration('start_pick_place')
+    start_eef_vision = LaunchConfiguration('start_eef_vision')
     start_aruco_bridge = LaunchConfiguration('start_aruco_bridge')
     start_mux = LaunchConfiguration('start_mux')
     start_coordinator = LaunchConfiguration('start_coordinator')
-
-    robot = LaunchConfiguration('robot')
-    frame_id = LaunchConfiguration('frame_id')
-    map_path = LaunchConfiguration('map_path')
-    command_timeout_sec = LaunchConfiguration('command_timeout_sec')
 
     control_start_delay = LaunchConfiguration('control_start_delay')
     force_object_x_m = LaunchConfiguration('force_object_x_m')
@@ -42,24 +36,8 @@ def generate_launch_description():
     eef_camera_name = LaunchConfiguration('eef_camera_name')
     eef_camera_info_url = LaunchConfiguration('eef_camera_info_url')
 
-    rover_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            PathJoinSubstitution([
-                FindPackageShare('leader_line_follower'),
-                'launch',
-                'leader_rover.launch.py',
-            ])
-        ]),
-        launch_arguments={
-            'robot': robot,
-            'frame_id': frame_id,
-            'map_path': map_path,
-            'command_timeout_sec': command_timeout_sec,
-            'publish_description': 'false',
-        }.items(),
-        condition=IfCondition(start_rover),
-    )
-
+    # Legacy manipulator path kept active until omx_rl_control is implemented.
+    # It will be replaced by the RL runtime, not run alongside it.
     pick_place_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -71,7 +49,7 @@ def generate_launch_description():
         launch_arguments={
             'start_camera': start_camera,
             'start_eef_camera_driver': start_eef_camera_driver,
-            'start_aruco_tracker': 'true',
+            'start_aruco_tracker': 'false',
             'start_mp_control': 'true',
             'start_servo': 'true',
             'start_joint_trajectory_transformer': 'true',
@@ -90,6 +68,7 @@ def generate_launch_description():
         condition=IfCondition(start_pick_place),
     )
 
+    # Legacy bridge is required only while mp_control consumes its target topics.
     aruco_bridge = Node(
         package='aruco_mp_bridge',
         executable='aruco_to_mp_control_bridge',
@@ -107,6 +86,15 @@ def generate_launch_description():
         condition=IfCondition(start_aruco_bridge),
     )
 
+    eef_vision = Node(
+        package='omx_eef_vision',
+        executable='eef_vision_node',
+        name='eef_vision_node',
+        output='screen',
+        parameters=[aruco_config_file],
+        condition=IfCondition(start_eef_vision),
+    )
+
     cmd_vel_mux = Node(
         package='turtlebot3_control',
         executable='cmd_vel_mux_node',
@@ -118,31 +106,19 @@ def generate_launch_description():
 
     coordinator = Node(
         package='turtlebot3_control',
-        executable='leader_pick_coordinator_node',
-        name='leader_pick_coordinator_node',
+        executable='omx_turtle_node',
+        name='omx_turtle_node',
         output='screen',
         parameters=[coordinator_config_file],
         condition=IfCondition(start_coordinator),
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument('start_rover', default_value='true'),
         DeclareLaunchArgument('start_pick_place', default_value='true'),
+        DeclareLaunchArgument('start_eef_vision', default_value='true'),
         DeclareLaunchArgument('start_aruco_bridge', default_value='true'),
         DeclareLaunchArgument('start_mux', default_value='true'),
         DeclareLaunchArgument('start_coordinator', default_value='true'),
-
-        DeclareLaunchArgument('robot', default_value='leader'),
-        DeclareLaunchArgument('frame_id', default_value='uwb_global'),
-        DeclareLaunchArgument(
-            'map_path',
-            default_value=PathJoinSubstitution([
-                FindPackageShare('leader_line_follower'),
-                'maps',
-                'map.json',
-            ]),
-        ),
-        DeclareLaunchArgument('command_timeout_sec', default_value='0.0'),
 
         DeclareLaunchArgument('control_start_delay', default_value='8.0'),
         DeclareLaunchArgument('force_object_x_m', default_value='0.29'),
@@ -158,9 +134,9 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'aruco_config_file',
             default_value=PathJoinSubstitution([
-                FindPackageShare('aruco_eef_tracker'),
+                FindPackageShare('omx_eef_vision'),
                 'config',
-                'eef_aruco_tracker.yaml',
+                'eef_vision.yaml',
             ]),
         ),
         DeclareLaunchArgument(
@@ -184,7 +160,7 @@ def generate_launch_description():
             default_value=PathJoinSubstitution([
                 FindPackageShare('turtlebot3_control'),
                 'config',
-                'leader_pick_coordinator.yaml',
+                'omx_turtle.yaml',
             ]),
         ),
 
@@ -195,10 +171,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument('start_eef_camera_driver', default_value='true'),
         DeclareLaunchArgument('eef_camera_video_device', default_value='/dev/video0'),
-        DeclareLaunchArgument(
-            'eef_camera_frame_id',
-            default_value='eef_usb_camera_optical_frame',
-        ),
+        DeclareLaunchArgument('eef_camera_frame_id', default_value='eef_usb_camera_optical_frame'),
         DeclareLaunchArgument('eef_camera_pixel_format', default_value='YUYV'),
         DeclareLaunchArgument('eef_camera_output_encoding', default_value='rgb8'),
         DeclareLaunchArgument('eef_camera_image_width', default_value='320'),
@@ -209,19 +182,15 @@ def generate_launch_description():
             default_value=[
                 'file://',
                 PathJoinSubstitution([
-                    EnvironmentVariable('HOME'),
-                    'turtlebot3_ws',
-                    'src',
-                    'mp_control',
-                    'calibration',
-                    'eef_camera',
+                    FindPackageShare('turtlebot3_manipulation_bringup'),
+                    'config',
                     'eef_usb_camera.yaml',
                 ]),
             ],
         ),
 
         pick_place_launch,
-        rover_launch,
+        eef_vision,
         aruco_bridge,
         cmd_vel_mux,
         coordinator,

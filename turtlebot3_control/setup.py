@@ -21,7 +21,7 @@ setup(
     zip_safe=True,
     maintainer='KweonTJ',
     maintainer_email='kweontj0701@naver.com',
-    description='Integrated TurtleBot3 leader rover and ArUco pick-place control.',
+    description='Integrated TurtleBot3 base arbitration and ArUco pick-place control.',
     license='Apache-2.0',
     extras_require={
         'test': [
@@ -31,7 +31,7 @@ setup(
     entry_points={
         'console_scripts': [
             'cmd_vel_mux_node = turtlebot3_control.cmd_vel_mux_node:main',
-            'leader_pick_coordinator_node = turtlebot3_control.leader_pick_coordinator_node:main',
+            'omx_turtle_node = turtlebot3_control.omx_turtle_node:main',
         ],
     },
 )

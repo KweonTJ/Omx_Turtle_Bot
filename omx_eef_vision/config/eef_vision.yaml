@@ -1,0 +1,49 @@
+eef_vision_node:
+  ros__parameters:
+    image_topic: /eef_camera/image_raw
+    camera_info_topic: /eef_camera/camera_info
+
+    marker_pose_topic: /target/aruco_pose
+    object_pose_topic: /target/object_pose
+    visible_topic: /target/aruco_visible
+    valid_topic: /target/valid
+    status_topic: /target/aruco_status
+    debug_image_topic: /target/aruco_debug_image
+
+    camera_frame: eef_usb_camera_optical_frame
+    target_frame: base_link
+    use_latest_tf: true
+    transform_timeout_s: 0.08
+
+    # Keep these values identical to the marker that is physically printed.
+    dictionary: DICT_APRILTAG_36h11
+    marker_id: 0
+    accept_any_marker: true
+    marker_size_m: 0.05
+
+    # Marker-frame transform from marker center to the box grasp target.
+    # Calibrate this after fixing the marker on the 6 x 5.5 x 5.5 cm box.
+    object_offset_xyz: [0.0, 0.0, 0.0]
+    object_offset_rpy: [0.0, 0.0, 0.0]
+
+    min_marker_perimeter_px: 12.0
+    max_reprojection_error_px: 8.0
+    pose_z_min_m: 0.04
+    pose_z_max_m: 1.0
+    target_workspace_min: [-0.5, -0.5, 0.0]
+    target_workspace_max: [0.8, 0.5, 0.8]
+
+    stable_detection_count: 3
+    position_filter_alpha: 0.35
+    orientation_filter_alpha: 0.35
+    max_position_jump_m: 0.10
+    max_orientation_jump_rad: 0.90
+    detection_timeout_s: 0.35
+    image_timeout_s: 1.0
+    filter_reset_timeout_s: 0.60
+
+    publish_debug_image: true
+    draw_axes: true
+    axis_length_m: 0.03
+    use_clahe: false
+    status_period_s: 0.5
