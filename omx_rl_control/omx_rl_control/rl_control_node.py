@@ -180,6 +180,8 @@ class RlControlNode(Node):
         self.object_target = None
         self.object_yaw = 0.0
         self.object_pose_time = 0.0
+        self.aruco_marker_z = math.inf
+        self.aruco_pose_time = 0.0
         self.target_valid = False
         self.target_valid_time = 0.0
         self.delivery_target = self._vector(
@@ -271,6 +273,9 @@ class RlControlNode(Node):
             'grasp_confirmation_timeout_s': 2.0,
             'joint_state_timeout_s': 0.25,
             'target_pose_timeout_s': 0.50,
+            'aruco_pose_timeout_s': 0.50,
+            'pick_start_max_marker_z_m': 0.25,
+            'pick_start_min_marker_z_m': 0.10,
             'base_arrival_timeout_s': 2.0,
             'odom_timeout_s': 0.50,
             'require_base_arrived': True,
@@ -304,6 +309,9 @@ class RlControlNode(Node):
             'base_hold_topic': '/target/base_hold',
             'status_topic': '/rl_control/status',
             'compat_status_topic': '/mp_control/status',
+            'image_target_topic': '/target/object_pose',
+            'aruco_pose_topic': '/target/aruco_pose',
+            'target_valid_topic': '/target/valid',
         }
         for name, value in defaults.items():
             self.declare_parameter(name, value)
@@ -311,6 +319,7 @@ class RlControlNode(Node):
     def _create_subscriptions(self) -> None:
         subscriptions = (
             (PoseStamped, 'image_target_topic', self._on_object_pose),
+            (PoseStamped, 'aruco_pose_topic', self._on_aruco_pose),
             (Bool, 'target_valid_topic', self._on_target_valid),
             (PoseStamped, 'delivery_pose_topic', self._on_delivery_pose),
             (JointState, 'joint_states_topic', self._on_joint_states),
@@ -445,6 +454,16 @@ class RlControlNode(Node):
         self.object_target = position
         self.object_yaw = yaw
         self.object_pose_time = time.monotonic()
+
+    def _on_aruco_pose(self, message: PoseStamped) -> None:
+        """Store raw marker depth measured in the EEF camera optical frame."""
+        marker_z = float(message.pose.position.z)
+
+        if not math.isfinite(marker_z) or marker_z <= 0.0:
+            return
+
+        self.aruco_marker_z = marker_z
+        self.aruco_pose_time = time.monotonic()
 
     def _on_delivery_pose(self, message: PoseStamped) -> None:
         if not self._pose_frame_valid(message):
@@ -620,18 +639,52 @@ class RlControlNode(Node):
         if not self._base_stopped(now):
             self.state_detail = 'waiting for base arrival and zero velocity'
             return
+
         if not self._object_target_fresh(now):
             self.state_detail = 'waiting for valid object pose'
             return
+
+        if not self._aruco_depth_fresh(now):
+            self.state_detail = 'waiting for fresh ArUco marker depth'
+            return
+
+        minimum_z = float(
+            self._parameter('pick_start_min_marker_z_m')
+        )
+        maximum_z = float(
+            self._parameter('pick_start_max_marker_z_m')
+        )
+
+        if self.aruco_marker_z > maximum_z:
+            self.state_detail = (
+                'waiting for object within PICK range; '
+                f'marker_z={self.aruco_marker_z:.3f}m '
+                f'limit={maximum_z:.3f}m'
+            )
+            return
+
+        if self.aruco_marker_z < minimum_z:
+            self.state_detail = (
+                'object too close for safe PICK; '
+                f'marker_z={self.aruco_marker_z:.3f}m '
+                f'minimum={minimum_z:.3f}m'
+            )
+            return
+
         self.reference.set_target(self.object_target, force=True)
         self.action_limiter.reset(self.arm_qpos)
         self.previous_action.fill(0.0)
+
         self.gripper.command(
             float(self._parameter('gripper_open')),
             float(self._parameter('gripper_max_effort')),
             allow_stall=False,
         )
-        self._set_state(RuntimeState.OPEN_GRIPPER, 'opening gripper')
+
+        self._set_state(
+            RuntimeState.OPEN_GRIPPER,
+            f'PICK range accepted: marker_z={self.aruco_marker_z:.3f}m',
+        )
 
     def _handle_open_gripper(self, now: float) -> None:
         if self.gripper.succeeded:
@@ -874,6 +927,15 @@ class RlControlNode(Node):
             and self.target_valid
             and now - self.object_pose_time <= timeout
             and now - self.target_valid_time <= timeout
+        )
+    
+    def _aruco_depth_fresh(self, now: float) -> bool:
+        timeout = float(self._parameter('aruco_pose_timeout_s'))
+
+        return bool(
+            self.aruco_pose_time > 0.0
+            and now - self.aruco_pose_time <= timeout
+            and math.isfinite(self.aruco_marker_z)
         )
 
     def _base_stopped(self, now: float) -> bool:

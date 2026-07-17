@@ -43,6 +43,11 @@ rl_control_node:
     final_approach_action_limit: 1.0
     target_update_min_m: 0.001
 
+    # PICK 동작 시작 거리 조건
+    pick_start_max_marker_z_m: 0.25
+    pick_start_min_marker_z_m: 0.10
+    aruco_pose_timeout_s: 0.50
+
     gripper_open: 0.019
     # Policy observation normalization limit; do not tune per object.
     gripper_close: -0.010
@@ -82,6 +87,7 @@ rl_control_node:
     publish_every_n_cycles: 1
 
     image_target_topic: /target/object_pose
+    aruco_pose_topic: /target/aruco_pose
     target_valid_topic: /target/valid
     delivery_pose_topic: /target/delivery_pose
     joint_states_topic: /joint_states
