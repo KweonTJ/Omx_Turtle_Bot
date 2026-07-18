@@ -275,6 +275,9 @@ class RlControlNode(Node):
             'target_pose_timeout_s': 0.50,
             'aruco_pose_timeout_s': 0.50,
             'pick_start_max_marker_z_m': 0.265,
+            'auto_pick_when_in_range': False,
+            'pick_start_max_marker_z_m': 0.265,
+            'pick_start_min_marker_z_m': 0.10,
             'pick_start_min_marker_z_m': 0.10,
             'base_arrival_timeout_s': 2.0,
             'odom_timeout_s': 0.50,
@@ -627,13 +630,45 @@ class RlControlNode(Node):
             self.stay_stable_count = 0
             self._set_state(RuntimeState.STAY_EMPTY, 'runtime ready')
 
+    # def _handle_stay_empty(self, now: float) -> None:
+    #     if not self._joint_state_fresh(now):
+    #         self._enter_fault('joint state timeout while idle')
+    #         return
+    #     if self.pending_command == 'PICK':
+    #         self.pending_command = ''
+    #         self._set_state(RuntimeState.WAIT_PICK, 'waiting for pick gate')
     def _handle_stay_empty(self, now: float) -> None:
         if not self._joint_state_fresh(now):
             self._enter_fault('joint state timeout while idle')
             return
-        if self.pending_command == 'PICK':
+
+        manual_pick = self.pending_command == 'PICK'
+
+        minimum_z = float(
+            self._parameter('pick_start_min_marker_z_m')
+        )
+        maximum_z = float(
+            self._parameter('pick_start_max_marker_z_m')
+        )
+
+        automatic_pick = bool(
+            self._parameter('auto_pick_when_in_range')
+        ) and (
+            self._base_stopped(now)
+            and self._object_target_fresh(now)
+            and self._aruco_depth_fresh(now)
+            and minimum_z <= self.aruco_marker_z <= maximum_z
+        )
+
+        if manual_pick or automatic_pick:
             self.pending_command = ''
-            self._set_state(RuntimeState.WAIT_PICK, 'waiting for pick gate')
+            reason = (
+                f'automatic PICK: marker_z={self.aruco_marker_z:.3f}m'
+                if automatic_pick and not manual_pick
+                else 'manual PICK command'
+            )
+            self._set_state(RuntimeState.WAIT_PICK, reason)
+
 
     def _handle_wait_pick(self, now: float) -> None:
         if not self._base_stopped(now):
@@ -1023,7 +1058,7 @@ class RlControlNode(Node):
 
     def _publish_arm_target(self, positions: np.ndarray) -> None:
         message = JointTrajectory()
-        message.header.stamp = self.get_clock().now().to_msg()
+        # message.header.stamp = self.get_clock().now().to_msg()
         message.joint_names = list(self.joint_names)
         point = JointTrajectoryPoint()
         point.positions = [float(value) for value in positions]

@@ -47,6 +47,12 @@ rl_control_node:
     pick_start_max_marker_z_m: 0.265
     pick_start_min_marker_z_m: 0.10
     aruco_pose_timeout_s: 0.50
+    auto_pick_when_in_range: true
+
+    pick_start_max_marker_z_m: 0.265
+    pick_start_min_marker_z_m: 0.10
+    aruco_pose_timeout_s: 0.50
+
 
     gripper_open: 0.019
     # Policy observation normalization limit; do not tune per object.
