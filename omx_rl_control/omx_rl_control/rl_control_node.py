@@ -274,7 +274,7 @@ class RlControlNode(Node):
             'joint_state_timeout_s': 0.25,
             'target_pose_timeout_s': 0.50,
             'aruco_pose_timeout_s': 0.50,
-            'pick_start_max_marker_z_m': 0.25,
+            'pick_start_max_marker_z_m': 0.265,
             'pick_start_min_marker_z_m': 0.10,
             'base_arrival_timeout_s': 2.0,
             'odom_timeout_s': 0.50,

@@ -44,7 +44,7 @@ rl_control_node:
     target_update_min_m: 0.001
 
     # PICK 동작 시작 거리 조건
-    pick_start_max_marker_z_m: 0.25
+    pick_start_max_marker_z_m: 0.265
     pick_start_min_marker_z_m: 0.10
     aruco_pose_timeout_s: 0.50
 
