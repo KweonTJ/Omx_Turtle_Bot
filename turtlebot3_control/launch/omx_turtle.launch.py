@@ -220,7 +220,7 @@ def generate_launch_description():
         ),
         DeclareLaunchArgument(
             'eef_usb_camera_rpy',
-            default_value='0.0 0.0 0.0',
+            default_value='0.0 1.5708 0.0',
         ),
 
         # EEF 카메라
