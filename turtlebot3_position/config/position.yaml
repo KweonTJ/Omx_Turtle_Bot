@@ -1,0 +1,97 @@
+uwb_serial_node:
+  ros__parameters:
+    port: /dev/ttyUSB0
+    baud: 115200
+    reconnect_sec: 2.0
+
+    frame_id: uwb_map
+
+    pose_topic: /turtlebot3_position/pose
+    uwb_valid_topic: /turtlebot3_position/uwb/valid
+    uwb_raw_topic: /turtlebot3_position/uwb/raw
+    odom_topic: /odom
+
+    include_odom_yaw: true
+    odom_timeout_sec: 1.0
+
+    position_variance_x: 0.0121
+    position_variance_y: 0.0121
+    yaw_variance: 0.04
+    yaw_unavailable_variance: 9.8696
+
+position_controller_node:
+  ros__parameters:
+    frame_id: uwb_map
+
+    pose_topic: /turtlebot3_position/pose
+    odom_topic: /odom
+    goal_topic: /turtlebot3_position/goal
+    enable_topic: /turtlebot3_position/enable
+    safety_stop_topic: /safety_stop
+
+    status_topic: /turtlebot3_position/status
+    nav_cmd_vel_topic: /turtlebot3_control/nav_cmd_vel
+    base_arrived_topic: /turtlebot3_control/base_arrived
+
+    delivery_request_topic: /delivery/request
+    delivery_event_topic: /delivery/event
+
+    pickup_x: 0.80
+    pickup_y: 0.93
+
+    tower1_x: 0.20
+    tower1_y: 0.20
+
+    tower2_x: 1.55
+    tower2_y: 0.93
+
+    tower3_x: 1.55
+    tower3_y: 0.90
+
+    safe_x: 0.80
+    safe_y: 0.20
+
+    arrival_tolerance: 0.13
+    arrival_confirmations: 3
+
+    linear_speed: 0.055
+    angular_speed: 0.28
+
+    heading_tolerance: 0.30
+    final_yaw_tolerance: 0.20
+
+    drive_pulse_sec: 0.45
+    turn_pulse_sec: 0.35
+    settle_sec: 1.6
+
+    uwb_timeout_sec: 2.0
+    odom_timeout_sec: 1.0
+
+    pickup_wait_sec: 2.0
+    delivery_wait_sec: 2.0
+
+    initial_yaw: 0.0
+    use_odom_yaw: true
+    use_goal_yaw: false
+
+goal_console:
+  ros__parameters:
+    goal_topic: /turtlebot3_position/goal
+    enable_topic: /turtlebot3_position/enable
+    frame_id: uwb_map
+    auto_enable: true
+
+    pickup_x: 0.80
+    pickup_y: 0.93
+
+    tower1_x: 0.20
+    tower1_y: 0.20
+
+    tower2_x: 1.55
+    tower2_y: 0.93
+
+    tower3_x: 1.55
+    tower3_y: 0.90
+
+    safe_x: 0.80
+    safe_y: 0.20
