@@ -102,7 +102,11 @@ class RlControlNode(Node):
         self.control_mode = (
             'reference_only'
             if self.residual_scale <= 1.0e-12
-            else 'reference_plus_residual'
+            else (
+                self.contract.control_mode
+                if self.contract is not None
+                else 'reference_plus_residual'
+            )
         )
         stay_joints = (
             np.asarray(self.contract.stay_joint_positions, dtype=np.float64)
@@ -148,6 +152,14 @@ class RlControlNode(Node):
                 self._parameter('final_approach_action_limit')),
             target_update_min_m=float(
                 self._parameter('target_update_min_m')),
+            gripper_pitch_hold_enabled=(
+                self.contract.gripper_pitch_hold_enabled
+                if self.contract is not None else False
+            ),
+            gripper_pitch_target=(
+                self.contract.gripper_pitch_target
+                if self.contract is not None else 0.0
+            ),
         )
         self.action_limiter = ActionLimiter(ActionLimitConfig(
             joint_low=self.joint_low,
@@ -158,6 +170,18 @@ class RlControlNode(Node):
             control_period_s=self.control_period_s,
             max_velocity=self._vector('max_joint_velocity', 4),
             max_acceleration=self._vector('max_joint_acceleration', 4),
+            gripper_pitch_hold_enabled=(
+                self.contract.gripper_pitch_hold_enabled
+                if self.contract is not None else False
+            ),
+            gripper_pitch_target=(
+                self.contract.gripper_pitch_target
+                if self.contract is not None else 0.0
+            ),
+            gripper_pitch_joint4_max_step=(
+                self.contract.gripper_pitch_joint4_max_step
+                if self.contract is not None else 0.0
+            ),
         ))
 
         self.state = RuntimeState.NOT_READY
@@ -275,14 +299,12 @@ class RlControlNode(Node):
             'target_pose_timeout_s': 0.50,
             'aruco_pose_timeout_s': 0.50,
             'pick_start_max_marker_z_m': 0.265,
-            'auto_pick_when_in_range': False,
-            'pick_start_max_marker_z_m': 0.265,
             'pick_start_min_marker_z_m': 0.10,
-            'pick_start_min_marker_z_m': 0.10,
+            'auto_pick_when_in_range': True,
             'base_arrival_timeout_s': 2.0,
             'odom_timeout_s': 0.50,
-            'require_base_arrived': True,
-            'require_odom_stopped': True,
+            'require_base_arrived': False,
+            'require_odom_stopped': False,
             'stopped_linear_speed_mps': 0.01,
             'stopped_angular_speed_radps': 0.05,
             'close_distance_m': 0.042,
@@ -350,7 +372,7 @@ class RlControlNode(Node):
                 artifact_dir = (
                     Path(get_package_share_directory('omx_rl_control'))
                     / 'models' / 'policies'
-                    / 'arm_delivery_residual_v3_robot_stay'
+                    / 'arm_grasp_pitch_hold_v3'
                 )
             self.contract = load_policy_contract(artifact_dir)
             if tuple(self.joint_names) != self.contract.joint_names:
@@ -512,6 +534,16 @@ class RlControlNode(Node):
         if command not in {'PICK', 'PLACE', 'HOLD', 'RESET', 'E_STOP'}:
             self.get_logger().warning(f'Ignoring unknown command: {command}')
             return
+        if (
+            command in {'PICK', 'PLACE'}
+            and self.contract is not None
+            and command not in self.contract.supported_commands
+        ):
+            self.get_logger().warning(
+                f'Ignoring unsupported policy command: {command}; '
+                f'supported={self.contract.supported_commands}'
+            )
+            return
         if command == 'E_STOP':
             self.safety_stop = True
             self._enter_estop('E_STOP command')
@@ -630,13 +662,6 @@ class RlControlNode(Node):
             self.stay_stable_count = 0
             self._set_state(RuntimeState.STAY_EMPTY, 'runtime ready')
 
-    # def _handle_stay_empty(self, now: float) -> None:
-    #     if not self._joint_state_fresh(now):
-    #         self._enter_fault('joint state timeout while idle')
-    #         return
-    #     if self.pending_command == 'PICK':
-    #         self.pending_command = ''
-    #         self._set_state(RuntimeState.WAIT_PICK, 'waiting for pick gate')
     def _handle_stay_empty(self, now: float) -> None:
         if not self._joint_state_fresh(now):
             self._enter_fault('joint state timeout while idle')
@@ -668,7 +693,6 @@ class RlControlNode(Node):
                 else 'manual PICK command'
             )
             self._set_state(RuntimeState.WAIT_PICK, reason)
-
 
     def _handle_wait_pick(self, now: float) -> None:
         if not self._base_stopped(now):
@@ -867,7 +891,17 @@ class RlControlNode(Node):
             return_to_stay=return_to_stay,
         )
         arm_target = self.action_limiter.step(
-            raw_action, reference_action)
+            raw_action,
+            reference_action,
+            couple_gripper_pitch=(
+                self.contract is not None
+                and self.contract.gripper_pitch_hold_enabled
+                and self.state in (
+                    RuntimeState.PICK_REACH,
+                    RuntimeState.PLACE_REACH,
+                )
+            ),
+        )
         self.previous_action = raw_action.copy()
         publish_every = int(self._parameter('publish_every_n_cycles'))
         if publish_every <= 0 or self.cycle_count % publish_every == 0:
@@ -963,7 +997,7 @@ class RlControlNode(Node):
             and now - self.object_pose_time <= timeout
             and now - self.target_valid_time <= timeout
         )
-    
+
     def _aruco_depth_fresh(self, now: float) -> bool:
         timeout = float(self._parameter('aruco_pose_timeout_s'))
 
@@ -1058,7 +1092,7 @@ class RlControlNode(Node):
 
     def _publish_arm_target(self, positions: np.ndarray) -> None:
         message = JointTrajectory()
-        # message.header.stamp = self.get_clock().now().to_msg()
+        # Keep the stamp zero so the controller starts the trajectory on receipt.
         message.joint_names = list(self.joint_names)
         point = JointTrajectoryPoint()
         point.positions = [float(value) for value in positions]

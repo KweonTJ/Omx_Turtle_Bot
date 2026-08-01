@@ -112,6 +112,7 @@ class OpenManipulatorKinematics:
         max_iterations: int = 80,
         tolerance_m: float = 0.00001,
         max_position_error_m: float = 0.015,
+        pitch_target: float = 0.0,
     ) -> IKResult:
         """Solve the training reference IK without a SciPy dependency."""
         target_position = np.asarray(target, dtype=np.float64)
@@ -120,6 +121,8 @@ class OpenManipulatorKinematics:
             or not np.isfinite(target_position).all()
         ):
             raise ValueError('target must be a finite 3-vector')
+        if not math.isfinite(pitch_target):
+            raise ValueError('pitch_target must be finite')
 
         joints = self.initial_guess.copy()
         joints[0] = np.clip(
@@ -134,7 +137,7 @@ class OpenManipulatorKinematics:
 
         for iteration in range(1, max_iterations + 1):
             residual = self._ik_residual(
-                joints[0], variables, target_position)
+                joints[0], variables, target_position, pitch_target)
             position_error = float(np.linalg.norm(residual[:3]) / 10.0)
             if position_error < best_position_error:
                 best_position_error = position_error
@@ -161,7 +164,8 @@ class OpenManipulatorKinematics:
                     denominator = shifted[index] - variables[index]
                 jacobian[:, index] = (
                     self._ik_residual(
-                        joints[0], shifted, target_position) - residual
+                        joints[0], shifted, target_position, pitch_target)
+                    - residual
                 ) / denominator
 
             normal = jacobian.T @ jacobian + damping * np.eye(3)
@@ -180,7 +184,7 @@ class OpenManipulatorKinematics:
                     self.joint_high[1:],
                 )
                 candidate_residual = self._ik_residual(
-                    joints[0], candidate, target_position)
+                    joints[0], candidate, target_position, pitch_target)
                 if float(candidate_residual @ candidate_residual) < baseline:
                     variables = candidate
                     accepted = True
@@ -201,10 +205,12 @@ class OpenManipulatorKinematics:
         joint1: float,
         joints_2_to_4: np.ndarray,
         target: np.ndarray,
+        pitch_target: float,
     ) -> np.ndarray:
         joints = np.concatenate(([joint1], joints_2_to_4))
         position_error = 10.0 * (self.forward(joints) - target)
-        return np.concatenate((position_error, [np.sum(joints_2_to_4)]))
+        pitch_error = np.sum(joints_2_to_4) - pitch_target
+        return np.concatenate((position_error, [pitch_error]))
 
     @staticmethod
     def _vector(value: np.ndarray, name: str) -> np.ndarray:

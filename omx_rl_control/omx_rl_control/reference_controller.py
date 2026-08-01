@@ -19,6 +19,8 @@ class ReferenceController:
         action_limit: float = 1.0,
         final_action_limit: float = 1.0,
         target_update_min_m: float = 0.001,
+        gripper_pitch_hold_enabled: bool = False,
+        gripper_pitch_target: float = 0.0,
     ):
         self.kinematics = kinematics
         self.stay_joints = self._vector(stay_joints, 'stay_joints')
@@ -32,10 +34,16 @@ class ReferenceController:
         self.action_limit = float(action_limit)
         self.final_action_limit = float(final_action_limit)
         self.target_update_min_m = float(target_update_min_m)
+        self.gripper_pitch_hold_enabled = bool(
+            gripper_pitch_hold_enabled
+        )
+        self.gripper_pitch_target = float(gripper_pitch_target)
         if np.any(self.action_scale <= 0.0):
             raise ValueError('action_scale values must be positive')
         if self.waypoint_tolerance <= 0.0:
             raise ValueError('waypoint_tolerance must be positive')
+        if not np.isfinite(self.gripper_pitch_target):
+            raise ValueError('gripper_pitch_target must be finite')
 
         self.target = None
         self.pregrasp_target = None
@@ -67,6 +75,21 @@ class ReferenceController:
             self.waypoints = self.base_waypoints.copy()
             if len(self.waypoints):
                 self.waypoints[:, 0] = bearing
+                if self.gripper_pitch_hold_enabled:
+                    coupled_joint4 = (
+                        self.gripper_pitch_target
+                        - self.waypoints[:, 1]
+                        - self.waypoints[:, 2]
+                    )
+                    if np.any(
+                        (coupled_joint4 < self.kinematics.joint_low[3])
+                        | (coupled_joint4 > self.kinematics.joint_high[3])
+                    ):
+                        raise ValueError(
+                            'Approach pitch target requires joint4 '
+                            'outside its limits'
+                        )
+                    self.waypoints[:, 3] = coupled_joint4
             self.waypoint_targets = np.asarray([
                 self.kinematics.forward(waypoint)
                 for waypoint in self.waypoints
@@ -80,7 +103,9 @@ class ReferenceController:
         )
         if initialize_reference:
             self.pregrasp_joints = self.kinematics.solve_position(
-                self.pregrasp_target).joints
+                self.pregrasp_target,
+                pitch_target=self.gripper_pitch_target,
+            ).joints
         return True
 
     def advance(self, current_joints: np.ndarray) -> bool:
@@ -94,7 +119,9 @@ class ReferenceController:
         self.stage += 1
         if self.final_stage and self.pregrasp_target is not None:
             self.pregrasp_joints = self.kinematics.solve_position(
-                self.pregrasp_target).joints
+                self.pregrasp_target,
+                pitch_target=self.gripper_pitch_target,
+            ).joints
         return True
 
     def active_target(self, return_to_stay: bool = False) -> np.ndarray:

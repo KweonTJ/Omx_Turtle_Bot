@@ -1,0 +1,28 @@
+manifest_version: 1
+policy_version: arm_grasp_pitch_hold_v3
+policy_file: policy.zip
+source:
+  workspace: /home/ktj/omx_train_ws
+  relative_path: policies/exported/arm_grasp_pitch_hold_v3/policy.zip
+  completed_stages: [center_reach, full_tower]
+  selected_counter: 21024
+files:
+  policy.zip: 19efed4e0e635f25603b7820ecdf7c0642fb22926b7235dd220e90f96b714ac9
+  policy_metadata.yaml: 3fa67c34a8b4b15dead6b5663af4792579c9b7133868b2f9b928751aa1006894
+  training_config.yaml: a95ef339d6c52499f9d9501705d0dfd3c2790505ab06eb42890958e4246be298
+  evaluation/full_tower_100.yaml: f68cde98d89830ab64a6135cf1f6a237aeff4c3e11ef34083cea1beb55318abb
+  source_model_manifest.yaml: bfe9112f75d1f56cb942a41659a88ae930f40b79cb6267e23299d057457c6634
+contract:
+  observation_schema_version: 1
+  observation_size: 33
+  action_schema_version: 3
+  action_size: 4
+  joint_names: [joint1, joint2, joint3, joint4]
+  supported_commands: [PICK]
+  control_mode: reference_plus_residual_with_joint4_pitch_coupling
+  gripper_pitch_hold_enabled: true
+  gripper_pitch_target: 0.0
+  gripper_pitch_joint4_max_step: 0.028
+  training_frame: base_footprint
+  ros_target_frame: base_link
+  ros_to_training_offset_xyz: [0.0, 0.0, 0.016]

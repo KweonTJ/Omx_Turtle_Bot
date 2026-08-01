@@ -1,0 +1,35 @@
+policy_version: arm_grasp_pitch_hold_v3
+policy_name: arm_grasp_randomized_ppo
+framework: stable-baselines3 PPO
+completed_stages:
+- center_reach
+- full_tower
+total_timesteps: 21024
+observation_schema_version: 1
+observation_size: 33
+action_schema_version: 3
+action_size: 4
+joint_names:
+- joint1
+- joint2
+- joint3
+- joint4
+control_mode: reference_plus_residual_with_joint4_pitch_coupling
+control_period_s: 0.02
+action_scale:
+- 0.014
+- 0.014
+- 0.014
+- 0.014
+action_filter_coefficient: 0.18
+residual_action_scale: 0.1
+gripper_pitch_hold_enabled: true
+gripper_pitch_target: 0.0
+gripper_pitch_joint4_max_step: 0.028
+stay_joint_positions:
+- 0.104311
+- 0.027612
+- -0.001534
+- -1.638291
+model_sha256: a62fb4c219f80d0a2020e8e741f5cbb0c5d77942e072200e1bf84bd3373c09af
+config_sha256: a95ef339d6c52499f9d9501705d0dfd3c2790505ab06eb42890958e4246be298

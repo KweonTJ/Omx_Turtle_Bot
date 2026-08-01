@@ -9,6 +9,7 @@ from omx_rl_control.kinematics import OpenManipulatorKinematics
 from omx_rl_control.observation_builder import ObservationBuilder
 from omx_rl_control.observation_builder import ObservationConfig
 from omx_rl_control.reference_controller import ReferenceController
+import pytest
 import yaml
 
 
@@ -186,3 +187,53 @@ def test_zero_residual_ignores_policy_action():
     expected = without_policy.step(np.zeros(4), reference)
 
     np.testing.assert_allclose(actual, expected, atol=1.0e-12)
+
+
+def test_pitch_coupling_tracks_joint2_and_joint3_with_bounded_joint4():
+    """Schema 3 must couple joint4 without bypassing hardware limits."""
+    limiter = ActionLimiter(ActionLimitConfig(
+        joint_low=JOINT_LOW,
+        joint_high=JOINT_HIGH,
+        action_scale=ACTION_SCALE,
+        filter_coefficient=1.0,
+        residual_scale=0.10,
+        control_period_s=0.02,
+        max_velocity=np.full(4, 10.0),
+        max_acceleration=np.full(4, 1000.0),
+        gripper_pitch_hold_enabled=True,
+        gripper_pitch_target=0.0,
+        gripper_pitch_joint4_max_step=0.028,
+    ))
+    initial = np.array([0.0, -0.5, 0.5, -0.2])
+    limiter.reset(initial)
+
+    next_target = limiter.step(
+        np.zeros(4),
+        np.array([0.0, 1.0, 1.0, -1.0]),
+        couple_gripper_pitch=True,
+    )
+
+    assert next_target[3] == pytest.approx(-0.172)
+    assert next_target[3] - initial[3] == pytest.approx(0.028)
+
+
+def test_reference_waypoints_are_pitch_coupled():
+    """Object-bearing waypoints must also preserve the schema 3 pitch."""
+    reference = ReferenceController(
+        _kinematics(),
+        np.array([0.104311, 0.027612, -0.001534, -1.638291]),
+        ACTION_SCALE,
+        np.array([
+            [0.0, -0.5, 0.5, 0.4],
+            [0.0, 0.5, 0.2, 0.4],
+        ]),
+        gripper_pitch_hold_enabled=True,
+        gripper_pitch_target=0.0,
+    )
+    reference.set_target(_array('vision_position_ros_base_link'), force=True)
+
+    np.testing.assert_allclose(
+        np.sum(reference.waypoints[:, 1:4], axis=1),
+        np.zeros(2),
+        atol=1.0e-12,
+    )

@@ -49,11 +49,6 @@ rl_control_node:
     aruco_pose_timeout_s: 0.50
     auto_pick_when_in_range: true
 
-    pick_start_max_marker_z_m: 0.265
-    pick_start_min_marker_z_m: 0.10
-    aruco_pose_timeout_s: 0.50
-
-
     gripper_open: 0.019
     # Policy observation normalization limit; do not tune per object.
     gripper_close: -0.010
@@ -72,8 +67,9 @@ rl_control_node:
     target_pose_timeout_s: 0.50
     base_arrival_timeout_s: 2.0
     odom_timeout_s: 0.50
-    require_base_arrived: true
-    require_odom_stopped: true
+    # Manipulator-only mode: do not wait for navigation arrival or odometry.
+    require_base_arrived: false
+    require_odom_stopped: false
     stopped_linear_speed_mps: 0.01
     stopped_angular_speed_radps: 0.05
 
@@ -90,7 +86,9 @@ rl_control_node:
     # 0.1975 m training height minus the 0.016 m base_link offset.
     fallback_delivery_position: [0.27, 0.0, 0.1815]
     fallback_delivery_yaw: 0.0
-    publish_every_n_cycles: 1
+    # 50 Hz control with 0.08 s trajectories: publish once every 4 cycles so
+    # the physical trajectory controller can advance instead of being reset.
+    publish_every_n_cycles: 4
 
     image_target_topic: /target/object_pose
     aruco_pose_topic: /target/aruco_pose

@@ -17,6 +17,9 @@ class ActionLimitConfig:
     control_period_s: float
     max_velocity: np.ndarray
     max_acceleration: np.ndarray
+    gripper_pitch_hold_enabled: bool = False
+    gripper_pitch_target: float = 0.0
+    gripper_pitch_joint4_max_step: float = 0.0
 
     def __post_init__(self) -> None:
         for name in (
@@ -41,6 +44,17 @@ class ActionLimitConfig:
             raise ValueError('residual_scale must be in [0, 1]')
         if self.control_period_s <= 0.0:
             raise ValueError('control_period_s must be positive')
+        if not np.isfinite(self.gripper_pitch_target):
+            raise ValueError('gripper_pitch_target must be finite')
+        if not np.isfinite(self.gripper_pitch_joint4_max_step):
+            raise ValueError('gripper_pitch_joint4_max_step must be finite')
+        if (
+            self.gripper_pitch_hold_enabled
+            and self.gripper_pitch_joint4_max_step <= 0.0
+        ):
+            raise ValueError(
+                'gripper_pitch_joint4_max_step must be positive when enabled'
+            )
 
 
 class ActionLimiter:
@@ -67,6 +81,7 @@ class ActionLimiter:
         raw_action: np.ndarray,
         reference_action: np.ndarray,
         integrate: bool = True,
+        couple_gripper_pitch: bool = False,
     ) -> np.ndarray:
         """Return the next bounded four-joint position target."""
         if not self.initialized:
@@ -98,6 +113,36 @@ class ActionLimiter:
             self.previous_velocity - maximum_velocity_change,
             self.previous_velocity + maximum_velocity_change,
         )
+        if couple_gripper_pitch:
+            if not config.gripper_pitch_hold_enabled:
+                raise RuntimeError('gripper pitch coupling is not configured')
+            next_joints_2_and_3 = np.clip(
+                self.arm_target[1:3]
+                + velocity[1:3] * config.control_period_s,
+                config.joint_low[1:3],
+                config.joint_high[1:3],
+            )
+            desired_joint4 = float(np.clip(
+                config.gripper_pitch_target
+                - float(np.sum(next_joints_2_and_3)),
+                config.joint_low[3],
+                config.joint_high[3],
+            ))
+            joint4_delta = float(np.clip(
+                desired_joint4 - self.arm_target[3],
+                -config.gripper_pitch_joint4_max_step,
+                config.gripper_pitch_joint4_max_step,
+            ))
+            joint4_velocity = float(np.clip(
+                joint4_delta / config.control_period_s,
+                -config.max_velocity[3],
+                config.max_velocity[3],
+            ))
+            velocity[3] = np.clip(
+                joint4_velocity,
+                self.previous_velocity[3] - maximum_velocity_change[3],
+                self.previous_velocity[3] + maximum_velocity_change[3],
+            )
         next_target = self.arm_target + velocity * config.control_period_s
         self.arm_target = np.clip(
             next_target, config.joint_low, config.joint_high)

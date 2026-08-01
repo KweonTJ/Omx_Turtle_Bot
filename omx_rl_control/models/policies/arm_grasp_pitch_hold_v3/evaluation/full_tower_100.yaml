@@ -1,0 +1,53 @@
+policy: policies/exported/arm_grasp_pitch_hold_v3/policy.zip
+stage: full_tower
+episodes: 100
+success_rate: 1.0
+grasped_final_rate: 1.0
+released_final_rate: 0.0
+collision_rate: 0.0
+mean_reward: 5.780513749268565
+mean_episode_steps: 209.79
+task_breakdown:
+  pick:
+    episodes: 100
+    success_rate: 1.0
+    collision_rate: 0.0
+    grasped_final_rate: 1.0
+    released_final_rate: 0.0
+position_buckets:
+  x_mid__y_mid:
+    episodes: 7
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_neg:
+    episodes: 10
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_pos:
+    episodes: 13
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_mid:
+    episodes: 14
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_neg:
+    episodes: 17
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_pos:
+    episodes: 9
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_mid:
+    episodes: 11
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_neg:
+    episodes: 11
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_pos:
+    episodes: 8
+    success_rate: 1.0
+    collision_rate: 0.0
