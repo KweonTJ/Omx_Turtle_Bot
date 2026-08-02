@@ -1,131 +1,129 @@
-# OMX Delivery Robot
+# OMX TurtleBot Delivery Robot
 
-한국지능로봇경진대회 출전을 위한 **TurtleBot3 Burger + OpenMANIPULATOR-X 기반 배송로봇** ROS 2 워크스페이스다. EEF(End-Effector) 카메라로 상자의 상대 위치를 인식하고, PPO 정책으로 매니퓰레이터를 제어한 뒤 UWB 목표 지점까지 운반하는 흐름을 목표로 한다.
+TurtleBot3 Waffle Pi와 OpenMANIPULATOR-X를 사용하는 ROS 2 Humble 실제 로봇
+워크스페이스다. EEF 카메라의 ArUco 자세를 `base_link`로 변환하고, 학습된
+PPO residual 정책과 결정론적 기준 경로로 물체를 파지한다.
 
-> **현재 단계**  
-> `omx_eef_vision`, `omx_rl_control` 패키지의 기본 구조와 설계 문서를 만든 상태다. 실행 노드, launch, 파라미터, 학습 모델은 아직 구현되지 않았다.
+현재 매니퓰레이터 구현 범위는 **ArUco 인식 → PICK → Stay 운반 자세 →
+외부 베이스 이동 → PLACE → Stay 복귀**다. 최신
+`arm_delivery_pitch_hold_v4`는 PICK과 PLACE를 함께 학습했다. 베이스
+목표 생성과 이동은 외부 navigation 패키지의 책임이며, 이 저장소의
+coordinator는 출발·도착 신호를 받아 두 팔 동작을 연결한다.
 
-## 시스템 구성
+## 현재 구성
 
 ```mermaid
 flowchart LR
-    CAM[EEF USB Camera] --> VISION[omx_eef_vision]
-    VISION -->|상자 상대 자세| RL[omx_rl_control]
-    JOINT[Joint States] --> RL
-    RL -->|Joint Trajectory| OMX[OpenMANIPULATOR-X]
-    OMX -->|파지 및 배치| BOX[Package]
-
-    SERVER[Central Server] -. 임무 할당 .-> COORD[Delivery Coordinator]
-    COORD -. 파지 요청 .-> VISION
-    COORD -. 이동 요청 .-> BASE[TurtleBot3 Burger]
-    UWB[UWB Localization] -. 위치 및 목적지 .-> BASE
-    SAFETY[E-Stop / Safe Zone] -. 제어 차단 .-> RL
-    SAFETY -. 제어 차단 .-> BASE
-
-    classDef current fill:#dff3e4,stroke:#217a3c,color:#111;
-    classDef planned fill:#f4f4f4,stroke:#777,color:#333,stroke-dasharray: 5 5;
-    class VISION,RL current;
-    class SERVER,COORD,BASE,UWB,SAFETY planned;
+    CAMERA[EEF USB camera] --> VISION[omx_eef_vision]
+    VISION -->|object pose / valid| CONTROL{RL runtime}
+    PY[omx_rl_control Python] --> CONTROL
+    CPP[omx_rl_control_cpp C++] --> CONTROL
+    JOINT[joint_states] --> CONTROL
+    CONTROL -->|joint trajectory| ARM[arm_controller]
+    CONTROL -->|GripperCommand| GRIPPER[gripper_controller]
+    CONTROL -->|base_hold| MUX[turtlebot3_control mux]
 ```
 
-실선은 현재 생성된 패키지의 책임 범위, 점선은 배송 임무 통합 단계에서 연결할 구성요소를 나타낸다.
+Python과 C++ 런타임은 선택 관계이며 동시에 실행하지 않는다.
 
-## 패키지 역할
+| 패키지 | 역할 | 상태 |
+|---|---|---|
+| [`omx_eef_vision`](./omx_eef_vision/) | ArUco 검출, 품질 판정, TF, 목표 자세 | 구현 |
+| [`omx_rl_control`](./omx_rl_control/) | SB3/PyTorch 기반 Python PPO 런타임 | 구현 |
+| [`omx_rl_control_cpp`](./omx_rl_control_cpp/) | Eigen 기반 C++ PPO actor와 PICK/PLACE 상태기계 | 구현, 실기 검증 전 |
+| [`turtlebot3_control`](./turtlebot3_control/) | 통합 launch, 베이스 mux, 배송 coordinator | 구현 |
+| `turtlebot3_manipulation_*` | 하드웨어, ros2_control, URDF, 카메라 TF | upstream 기반 확장 |
+| `turtlebot3_position` | UWB 위치·이동 제어 | 패키지 미구현 |
 
-| 패키지 | 입력 | 핵심 처리 | 출력 | 상태 |
-|---|---|---|---|---|
-| [`omx_eef_vision`](./omx_eef_vision/) | EEF 카메라 영상 | ArUco 검출, 상대 위치·자세 추정, 신뢰도 판정 | 목표 자세 | 구현 |
-| [`omx_rl_control`](./omx_rl_control/) | 목표 자세, 로봇 관절 상태 | 관측값 구성, PPO 추론, 관절 명령 제한 | 관절 궤적 | 구조 생성 |
+전체 24개 ROS 패키지 중 위 다섯 영역이 프로젝트의 직접 변경 범위이며,
+DynamixelSDK와 TurtleBot3 기본 패키지는 기반 의존성이다.
 
-두 패키지는 **인식과 제어를 분리**한다. 카메라나 검출 모델이 바뀌어도 제어 정책의 입력 계약만 유지하면 되고, 정책을 교체해도 영상 처리 코드는 영향을 받지 않는 구조다.
+## 기본 모델
 
-## 임무 흐름
-
-```mermaid
-stateDiagram-v2
-    [*] --> STANDBY
-    STANDBY --> DETECT: 배송 임무 수신
-    DETECT --> ALIGN: 상자 자세 확인
-    ALIGN --> GRASP: 접근 완료
-    GRASP --> TRANSPORT: 파지 확인
-    TRANSPORT --> PLACE: 목적지 도착
-    PLACE --> COMPLETE: 배치 확인
-    COMPLETE --> STANDBY: 결과 보고
-
-    DETECT --> RECOVERY: 검출 실패
-    ALIGN --> RECOVERY: 정렬 실패
-    GRASP --> RECOVERY: 파지 실패
-    TRANSPORT --> RECOVERY: 경로 이탈
-    RECOVERY --> STANDBY: 안전 위치 복귀
-```
-
-정상 흐름보다 실패 복구를 먼저 고려한다. 인식 신뢰도 부족, 관절 한계 초과, 통신 단절이 발생하면 동작을 계속하지 않고 정지 또는 `RECOVERY` 상태로 전환하는 것을 기본 원칙으로 둔다.
-
-## 인터페이스 초안
-
-아래 이름은 구현 전 기준안이다. 실제 노드를 작성할 때 메시지 타입과 QoS까지 함께 확정한다.
-
-| 데이터 | ROS 2 인터페이스 | 발행 → 구독 | 용도 |
-|---|---|---|---|
-| 카메라 영상 | `/eef_camera/image_raw` · `sensor_msgs/msg/Image` | Camera → Vision | ArUco 검출 원본 |
-| 상자 목표 자세 | `/target/object_pose` · `geometry_msgs/msg/PoseStamped` | Vision → RL Control | EEF 기준 접근 목표 |
-| 관절 상태 | `/joint_states` · `sensor_msgs/msg/JointState` | Hardware → RL Control | 정책 관측값 및 한계 검사 |
-| 관절 궤적 | 컨트롤러 명령 인터페이스 · `trajectory_msgs/msg/JointTrajectory` | RL Control → Controller | OpenMANIPULATOR-X 제어 |
-| 비상 정지 | `/safety_stop` · `std_msgs/msg/Bool` | Safety → All Controllers | 출력 즉시 차단 |
-
-## 개발 기준
-
-| 단계 | 완료 조건 |
+| 항목 | 값 |
 |---|---|
-| 1. Vision 단독 검증 | 녹화 영상과 실시간 영상에서 상자 자세를 안정적으로 발행 |
-| 2. RL 추론 검증 | 고정 입력에 대해 모델 로딩, 추론 주기, 출력 한계를 재현 가능하게 확인 |
-| 3. Manipulator 연동 | 저속·무부하 조건에서 관절 명령과 E-Stop 검증 |
-| 4. 파지 통합 | 인식 → 정렬 → 파지 과정을 반복 시험하고 실패 원인을 기록 |
-| 5. 배송 통합 | UWB 이동, 도착, 배치, 결과 보고까지 상태 머신으로 연결 |
+| 모델 | `arm_delivery_pitch_hold_v4` |
+| 관측/행동 | 33 / 4 |
+| 행동 | reference + PPO residual 10% |
+| 제어 주기 | 50 Hz |
+| 자세 유지 | `joint2 + joint3 + joint4 ≈ 0` |
+| 지원 명령 | `PICK`, `PLACE` |
+| MuJoCo delivery full-tower | 100/100 성공, 충돌 0 |
+| MuJoCo delivery sim-to-real robust | 98/100 성공, 충돌 2 |
 
-## 개발 환경
-
-| 구분 | 기준 |
-|---|---|
-| 운영체제 | Ubuntu 22.04 |
-| 미들웨어 | ROS 2 Humble |
-| 이동 플랫폼 | TurtleBot3 Burger |
-| 매니퓰레이터 | OpenMANIPULATOR-X + Gripper |
-| 연산 장치 | Jetson Orin Nano |
-| 센서 | EEF USB Camera, DWM1000 UWB |
-| 정책 개발 | MuJoCo, PPO |
+평가 수치는 MuJoCo 결과이며 실제 로봇 반복 성공률을 의미하지 않는다.
 
 ## 빌드
-
-현재는 패키지 구조가 정상적으로 인식되는지 확인하는 빌드 단계다.
 
 ```bash
 cd /home/ktj/omx_turtle_ws
 source /opt/ros/humble/setup.bash
 rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink-install \
-  --packages-select omx_eef_vision omx_rl_control
+colcon build --symlink-install
 source install/setup.bash
 ```
 
-노드의 실행 진입점과 launch 설치 설정이 추가되기 전에는 `ros2 run` 또는 `ros2 launch`로 실행할 수 없다.
+Python 런타임은 Stable-Baselines3와 PyTorch가 설치된 로봇 환경이 필요하다.
+C++ 런타임은 Eigen actor를 사용해 Python/CUDA 런타임 의존성을 제거한다.
 
-## 저장소 구조
+## 통합 실행
 
-```text
-omx_turtle_ws/src/
-├── omx_eef_vision/       # EEF 영상 인식과 목표 자세 생성
-│   ├── config/
-│   ├── launch/
-│   ├── models/
-│   └── omx_eef_vision/
-├── omx_rl_control/       # PPO 추론과 매니퓰레이터 명령 생성
-│   ├── config/
-│   ├── launch/
-│   ├── models/
-│   └── omx_rl_control/
-├── turtlebot3/           # TurtleBot3 기본 패키지
-└── turtlebot3_manipulation/
+기존 기본값인 Python 런타임:
+
+```bash
+ros2 launch turtlebot3_control omx_turtle.launch.py \
+  control_runtime:=python
 ```
 
-모델 가중치는 코드와 분리해 각 패키지의 `models/`에서 관리하고, 파일명·입출력 차원·학습 환경 버전은 패키지 README에 기록한다.
+C++ 런타임:
+
+```bash
+ros2 launch turtlebot3_control omx_turtle.launch.py \
+  control_runtime:=cpp
+```
+
+통합 launch 기본값은 실제 하드웨어, EEF 카메라, Vision, RL, mux와
+coordinator를 시작한다. 또한 기존 동작대로 bringup에
+`move_to_stay_pose:=true`를 전달하므로 실제 로봇에서는 주변과 E-Stop을
+확인한 뒤 실행한다. 시작 자세 동작을 변경하는 코드는 이번 작업에 포함하지
+않았다.
+
+매니퓰레이터만 점검할 때는 베이스 통합 노드를 끈다.
+
+```bash
+ros2 launch turtlebot3_control omx_turtle.launch.py \
+  control_runtime:=cpp \
+  start_mux:=false start_coordinator:=false \
+  require_base_arrived:=false require_odom_stopped:=false
+```
+
+## 상태 확인
+
+```bash
+ros2 topic echo /target/aruco_status
+ros2 topic echo /target/object_pose --once
+ros2 topic echo /target/valid
+ros2 topic echo /rl_control/status
+ros2 control list_controllers
+```
+
+`PICK`이나 `valid=true`만으로 정상 동작을 판단하지 않는다. object pose와
+ArUco freshness, joint state, base gate, controller와 최종
+`/rl_control/status`를 함께 확인한다.
+
+## 문서
+
+개발 순서와 최신 분석은 [docs/README.md](./docs/README.md)에서 시작한다.
+
+- [Python 매니퓰레이터 제어 코드 분석](<./docs/7. Python 매니퓰레이터 제어 코드 분석.md>)
+- [C++ 매니퓰레이터 제어 구현 및 검증](<./docs/8. C++ 매니퓰레이터 제어 구현 및 검증.md>)
+- [변경 이력](<./docs/9. 변경 이력.md>)
+- [배송 정책 v4 실제 로봇 배포](<./docs/10. 배송 정책 v4 실제 로봇 배포.md>)
+
+## 안전 경계
+
+- 실제 팔은 fake hardware와 모델 checksum·상태 출력을 먼저 확인한다.
+- pose, joint, odom 또는 inference timeout 시 계속 명령하지 않는다.
+- `/safety_stop=true`에서는 gripper goal을 취소하고 현재 관절 hold를 보낸다.
+- 마커 크기, 카메라 보정, EEF 카메라 TF를 실측 없이 추정하지 않는다.
+- Python/C++ RL 노드를 동시에 실행해 trajectory publisher를 중복시키지 않는다.

@@ -25,6 +25,7 @@ class PolicyContract:
     action_size: int
     joint_names: tuple[str, ...]
     supported_commands: tuple[str, ...]
+    delivery_sequence_trained: bool
     control_mode: str
     control_period_s: float
     action_scale: tuple[float, ...]
@@ -63,16 +64,53 @@ def _require_equal(label: str, actual: Any, expected: Any) -> None:
             f'{label} mismatch: expected={expected!r}, actual={actual!r}')
 
 
+def _checksum_files(artifact_root: Path, manifest: dict[str, Any]) -> dict:
+    """Return the payload checksum map for manifest versions 1 and 2."""
+    manifest_version = manifest.get('manifest_version')
+    if manifest_version == 1:
+        files = manifest.get('files')
+        if not isinstance(files, dict) or not files:
+            raise ContractError(
+                'runtime manifest files must be a non-empty mapping')
+        return {str(name): str(digest) for name, digest in files.items()}
+    if manifest_version != 2:
+        raise ContractError(
+            'manifest_version mismatch: expected one of (1, 2), '
+            f'actual={manifest_version!r}'
+        )
+
+    checksum_path = artifact_root / 'SHA256SUMS'
+    if not checksum_path.is_file():
+        raise ContractError(f'Missing policy artifact: {checksum_path}')
+    files = {}
+    for line_number, raw_line in enumerate(
+            checksum_path.read_text(encoding='utf-8').splitlines(), start=1):
+        line = raw_line.strip()
+        if not line:
+            continue
+        fields = line.split(maxsplit=1)
+        if len(fields) != 2 or len(fields[0]) != 64:
+            raise ContractError(
+                f'Invalid SHA256SUMS line {line_number}: {raw_line!r}')
+        relative_name = fields[1].lstrip('*')
+        relative_path = Path(relative_name)
+        if relative_path.is_absolute() or '..' in relative_path.parts:
+            raise ContractError(
+                f'Checksum path escapes artifact root: {relative_name}'
+            )
+        files[relative_name] = fields[0].lower()
+    if not files:
+        raise ContractError('SHA256SUMS must cover at least one payload')
+    return files
+
+
 def load_policy_contract(root: str | Path) -> PolicyContract:
     """Validate checksums and return the deployed policy contract."""
     artifact_root = Path(root).expanduser().resolve()
     manifest = _load_yaml(artifact_root / 'runtime_manifest.yaml')
     metadata = _load_yaml(artifact_root / 'policy_metadata.yaml')
 
-    _require_equal('manifest_version', manifest.get('manifest_version'), 1)
-    files = manifest.get('files')
-    if not isinstance(files, dict) or not files:
-        raise ContractError('runtime manifest files must be a non-empty mapping')
+    files = _checksum_files(artifact_root, manifest)
     for relative_name, expected_hash in files.items():
         artifact_path = artifact_root / str(relative_name)
         if not artifact_path.is_file():
@@ -109,6 +147,25 @@ def load_policy_contract(root: str | Path) -> PolicyContract:
     ):
         raise ContractError(
             'supported_commands must contain unique PICK/PLACE entries'
+        )
+    delivery_sequence_trained = contract.get(
+        'delivery_sequence_trained',
+        metadata.get(
+            'delivery_sequence_trained',
+            'PLACE' in supported_commands,
+        ),
+    )
+    if not isinstance(delivery_sequence_trained, bool):
+        raise ContractError('delivery_sequence_trained must be a boolean')
+    if 'delivery_sequence_trained' in metadata:
+        _require_equal(
+            'metadata delivery_sequence_trained',
+            metadata['delivery_sequence_trained'],
+            delivery_sequence_trained,
+        )
+    if 'PLACE' in supported_commands and not delivery_sequence_trained:
+        raise ContractError(
+            'PLACE requires delivery_sequence_trained=true'
         )
     _require_equal('policy_version', metadata.get('policy_version'),
                    manifest.get('policy_version'))
@@ -195,6 +252,7 @@ def load_policy_contract(root: str | Path) -> PolicyContract:
         action_size=int(metadata['action_size']),
         joint_names=metadata_joints,
         supported_commands=supported_commands,
+        delivery_sequence_trained=delivery_sequence_trained,
         control_mode=control_mode,
         control_period_s=float(metadata['control_period_s']),
         action_scale=tuple(float(value) for value in metadata['action_scale']),

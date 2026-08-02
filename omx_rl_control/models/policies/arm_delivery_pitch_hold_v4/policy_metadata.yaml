@@ -1,0 +1,51 @@
+policy_version: arm_delivery_pitch_hold_v4
+policy_name: arm_grasp_randomized_ppo
+framework: stable-baselines3 PPO
+completed_stages:
+- center_reach
+- full_tower
+- place_center
+- place_return_center
+- place_full_tower
+- pick_place_mixed
+- delivery_center
+- delivery_full_tower
+- delivery_sim2real_robust
+total_timesteps: 627232
+observation_schema_version: 1
+observation_size: 33
+action_schema_version: 3
+action_size: 4
+joint_names:
+- joint1
+- joint2
+- joint3
+- joint4
+supported_commands:
+- PICK
+- PLACE
+delivery_sequence_trained: true
+control_mode: reference_plus_residual_with_joint4_pitch_coupling
+control_period_s: 0.02
+action_scale:
+- 0.014
+- 0.014
+- 0.014
+- 0.014
+action_filter_coefficient: 0.18
+residual_action_scale: 0.1
+gripper_pitch_hold_enabled: true
+gripper_pitch_target: 0.0
+gripper_pitch_joint4_max_step: 0.028
+transport_hold_steps: 50
+delivery_stage_transport_hold_steps:
+  delivery_center: 25
+  delivery_full_tower: 50
+  delivery_sim2real_robust: 75
+stay_joint_positions:
+- 0.104311
+- 0.027612
+- -0.001534
+- -1.638291
+model_sha256: a62fb4c219f80d0a2020e8e741f5cbb0c5d77942e072200e1bf84bd3373c09af
+config_sha256: 5b4840dbd00e35b8b68161b7b83ea4d7b93dfeb2e031a93bd10dd73b56cd8489

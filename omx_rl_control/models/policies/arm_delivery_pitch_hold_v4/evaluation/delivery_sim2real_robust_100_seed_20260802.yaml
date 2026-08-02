@@ -1,0 +1,92 @@
+policy: policies/exported/arm_delivery_pitch_hold_v4/policy.zip
+stage: delivery_sim2real_robust
+episodes: 100
+success_rate: 0.98
+grasped_final_rate: 0.01
+released_final_rate: 0.99
+collision_rate: 0.02
+mean_reward: -317.5412750288904
+mean_episode_steps: 715.47
+task_breakdown:
+  delivery:
+    episodes: 100
+    success_rate: 0.98
+    collision_rate: 0.02
+    grasped_final_rate: 0.01
+    released_final_rate: 0.99
+    delivery_pick_completed_rate: 0.99
+    delivery_place_started_rate: 0.99
+position_buckets:
+  x_mid__y_mid:
+    episodes: 4
+    success_rate: 0.75
+    collision_rate: 0.25
+  x_mid__y_neg:
+    episodes: 14
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_pos:
+    episodes: 10
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_mid:
+    episodes: 7
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_neg:
+    episodes: 15
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_pos:
+    episodes: 8
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_mid:
+    episodes: 13
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_neg:
+    episodes: 18
+    success_rate: 0.9444444444444444
+    collision_rate: 0.05555555555555555
+  x_pos__y_pos:
+    episodes: 11
+    success_rate: 1.0
+    collision_rate: 0.0
+place_target_buckets:
+  x_mid__y_mid:
+    episodes: 6
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_neg:
+    episodes: 7
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_pos:
+    episodes: 10
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_mid:
+    episodes: 9
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_neg:
+    episodes: 15
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_pos:
+    episodes: 15
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_mid:
+    episodes: 9
+    success_rate: 0.8888888888888888
+    collision_rate: 0.1111111111111111
+  x_pos__y_neg:
+    episodes: 14
+    success_rate: 0.9285714285714286
+    collision_rate: 0.07142857142857142
+  x_pos__y_pos:
+    episodes: 15
+    success_rate: 1.0
+    collision_rate: 0.0

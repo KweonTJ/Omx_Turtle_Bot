@@ -12,6 +12,9 @@ import yaml
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 ARTIFACT = (
+    PACKAGE_ROOT / 'models/policies/arm_delivery_pitch_hold_v4'
+)
+PICK_ONLY_ARTIFACT = (
     PACKAGE_ROOT / 'models/policies/arm_grasp_pitch_hold_v3'
 )
 LEGACY_ARTIFACT = (
@@ -24,11 +27,12 @@ def test_deployed_policy_and_metadata_are_consistent():
     from stable_baselines3 import PPO
 
     contract = load_policy_contract(ARTIFACT)
-    assert contract.version == 'arm_grasp_pitch_hold_v3'
+    assert contract.version == 'arm_delivery_pitch_hold_v4'
     assert contract.observation_size == 33
     assert contract.action_schema_version == 3
     assert contract.action_size == 4
-    assert contract.supported_commands == ('PICK',)
+    assert contract.supported_commands == ('PICK', 'PLACE')
+    assert contract.delivery_sequence_trained
     assert contract.control_mode == (
         'reference_plus_residual_with_joint4_pitch_coupling'
     )
@@ -59,13 +63,35 @@ def test_deployed_policy_and_metadata_are_consistent():
     assert np.isfinite(action).all()
 
 
+def test_previous_pick_only_artifact_remains_loadable():
+    """Keep the previous pitch-hold policy available for rollback."""
+    contract = load_policy_contract(PICK_ONLY_ARTIFACT)
+    assert contract.action_schema_version == 3
+    assert contract.supported_commands == ('PICK',)
+    assert not contract.delivery_sequence_trained
+
+
 def test_previous_schema_two_artifact_remains_loadable():
     """Keep the prior fully robust policy available for rollback."""
     contract = load_policy_contract(LEGACY_ARTIFACT)
     assert contract.action_schema_version == 2
     assert contract.control_mode == 'reference_plus_residual'
     assert contract.supported_commands == ('PICK', 'PLACE')
+    assert contract.delivery_sequence_trained
     assert not contract.gripper_pitch_hold_enabled
+
+
+def test_manifest_v2_allows_colcon_symlink_install(tmp_path):
+    """Accept verified payload symlinks while rejecting path traversal."""
+    artifact = tmp_path / 'arm_delivery_pitch_hold_v4'
+    artifact.mkdir()
+    for source in ARTIFACT.iterdir():
+        (artifact / source.name).symlink_to(
+            source,
+            target_is_directory=source.is_dir(),
+        )
+    contract = load_policy_contract(artifact)
+    assert contract.version == 'arm_delivery_pitch_hold_v4'
 
 
 def test_missing_artifact_is_rejected(tmp_path):

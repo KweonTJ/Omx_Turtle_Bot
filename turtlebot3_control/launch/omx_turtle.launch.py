@@ -6,6 +6,7 @@ from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PythonExpression
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
@@ -14,9 +15,13 @@ def generate_launch_description():
     # 실행 모듈
     start_hardware = LaunchConfiguration('start_hardware')
     start_rl_control = LaunchConfiguration('start_rl_control')
+    control_runtime = LaunchConfiguration('control_runtime')
     start_eef_vision = LaunchConfiguration('start_eef_vision')
     start_mux = LaunchConfiguration('start_mux')
     start_coordinator = LaunchConfiguration('start_coordinator')
+    require_base_arrived = LaunchConfiguration('require_base_arrived')
+    require_odom_stopped = LaunchConfiguration('require_odom_stopped')
+    delivery_pose_required = LaunchConfiguration('delivery_pose_required')
 
     # 하드웨어 설정
     use_fake_hardware = LaunchConfiguration('use_fake_hardware')
@@ -115,8 +120,37 @@ def generate_launch_description():
         executable='rl_control_node',
         name='rl_control_node',
         output='screen',
-        parameters=[rl_control_config_file],
-        condition=IfCondition(start_rl_control),
+        parameters=[
+            rl_control_config_file,
+            {
+                'require_base_arrived': require_base_arrived,
+                'require_odom_stopped': require_odom_stopped,
+                'delivery_pose_required': delivery_pose_required,
+            },
+        ],
+        condition=IfCondition(PythonExpression([
+            "'", start_rl_control, "'.lower() == 'true' and '",
+            control_runtime, "' == 'python'",
+        ])),
+    )
+
+    rl_control_cpp = Node(
+        package='omx_rl_control_cpp',
+        executable='rl_control_cpp_node',
+        name='rl_control_node',
+        output='screen',
+        parameters=[
+            rl_control_config_file,
+            {
+                'require_base_arrived': require_base_arrived,
+                'require_odom_stopped': require_odom_stopped,
+                'delivery_pose_required': delivery_pose_required,
+            },
+        ],
+        condition=IfCondition(PythonExpression([
+            "'", start_rl_control, "'.lower() == 'true' and '",
+            control_runtime, "' == 'cpp'",
+        ])),
     )
 
     # ---------------------------------------------------------
@@ -158,6 +192,12 @@ def generate_launch_description():
             default_value='true',
         ),
         DeclareLaunchArgument(
+            'control_runtime',
+            default_value='python',
+            choices=['python', 'cpp'],
+            description='매니퓰레이터 RL 런타임 구현을 선택한다.',
+        ),
+        DeclareLaunchArgument(
             'start_eef_vision',
             default_value='true',
         ),
@@ -168,6 +208,23 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'start_coordinator',
             default_value='true',
+        ),
+        DeclareLaunchArgument(
+            'require_base_arrived',
+            default_value='true',
+            description='팔 동작 중 fresh base arrival 신호를 요구한다.',
+        ),
+        DeclareLaunchArgument(
+            'require_odom_stopped',
+            default_value='true',
+            description='팔 동작 중 odometry 정지를 요구한다.',
+        ),
+        DeclareLaunchArgument(
+            'delivery_pose_required',
+            default_value='false',
+            description=(
+                'true이면 PLACE 전에 fresh /target/delivery_pose를 요구한다.'
+            ),
         ),
 
         # 하드웨어
@@ -304,7 +361,7 @@ def generate_launch_description():
         eef_vision,
         TimerAction(
             period=8.0,
-            actions=[rl_control],
+            actions=[rl_control, rl_control_cpp],
         ),
         cmd_vel_mux,
         coordinator,

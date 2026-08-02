@@ -1,0 +1,43 @@
+manifest_version: 2
+policy_version: arm_delivery_pitch_hold_v4
+policy_file: policy.zip
+source:
+  workspace: /home/ktj/omx_train_ws
+  relative_path: policies/latest/arm_delivery_pitch_hold_v4/arm_grasp_latest.zip
+  completed_stages:
+  - center_reach
+  - full_tower
+  - place_center
+  - place_return_center
+  - place_full_tower
+  - pick_place_mixed
+  - delivery_center
+  - delivery_full_tower
+  - delivery_sim2real_robust
+  selected_counter: 627232
+contract:
+  observation_schema_version: 1
+  observation_size: 33
+  action_schema_version: 3
+  action_size: 4
+  joint_names:
+  - joint1
+  - joint2
+  - joint3
+  - joint4
+  supported_commands:
+  - PICK
+  - PLACE
+  delivery_sequence_trained: true
+  control_mode: reference_plus_residual_with_joint4_pitch_coupling
+  gripper_pitch_hold_enabled: true
+  gripper_pitch_target: 0.0
+  gripper_pitch_joint4_max_step: 0.028
+  transport_controller: external_mobile_base
+  transport_arm_state: PICK_TO_STAY_HOLDING_OBJECT
+  training_frame: base_footprint
+  ros_target_frame: base_link
+  ros_to_training_offset_xyz:
+  - 0.0
+  - 0.0
+  - 0.016

@@ -1,0 +1,56 @@
+policy: policies/exported/arm_delivery_pitch_hold_v4/policy.zip
+stage: full_tower
+episodes: 100
+success_rate: 1.0
+grasped_final_rate: 1.0
+released_final_rate: 0.0
+collision_rate: 0.0
+mean_reward: 1.8105844454474522
+mean_episode_steps: 211.17
+task_breakdown:
+  pick:
+    episodes: 100
+    success_rate: 1.0
+    collision_rate: 0.0
+    grasped_final_rate: 1.0
+    released_final_rate: 0.0
+    delivery_pick_completed_rate: 0.0
+    delivery_place_started_rate: 0.0
+position_buckets:
+  x_mid__y_mid:
+    episodes: 8
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_neg:
+    episodes: 9
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_mid__y_pos:
+    episodes: 15
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_mid:
+    episodes: 10
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_neg:
+    episodes: 10
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_neg__y_pos:
+    episodes: 15
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_mid:
+    episodes: 12
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_neg:
+    episodes: 9
+    success_rate: 1.0
+    collision_rate: 0.0
+  x_pos__y_pos:
+    episodes: 12
+    success_rate: 1.0
+    collision_rate: 0.0
+place_target_buckets: {}

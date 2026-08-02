@@ -195,6 +195,7 @@ class RlControlNode(Node):
         self.stay_stable_count = 0
         self.inference_deadline_misses = 0
         self.cycle_count = 0
+        self.release_complete_time = 0.0
 
         self.arm_qpos = np.zeros(4, dtype=np.float64)
         self.arm_qvel = np.zeros(4, dtype=np.float64)
@@ -372,7 +373,7 @@ class RlControlNode(Node):
                 artifact_dir = (
                     Path(get_package_share_directory('omx_rl_control'))
                     / 'models' / 'policies'
-                    / 'arm_grasp_pitch_hold_v3'
+                    / 'arm_delivery_pitch_hold_v4'
                 )
             self.contract = load_policy_contract(artifact_dir)
             if tuple(self.joint_names) != self.contract.joint_names:
@@ -552,10 +553,39 @@ class RlControlNode(Node):
         elif command == 'RESET':
             self._reset_runtime()
         else:
+            if (
+                command == 'PICK'
+                and self.state not in (
+                    RuntimeState.NOT_READY,
+                    RuntimeState.STAY_EMPTY,
+                )
+            ):
+                self.get_logger().warning(
+                    f'Ignoring PICK while state={self.state.value}'
+                )
+                return
+            if (
+                command == 'PLACE'
+                and (
+                    self.state != RuntimeState.WAIT_DELIVERY
+                    or not self.grasped
+                )
+            ):
+                self.get_logger().warning(
+                    'Ignoring PLACE before a confirmed PICK has returned '
+                    'to WAIT_DELIVERY'
+                )
+                return
             self.pending_command = command
 
     def _on_compat_start(self, message: Bool) -> None:
-        if message.data:
+        if (
+            message.data
+            and self.state in (
+                RuntimeState.NOT_READY,
+                RuntimeState.STAY_EMPTY,
+            )
+        ):
             self.pending_command = 'PICK'
 
     def _on_control_timer(self) -> None:
@@ -779,6 +809,9 @@ class RlControlNode(Node):
         if not self._joint_state_fresh(now):
             self._enter_fault('joint state timeout during delivery')
             return
+        if not self.grasped:
+            self._enter_fault('WAIT_DELIVERY reached without a grasped object')
+            return
         if self.pending_command != 'PLACE':
             return
         if not self._base_stopped(now):
@@ -800,10 +833,13 @@ class RlControlNode(Node):
 
     def _handle_open_release(self, now: float) -> None:
         if self.gripper.succeeded:
-            if now - self.state_enter_time < self.release_settle_time_s:
+            if self.release_complete_time <= 0.0:
+                self.release_complete_time = now
+            if now - self.release_complete_time < self.release_settle_time_s:
                 self.state_detail = 'gripper open; settling object'
                 return
             self.gripper.reset()
+            self.release_complete_time = 0.0
             self.grasped = False
             self.stay_stable_count = 0
             self._set_state(RuntimeState.PLACE_TO_STAY,
@@ -1043,6 +1079,7 @@ class RlControlNode(Node):
         self.stable_gate_count = 0
         self.stay_stable_count = 0
         self.inference_deadline_misses = 0
+        self.release_complete_time = 0.0
         self.previous_action.fill(0.0)
         self.gripper.reset()
         if self._joint_state_fresh(time.monotonic()):

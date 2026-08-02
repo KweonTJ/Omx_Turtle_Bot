@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Coordinate one external-base PICK, transport, and PLACE cycle."""
+
 import time
 
 import rclpy
@@ -8,7 +10,7 @@ from std_msgs.msg import String
 
 
 class OmxTurtleNode(Node):
-    """Gate ArUco pick-place until the base arrival signal is fresh."""
+    """Gate arm commands using fresh arrival and perception signals."""
 
     def __init__(self):
         super().__init__('omx_turtle_node')
@@ -18,54 +20,66 @@ class OmxTurtleNode(Node):
         self.declare_parameter('aruco_visible_topic', '/target/aruco_visible')
         self.declare_parameter('mp_control_status_topic', '/mp_control/status')
         self.declare_parameter('mp_control_start_topic', '/mp_control/start')
+        self.declare_parameter('rl_command_topic', '/rl_control/command')
         self.declare_parameter('mux_mode_topic', '/turtlebot3_control/mux_mode')
         self.declare_parameter(
             'status_topic', '/turtlebot3_control/coordinator_status')
         self.declare_parameter('wait_for_base_arrival', True)
         self.declare_parameter('require_aruco_visible', True)
-        self.declare_parameter('start_publish_count', 3)
-        self.declare_parameter('start_publish_period_s', 0.2)
+        self.declare_parameter('require_transport_departure', True)
+        self.declare_parameter('publish_compat_start', False)
+        self.declare_parameter('command_publish_count', 3)
+        self.declare_parameter('command_publish_period_s', 0.2)
         self.declare_parameter('aruco_visible_timeout_s', 0.8)
         self.declare_parameter('base_arrival_timeout_s', 2.0)
-        self.declare_parameter('done_status_keywords', [
-            'handoff release complete',
-            'handoff stay complete',
-            'pick place complete',
-            'grasp complete',
-        ])
+        self.declare_parameter('grasp_status_keywords', ['grasp complete'])
+        self.declare_parameter(
+            'place_status_keywords', ['pick place complete'])
         self.declare_parameter('error_status_keywords', [
             'abort',
             'ERROR',
             'failed',
+            'FAULT',
+            'E_STOP',
         ])
 
         self.wait_for_base_arrival = bool(
             self.get_parameter('wait_for_base_arrival').value)
         self.require_aruco_visible = bool(
             self.get_parameter('require_aruco_visible').value)
-        self.start_publish_count = int(
-            self.get_parameter('start_publish_count').value)
-        self.start_publish_period_s = float(
-            self.get_parameter('start_publish_period_s').value)
+        self.require_transport_departure = bool(
+            self.get_parameter('require_transport_departure').value)
+        self.publish_compat_start = bool(
+            self.get_parameter('publish_compat_start').value)
+        self.command_publish_count = int(
+            self.get_parameter('command_publish_count').value)
+        self.command_publish_period_s = float(
+            self.get_parameter('command_publish_period_s').value)
         self.aruco_visible_timeout_s = float(
             self.get_parameter('aruco_visible_timeout_s').value)
         self.base_arrival_timeout_s = float(
             self.get_parameter('base_arrival_timeout_s').value)
-        self.done_status_keywords = [
-            str(word) for word in self.get_parameter('done_status_keywords').value
-        ]
-        self.error_status_keywords = [
-            str(word) for word in self.get_parameter('error_status_keywords').value
-        ]
+        self.grasp_status_keywords = self._string_list(
+            'grasp_status_keywords')
+        self.place_status_keywords = self._string_list(
+            'place_status_keywords')
+        self.error_status_keywords = self._string_list(
+            'error_status_keywords')
+
+        if self.command_publish_count == 0:
+            raise ValueError('command_publish_count must be -1 or positive')
+        if self.command_publish_period_s <= 0.0:
+            raise ValueError('command_publish_period_s must be positive')
 
         self.base_arrived = False
         self.base_arrival_time = 0.0
         self.aruco_visible = False
         self.aruco_visible_time = 0.0
         self.mp_status = ''
-        self.phase = 'NAVIGATING'
-        self.start_sent = 0
-        self.last_start_time = 0.0
+        self.phase = 'NAVIGATING_PICK'
+        self.phase_enter_time = time.monotonic()
+        self.command_sent = 0
+        self.last_command_time = 0.0
         self.last_status = ''
 
         self.create_subscription(
@@ -87,9 +101,14 @@ class OmxTurtleNode(Node):
             10,
         )
 
-        self.start_pub = self.create_publisher(
+        self.compat_start_pub = self.create_publisher(
             Bool,
             str(self.get_parameter('mp_control_start_topic').value),
+            10,
+        )
+        self.command_pub = self.create_publisher(
+            String,
+            str(self.get_parameter('rl_command_topic').value),
             10,
         )
         self.mode_pub = self.create_publisher(
@@ -105,6 +124,12 @@ class OmxTurtleNode(Node):
 
         self.create_timer(0.05, self._on_timer)
 
+    def _string_list(self, parameter):
+        return [
+            str(word).lower()
+            for word in self.get_parameter(parameter).value
+        ]
+
     def _on_base_arrived(self, msg):
         self.base_arrived = bool(msg.data)
         self.base_arrival_time = time.monotonic()
@@ -119,62 +144,107 @@ class OmxTurtleNode(Node):
 
     def _on_timer(self):
         now = time.monotonic()
-
-        base_arrival_fresh = (
-            self.base_arrived and
-            self.base_arrival_time > 0.0 and
-            now - self.base_arrival_time <= self.base_arrival_timeout_s
+        base_signal_fresh = (
+            self.base_arrival_time > 0.0
+            and now - self.base_arrival_time <= self.base_arrival_timeout_s
         )
+        base_arrival_fresh = self.base_arrived and base_signal_fresh
         aruco_fresh = (
-            self.aruco_visible and
-            self.aruco_visible_time > 0.0 and
-            now - self.aruco_visible_time <= self.aruco_visible_timeout_s
+            self.aruco_visible
+            and self.aruco_visible_time > 0.0
+            and now - self.aruco_visible_time <= self.aruco_visible_timeout_s
         )
+        status_lower = self.mp_status.lower()
 
-        if self.phase == 'NAVIGATING':
+        if self.phase == 'NAVIGATING_PICK':
             self._publish_mode('NAV')
-            arrived = (
-                not self.wait_for_base_arrival or base_arrival_fresh
-            )
-            visible_ok = (not self.require_aruco_visible) or aruco_fresh
+            arrived = not self.wait_for_base_arrival or base_arrival_fresh
+            visible_ok = not self.require_aruco_visible or aruco_fresh
             if arrived and visible_ok:
-                self.phase = 'PICKING'
-                self.start_sent = 0
-                self.last_start_time = 0.0
-                self._publish_status(force=True)
+                self._set_phase('PICKING')
 
         elif self.phase == 'PICKING':
             self._publish_mode('PICK')
-            self._maybe_publish_start(now)
-            status_lower = self.mp_status.lower()
-            if any(word.lower() in status_lower for word in self.done_status_keywords):
-                self.phase = 'DONE'
-                self._publish_status(force=True)
-            elif any(word.lower() in status_lower for word in self.error_status_keywords):
-                self.phase = 'ERROR'
-                self._publish_status(force=True)
+            self._maybe_publish_command('PICK', now)
+            if self._matches(status_lower, self.error_status_keywords):
+                self._set_phase('ERROR')
+            elif self._matches(status_lower, self.grasp_status_keywords):
+                next_phase = (
+                    'WAIT_TRANSPORT_DEPARTURE'
+                    if self.require_transport_departure
+                    else 'TRANSPORTING'
+                )
+                self._set_phase(next_phase)
+
+        elif self.phase == 'WAIT_TRANSPORT_DEPARTURE':
+            self._publish_mode('NAV')
+            departed_after_pick = (
+                base_signal_fresh
+                and not self.base_arrived
+                and self.base_arrival_time >= self.phase_enter_time
+            )
+            if departed_after_pick:
+                self._set_phase('TRANSPORTING')
+
+        elif self.phase == 'TRANSPORTING':
+            self._publish_mode('NAV')
+            arrived_after_transport = (
+                base_arrival_fresh
+                and self.base_arrival_time >= self.phase_enter_time
+            )
+            if arrived_after_transport:
+                self._set_phase('PLACING')
+
+        elif self.phase == 'PLACING':
+            self._publish_mode('PICK')
+            self._maybe_publish_command('PLACE', now)
+            if self._matches(status_lower, self.error_status_keywords):
+                self._set_phase('ERROR')
+            elif self._matches(status_lower, self.place_status_keywords):
+                self._set_phase('DONE')
 
         elif self.phase in ('DONE', 'ERROR'):
             self._publish_mode('HOLD')
 
         self._publish_status(
+            base_signal_fresh=base_signal_fresh,
             base_arrival_fresh=base_arrival_fresh,
             aruco_fresh=aruco_fresh,
         )
 
-    def _maybe_publish_start(self, now):
-        if self.start_publish_count >= 0 and self.start_sent >= self.start_publish_count:
+    @staticmethod
+    def _matches(status, keywords):
+        return any(word in status for word in keywords)
+
+    def _set_phase(self, phase):
+        if self.phase == phase:
             return
+        self.phase = phase
+        self.phase_enter_time = time.monotonic()
+        self.command_sent = 0
+        self.last_command_time = 0.0
+        self._publish_status(force=True)
+
+    def _maybe_publish_command(self, command, now):
         if (
-            self.start_sent > 0 and
-            now - self.last_start_time < self.start_publish_period_s
+            self.command_publish_count >= 0
+            and self.command_sent >= self.command_publish_count
         ):
             return
-        msg = Bool()
-        msg.data = True
-        self.start_pub.publish(msg)
-        self.start_sent += 1
-        self.last_start_time = now
+        if (
+            self.command_sent > 0
+            and now - self.last_command_time < self.command_publish_period_s
+        ):
+            return
+        msg = String()
+        msg.data = command
+        self.command_pub.publish(msg)
+        if command == 'PICK' and self.publish_compat_start:
+            compat = Bool()
+            compat.data = True
+            self.compat_start_pub.publish(compat)
+        self.command_sent += 1
+        self.last_command_time = now
 
     def _publish_mode(self, mode):
         msg = String()
@@ -182,12 +252,14 @@ class OmxTurtleNode(Node):
         self.mode_pub.publish(msg)
 
     def _publish_status(
-            self, base_arrival_fresh=None, aruco_fresh=None, force=False):
+            self, base_signal_fresh=None, base_arrival_fresh=None,
+            aruco_fresh=None, force=False):
         text = (
             f'phase={self.phase} base_arrived={self.base_arrived} '
+            f'base_signal_fresh={base_signal_fresh} '
             f'base_arrival_fresh={base_arrival_fresh} '
             f'aruco_visible={self.aruco_visible} '
-            f'aruco_fresh={aruco_fresh} start_sent={self.start_sent}'
+            f'aruco_fresh={aruco_fresh} command_sent={self.command_sent}'
         )
         if not force and text == self.last_status:
             return

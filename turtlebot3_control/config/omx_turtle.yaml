@@ -4,6 +4,7 @@ omx_turtle_node:
     aruco_visible_topic: /target/aruco_visible
     mp_control_status_topic: /mp_control/status
     mp_control_start_topic: /mp_control/start
+    rl_command_topic: /rl_control/command
     mux_mode_topic: /turtlebot3_control/mux_mode
     status_topic: /turtlebot3_control/coordinator_status
 
@@ -11,16 +12,19 @@ omx_turtle_node:
     wait_for_base_arrival: true
     require_aruco_visible: true
 
-    start_publish_count: 3
-    start_publish_period_s: 0.2
+    # PICK 완료 뒤 base_arrived=false를 확인하고, 배송지에서 다시 true가
+    # 된 뒤에만 PLACE를 전송한다.
+    require_transport_departure: true
+    publish_compat_start: false
+    command_publish_count: 3
+    command_publish_period_s: 0.2
     aruco_visible_timeout_s: 0.8
     base_arrival_timeout_s: 2.0
 
-    done_status_keywords:
-      - handoff release complete
-      - handoff stay complete
-      - pick place complete
+    grasp_status_keywords:
       - grasp complete
+    place_status_keywords:
+      - pick place complete
     error_status_keywords:
       - abort
       - ERROR

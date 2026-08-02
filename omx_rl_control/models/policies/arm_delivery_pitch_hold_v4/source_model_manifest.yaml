@@ -1,0 +1,19 @@
+model:
+  file: scene.xml
+  sha256: a62fb4c219f80d0a2020e8e741f5cbb0c5d77942e072200e1bf84bd3373c09af
+  source: /home/ktj/omx_turtle_ws/src/omx_rl_control/models/mjcf/omx_turtlebot_smooth.xml
+  synchronized_at: "2026-07-16"
+  contract:
+    nq: 8
+    nv: 8
+    nu: 5
+    tower_size_m: [0.13, 0.13, 0.17]
+    object_size_m: [0.06, 0.055, 0.055]
+
+meshes:
+  link2.stl: 20a6cc8a673b90ab02f97e4c2f0437ff692e71daded8a82a77b54254ae877c66
+  link3.stl: e6904447bca7888acb6a3a170d220b12e92f6dbf53c560987527cfd115f6eb19
+  link4.stl: 9da72baf0854e0335bf0fe199da3676c57625e17277a4fa455b995130b29ffab
+  link5.stl: 75e7596295dd5f5cbc68d81b2c875058f28721f98d7402d2d431ccf2334b57a6
+  gripper_left_palm.stl: fb4dfabe68712bbba34deb9f8469f9187009c07579dccd5401b82d08de425267
+  gripper_right_palm.stl: a5bfc10a067c806a19062e2fcb58989623a09edc0e9bbc4fd735a56d83f99752

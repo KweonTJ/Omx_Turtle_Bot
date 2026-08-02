@@ -38,14 +38,17 @@ flowchart LR
 | 항목 | 기본값 | 확인 사항 |
 |---|---:|---|
 | Dictionary | `DICT_APRILTAG_36h11` | 실제 인쇄한 마커와 반드시 일치 |
-| Marker ID | `0` | `accept_any_marker=false` 사용 시 필수 |
-| Marker size | `0.05 m` | 검은 정사각형 한 변을 실측 |
+| Marker ID | `0` | 현재 `accept_any_marker=true`이므로 첫 검출 marker 사용 |
+| Marker size | `0.04 m` | 실제 YAML 기준, 검은 정사각형 한 변 재실측 필요 |
 | 안정 검출 | `3 frames` | 연속 통과 전에는 `valid=false` |
 | 최대 재투영 오차 | `8 px` | 높으면 자세가 흔들리므로 거부 |
 | 출력 좌표계 | `base_link` | EEF 카메라 TF 필요 |
 | 영상 timeout | `1.0 s` | 초과 시 즉시 무효화 |
 
-현재 기본 Dictionary와 크기는 기존 ArUco 설정을 이어받은 값이다. 실제 대회용 마커가 다르면 `config/eef_vision.yaml`을 먼저 수정한다.
+현재 기본 Dictionary는 `DICT_APRILTAG_36h11`, 크기는 `0.04 m`다. 실제
+인쇄물과 다르면 거리 추정도 같은 비율로 틀어지므로
+`config/eef_vision.yaml`을 먼저 수정한다. 여러 marker가 보일 수 있는
+환경에서는 `accept_any_marker=false`와 고정 ID를 사용한다.
 
 ## 상자 중심 보정
 

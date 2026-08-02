@@ -1,0 +1,15 @@
+format: omx_sb3_actor
+format_version: 1
+model_version: arm_delivery_pitch_hold_v4
+source_policy: policy.zip
+source_policy_sha256: ce5403ddffaf69181801400959824700346d28b64bb559bab93fcdbe16f9aafb
+actor_file: policy_actor.bin
+actor_sha256: 379a38e4866ba2d6f57942f61998ec74f685c50984fc3a0f6e005764987e70d4
+observation_size: 33
+hidden_layers:
+- 256
+- 256
+hidden_activation: tanh
+action_size: 4
+action_postprocess: clip[-1,1]
+deterministic: true
