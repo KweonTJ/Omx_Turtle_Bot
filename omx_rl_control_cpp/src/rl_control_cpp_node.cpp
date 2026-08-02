@@ -80,9 +80,10 @@ public:
       std::bind(&RlControlCppNode::onControlTimer, this));
     RCLCPP_INFO(
       get_logger(),
-      "C++ RL control initialized; actor_ready=%s period=%.3fs mode=%s residual=%.3f",
-      boolText(actor_.ready()).c_str(), control_period_s_, control_mode_.c_str(),
-      residual_scale_);
+      "C++ RL control initialized; actor_ready=%s backend=%s device=%s "
+      "period=%.3fs mode=%s residual=%.3f",
+      boolText(actor_.ready()).c_str(), actor_.backend().c_str(), actor_.device().c_str(),
+      control_period_s_, control_mode_.c_str(), residual_scale_);
   }
 
 private:
@@ -175,6 +176,8 @@ private:
     target_frame_id_ = parameterOr<std::string>("target_frame_id", "base_link");
     model_version_ = parameterOr<std::string>(
       "cpp_model_version", "arm_delivery_pitch_hold_v4");
+    policy_backend_ = parameterOr<std::string>("cpp_policy_backend", "auto");
+    policy_device_ = parameterOr<std::string>("cpp_policy_device", "auto");
 
     const double control_rate_hz = parameterOr<double>("control_rate_hz", 50.0);
     if (control_rate_hz <= 0.0) {
@@ -185,6 +188,7 @@ private:
     inference_deadline_s_ = parameterOr<double>("inference_deadline_s", 0.018);
     inference_deadline_miss_limit_ = parameterOr<int64_t>(
       "inference_deadline_miss_limit", 3);
+    inference_timing_window_ = parameterOr<int64_t>("inference_timing_window", 500);
     status_period_s_ = parameterOr<double>("status_period_s", 0.5);
     release_settle_time_s_ = parameterOr<double>("release_settle_time_s", 0.24);
 
@@ -300,10 +304,19 @@ private:
     status_topic_ = parameterOr<std::string>("status_topic", "/rl_control/status");
     compat_status_topic_ = parameterOr<std::string>("compat_status_topic", "/mp_control/status");
 
-    if (inference_deadline_miss_limit_ <= 0 || gate_stable_count_required_ <= 0 ||
-      stay_stable_count_required_ <= 0)
+    if (policy_backend_ != "auto" && policy_backend_ != "eigen" &&
+      policy_backend_ != "torchscript")
     {
-      throw std::invalid_argument("stable counts and deadline miss limit must be positive");
+      throw std::invalid_argument("cpp_policy_backend must be auto, eigen, or torchscript");
+    }
+    if (policy_device_ != "auto" && policy_device_ != "cpu" && policy_device_ != "cuda") {
+      throw std::invalid_argument("cpp_policy_device must be auto, cpu, or cuda");
+    }
+    if (inference_deadline_miss_limit_ <= 0 || inference_timing_window_ <= 0 ||
+      gate_stable_count_required_ <= 0 || stay_stable_count_required_ <= 0)
+    {
+      throw std::invalid_argument(
+              "stable counts, timing window, and deadline miss limit must be positive");
     }
   }
 
@@ -329,14 +342,38 @@ private:
         gripper_pitch_hold_enabled_, gripper_pitch_target_,
         gripper_pitch_joint4_max_step_});
 
+    const std::string package_share =
+      ament_index_cpp::get_package_share_directory("omx_rl_control_cpp");
     std::string actor_path = parameterOr<std::string>("actor_model_path", "");
     if (actor_path.empty()) {
-      actor_path = ament_index_cpp::get_package_share_directory("omx_rl_control_cpp") +
-        "/models/arm_delivery_pitch_hold_v4/policy_actor.bin";
+      actor_path = package_share + "/models/arm_delivery_pitch_hold_v4/policy_actor.bin";
     }
-    if (!actor_.load(actor_path, &startup_error_)) {
+    std::string torchscript_path = parameterOr<std::string>("torchscript_model_path", "");
+    if (torchscript_path.empty()) {
+      torchscript_path = package_share + "/models/arm_delivery_pitch_hold_v4/policy_actor.pt";
+    }
+
+    bool loaded = false;
+    if (policy_backend_ != "eigen" && PolicyActor::torchRuntimeCompiled()) {
+      loaded = actor_.loadTorchScript(torchscript_path, policy_device_, &startup_error_);
+      if (!loaded && policy_backend_ == "auto") {
+        RCLCPP_WARN(
+          get_logger(), "TorchScript actor unavailable (%s); falling back to Eigen CPU",
+          startup_error_.c_str());
+      }
+    } else if (policy_backend_ == "torchscript") {
+      startup_error_ =
+        "TorchScript backend requested but this build does not contain LibTorch";
+    }
+    if (!loaded && policy_backend_ != "torchscript") {
+      loaded = actor_.load(actor_path, &startup_error_);
+    }
+    if (!loaded) {
       RCLCPP_ERROR(get_logger(), "C++ actor validation failed: %s", startup_error_.c_str());
+    } else {
+      startup_error_.clear();
     }
+    inference_window_ms_.reserve(static_cast<std::size_t>(inference_timing_window_));
     gripper_position_ = gripper_open_;
   }
 
@@ -851,6 +888,7 @@ private:
       const auto started = SteadyClock::now();
       raw_action = actor_.predict(observation);
       const double elapsed = ageSeconds(started, SteadyClock::now());
+      recordInferenceTiming(elapsed);
       if (elapsed > inference_deadline_s_) {
         ++inference_deadline_misses_;
         if (inference_deadline_misses_ >= inference_deadline_miss_limit_) {
@@ -896,6 +934,32 @@ private:
         }
       }
     }
+  }
+
+  void recordInferenceTiming(double elapsed_s)
+  {
+    const double elapsed_ms = elapsed_s * 1000.0;
+    inference_window_ms_.push_back(elapsed_ms);
+    inference_total_ms_ += elapsed_ms;
+    if (inference_window_ms_.size() < static_cast<std::size_t>(inference_timing_window_)) {
+      return;
+    }
+
+    std::vector<double> sorted = inference_window_ms_;
+    std::sort(sorted.begin(), sorted.end());
+    const auto percentile = [&sorted](double probability) {
+        const auto rank = static_cast<std::size_t>(
+          std::ceil(probability * static_cast<double>(sorted.size())));
+        return sorted.at(std::max<std::size_t>(1U, rank) - 1U);
+      };
+    RCLCPP_INFO(
+      get_logger(),
+      "C++ PPO inference timing: samples=%zu mean=%.4fms p95=%.4fms p99=%.4fms "
+      "max=%.4fms deadline=%.1fms",
+      sorted.size(), inference_total_ms_ / static_cast<double>(sorted.size()),
+      percentile(0.95), percentile(0.99), sorted.back(), inference_deadline_s_ * 1000.0);
+    inference_window_ms_.clear();
+    inference_total_ms_ = 0.0;
   }
 
   bool reachGate(const Vector3 & eef_position) const
@@ -1107,6 +1171,7 @@ private:
     stream.precision(4);
     stream << "state=" << stateName(state_) << " detail=" << state_detail_
            << " model=" << model_version_ << " runtime=cpp"
+           << " actor_backend=" << actor_.backend() << " actor_device=" << actor_.device()
            << " grasped=" << boolText(grasped_) << " mode=" << control_mode_
            << " ref_stage=" << reference_->stage() << '/' << reference_->waypointCount()
            << " track_error=" << tracking_error
@@ -1213,10 +1278,13 @@ private:
   std::string gripper_joint_name_;
   std::string target_frame_id_;
   std::string model_version_;
+  std::string policy_backend_;
+  std::string policy_device_;
   double control_period_s_{0.02};
   double trajectory_time_s_{0.08};
   double inference_deadline_s_{0.018};
   int64_t inference_deadline_miss_limit_{3};
+  int64_t inference_timing_window_{500};
   double status_period_s_{0.5};
   double release_settle_time_s_{0.24};
   Vector4 joint_low_;
@@ -1334,6 +1402,8 @@ private:
   int64_t stable_gate_count_{0};
   int64_t stay_stable_count_{0};
   int64_t inference_deadline_misses_{0};
+  std::vector<double> inference_window_ms_;
+  double inference_total_ms_{0.0};
   int64_t cycle_count_{0};
   TimePoint release_complete_time_{};
   std::string last_status_text_;

@@ -16,6 +16,8 @@ def generate_launch_description():
     start_hardware = LaunchConfiguration('start_hardware')
     start_rl_control = LaunchConfiguration('start_rl_control')
     control_runtime = LaunchConfiguration('control_runtime')
+    cpp_policy_backend = LaunchConfiguration('cpp_policy_backend')
+    cpp_policy_device = LaunchConfiguration('cpp_policy_device')
     start_eef_vision = LaunchConfiguration('start_eef_vision')
     start_mux = LaunchConfiguration('start_mux')
     start_coordinator = LaunchConfiguration('start_coordinator')
@@ -145,6 +147,8 @@ def generate_launch_description():
                 'require_base_arrived': require_base_arrived,
                 'require_odom_stopped': require_odom_stopped,
                 'delivery_pose_required': delivery_pose_required,
+                'cpp_policy_backend': cpp_policy_backend,
+                'cpp_policy_device': cpp_policy_device,
             },
         ],
         condition=IfCondition(PythonExpression([
@@ -196,6 +200,18 @@ def generate_launch_description():
             default_value='python',
             choices=['python', 'cpp'],
             description='매니퓰레이터 RL 런타임 구현을 선택한다.',
+        ),
+        DeclareLaunchArgument(
+            'cpp_policy_backend',
+            default_value='auto',
+            choices=['auto', 'torchscript', 'eigen'],
+            description='C++ actor backend를 자동, TorchScript, Eigen 중 선택한다.',
+        ),
+        DeclareLaunchArgument(
+            'cpp_policy_device',
+            default_value='auto',
+            choices=['auto', 'cuda', 'cpu'],
+            description='TorchScript actor 장치를 자동, CUDA, CPU 중 선택한다.',
         ),
         DeclareLaunchArgument(
             'start_eef_vision',

@@ -5,10 +5,17 @@ rl_control_node:
     policy_device: cuda
     policy_torch_threads: 1
     policy_warmup_runs: 3
+    # C++ prefers TorchScript and selects CUDA when LibTorch reports it available.
+    # If LibTorch is absent, auto safely falls back to the Eigen CPU actor.
+    cpp_policy_backend: auto
+    cpp_policy_device: auto
+    torchscript_model_path: ''
     control_rate_hz: 50.0
     trajectory_time_s: 0.08
     inference_deadline_s: 0.018
     inference_deadline_miss_limit: 3
+    # C++ runtime logs mean/p95/p99/max every N actor calls.
+    inference_timing_window: 500
     status_period_s: 0.5
 
     joint_names: [joint1, joint2, joint3, joint4]

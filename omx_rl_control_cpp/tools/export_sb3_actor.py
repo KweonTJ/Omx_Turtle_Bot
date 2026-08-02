@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Export the deterministic SB3 PPO actor to the small C++ runtime format."""
+"""Export the deterministic SB3 PPO actor to Eigen and TorchScript formats."""
 
 import argparse
 import hashlib
@@ -38,6 +38,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--policy', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--torchscript-output', type=Path)
     parser.add_argument('--metadata', type=Path, required=True)
     parser.add_argument('--model-version', required=True)
     arguments = parser.parse_args()
@@ -54,6 +55,30 @@ def main():
         tensor(state, 'action_net.weight', (4, 256)),
         tensor(state, 'action_net.bias', (4,)),
     ]
+
+    torchscript_sha256 = None
+    if arguments.torchscript_output is not None:
+        import torch
+
+        actor = torch.nn.Sequential(
+            torch.nn.Linear(33, 256),
+            torch.nn.Tanh(),
+            torch.nn.Linear(256, 256),
+            torch.nn.Tanh(),
+            torch.nn.Linear(256, 4),
+            torch.nn.Hardtanh(min_val=-1.0, max_val=1.0),
+        ).eval()
+        with torch.no_grad():
+            actor[0].weight.copy_(torch.from_numpy(arrays[0].copy()))
+            actor[0].bias.copy_(torch.from_numpy(arrays[1].copy()))
+            actor[2].weight.copy_(torch.from_numpy(arrays[2].copy()))
+            actor[2].bias.copy_(torch.from_numpy(arrays[3].copy()))
+            actor[4].weight.copy_(torch.from_numpy(arrays[4].copy()))
+            actor[4].bias.copy_(torch.from_numpy(arrays[5].copy()))
+        traced = torch.jit.trace(actor, torch.zeros((1, 33), dtype=torch.float32))
+        arguments.torchscript_output.parent.mkdir(parents=True, exist_ok=True)
+        torch.jit.save(traced, str(arguments.torchscript_output))
+        torchscript_sha256 = sha256(arguments.torchscript_output)
 
     arguments.output.parent.mkdir(parents=True, exist_ok=True)
     with arguments.output.open('wb') as stream:
@@ -77,12 +102,18 @@ def main():
         'action_postprocess': 'clip[-1,1]',
         'deterministic': True,
     }
+    if arguments.torchscript_output is not None:
+        metadata['torchscript_file'] = arguments.torchscript_output.name
+        metadata['torchscript_sha256'] = torchscript_sha256
     arguments.metadata.parent.mkdir(parents=True, exist_ok=True)
     arguments.metadata.write_text(
         yaml.safe_dump(metadata, sort_keys=False), encoding='utf-8')
 
     print(f'actor={arguments.output}')
     print(f'actor_sha256={metadata["actor_sha256"]}')
+    if arguments.torchscript_output is not None:
+        print(f'torchscript={arguments.torchscript_output}')
+        print(f'torchscript_sha256={torchscript_sha256}')
     print(f'source_policy_sha256={metadata["source_policy_sha256"]}')
 
 

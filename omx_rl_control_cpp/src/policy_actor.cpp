@@ -12,6 +12,12 @@
 #include <stdexcept>
 #include <vector>
 
+#ifdef OMX_RL_HAS_TORCH
+#include <torch/cuda.h>
+#include <torch/script.h>
+#include <torch/torch.h>
+#endif
+
 namespace omx_rl_control_cpp
 {
 namespace
@@ -64,10 +70,33 @@ void readVector(std::ifstream & stream, Eigen::VectorXf & vector)
 
 }  // namespace
 
+struct PolicyActor::TorchState
+{
+#ifdef OMX_RL_HAS_TORCH
+  torch::jit::script::Module module;
+  torch::Device device{torch::kCPU};
+#endif
+};
+
+PolicyActor::PolicyActor() = default;
+PolicyActor::~PolicyActor() = default;
+
+bool PolicyActor::torchRuntimeCompiled() noexcept
+{
+#ifdef OMX_RL_HAS_TORCH
+  return true;
+#else
+  return false;
+#endif
+}
+
 bool PolicyActor::load(const std::string & path, std::string * error)
 {
   ready_ = false;
+  torch_state_.reset();
   model_path_.clear();
+  backend_.clear();
+  device_.clear();
   try {
     std::ifstream stream(path, std::ios::binary);
     if (!stream) {
@@ -116,6 +145,8 @@ bool PolicyActor::load(const std::string & path, std::string * error)
     }
 
     model_path_ = path;
+    backend_ = "eigen";
+    device_ = "cpu";
     ready_ = true;
     return true;
   } catch (const std::exception & exception) {
@@ -124,6 +155,62 @@ bool PolicyActor::load(const std::string & path, std::string * error)
     }
     return false;
   }
+}
+
+bool PolicyActor::loadTorchScript(
+  const std::string & path, const std::string & requested_device, std::string * error)
+{
+  ready_ = false;
+  torch_state_.reset();
+  model_path_.clear();
+  backend_.clear();
+  device_.clear();
+#ifdef OMX_RL_HAS_TORCH
+  try {
+    if (requested_device != "auto" && requested_device != "cpu" &&
+      requested_device != "cuda")
+    {
+      throw std::invalid_argument("cpp_policy_device must be auto, cpu, or cuda");
+    }
+    const bool use_cuda = requested_device == "cuda" ||
+      (requested_device == "auto" && torch::cuda::is_available());
+    if (use_cuda && !torch::cuda::is_available()) {
+      throw std::runtime_error("CUDA was requested but torch::cuda::is_available() is false");
+    }
+
+    auto state = std::make_unique<TorchState>();
+    state->device = use_cuda ? torch::Device(torch::kCUDA, 0) : torch::Device(torch::kCPU);
+    state->module = torch::jit::load(path, state->device);
+    state->module.eval();
+
+    torch::NoGradGuard no_grad;
+    const auto options = torch::TensorOptions().dtype(torch::kFloat32).device(state->device);
+    const torch::Tensor output = state->module.forward(
+      {torch::zeros({1, kObservationSize}, options)}).toTensor();
+    if (output.numel() != kActionSize || !torch::isfinite(output).all().item<bool>()) {
+      throw std::runtime_error("TorchScript actor returned an invalid warm-up action");
+    }
+
+    model_path_ = path;
+    backend_ = "torchscript";
+    device_ = state->device.str();
+    torch_state_ = std::move(state);
+    ready_ = true;
+    return true;
+  } catch (const std::exception & exception) {
+    if (error != nullptr) {
+      *error = exception.what();
+    }
+    return false;
+  }
+#else
+  (void)path;
+  (void)requested_device;
+  if (error != nullptr) {
+    *error = "TorchScript backend was not compiled; install LibTorch or use cpp_policy_backend=eigen";
+  }
+  return false;
+#endif
 }
 
 Action PolicyActor::predict(const Observation & observation) const
@@ -135,14 +222,36 @@ Action PolicyActor::predict(const Observation & observation) const
     throw std::invalid_argument("policy observation contains NaN or Inf");
   }
 
+  Action action;
+#ifdef OMX_RL_HAS_TORCH
+  if (torch_state_ != nullptr) {
+    std::array<float, kObservationSize> values{};
+    for (int index = 0; index < kObservationSize; ++index) {
+      values.at(index) = static_cast<float>(observation(index));
+    }
+    torch::NoGradGuard no_grad;
+    const auto cpu_options = torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCPU);
+    const torch::Tensor input = torch::from_blob(
+      values.data(), {1, kObservationSize}, cpu_options).to(torch_state_->device);
+    const torch::Tensor output = torch_state_->module.forward({input}).toTensor().to(
+      torch::kCPU).contiguous().view({-1});
+    if (output.numel() != kActionSize || !torch::isfinite(output).all().item<bool>()) {
+      throw std::runtime_error("TorchScript actor returned NaN, Inf, or an invalid shape");
+    }
+    const float * output_data = output.data_ptr<float>();
+    for (int index = 0; index < kActionSize; ++index) {
+      action(index) = std::clamp(static_cast<double>(output_data[index]), -1.0, 1.0);
+    }
+    return action;
+  }
+#endif
+
   const Eigen::VectorXf input = observation.cast<float>();
   const Eigen::VectorXf hidden_1 =
     (weight_1_ * input + bias_1_).array().tanh().matrix();
   const Eigen::VectorXf hidden_2 =
     (weight_2_ * hidden_1 + bias_2_).array().tanh().matrix();
   const Eigen::VectorXf output = weight_out_ * hidden_2 + bias_out_;
-
-  Action action;
   for (int index = 0; index < kActionSize; ++index) {
     action(index) = std::clamp(
       static_cast<double>(output(index)), -1.0, 1.0);

@@ -30,7 +30,7 @@ Python과 C++ 런타임은 선택 관계이며 동시에 실행하지 않는다.
 |---|---|---|
 | [`omx_eef_vision`](./omx_eef_vision/) | ArUco 검출, 품질 판정, TF, 목표 자세 | 구현 |
 | [`omx_rl_control`](./omx_rl_control/) | SB3/PyTorch 기반 Python PPO 런타임 | 구현 |
-| [`omx_rl_control_cpp`](./omx_rl_control_cpp/) | Eigen 기반 C++ PPO actor와 PICK/PLACE 상태기계 | 구현, 실기 검증 전 |
+| [`omx_rl_control_cpp`](./omx_rl_control_cpp/) | TorchScript CUDA/CPU와 Eigen fallback 기반 C++ PPO actor | 구현, 실기 검증 전 |
 | [`turtlebot3_control`](./turtlebot3_control/) | 통합 launch, 베이스 mux, 배송 coordinator | 구현 |
 | `turtlebot3_manipulation_*` | 하드웨어, ros2_control, URDF, 카메라 TF | upstream 기반 확장 |
 | `turtlebot3_position` | UWB 위치·이동 제어 | 패키지 미구현 |
@@ -64,7 +64,8 @@ source install/setup.bash
 ```
 
 Python 런타임은 Stable-Baselines3와 PyTorch가 설치된 로봇 환경이 필요하다.
-C++ 런타임은 Eigen actor를 사용해 Python/CUDA 런타임 의존성을 제거한다.
+C++ 런타임은 LibTorch가 있으면 TorchScript actor를 CUDA 또는 CPU에서
+실행하고, LibTorch가 없는 빌드에서는 Eigen CPU actor로 fallback한다.
 
 ## 통합 실행
 
@@ -79,7 +80,8 @@ C++ 런타임:
 
 ```bash
 ros2 launch turtlebot3_control omx_turtle.launch.py \
-  control_runtime:=cpp
+  control_runtime:=cpp \
+  cpp_policy_backend:=auto cpp_policy_device:=auto
 ```
 
 통합 launch 기본값은 실제 하드웨어, EEF 카메라, Vision, RL, mux와

@@ -13,3 +13,5 @@ hidden_activation: tanh
 action_size: 4
 action_postprocess: clip[-1,1]
 deterministic: true
+torchscript_file: policy_actor.pt
+torchscript_sha256: ddfffc921959d92613daa71bde6f35df03e16be2f29a90149ebffcbe3fe4587b

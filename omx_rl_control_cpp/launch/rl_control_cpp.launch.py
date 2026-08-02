@@ -15,6 +15,9 @@ def generate_launch_description():
     """Create the standalone C++ control launch description."""
     config_file = LaunchConfiguration('config_file')
     actor_model_path = LaunchConfiguration('actor_model_path')
+    torchscript_model_path = LaunchConfiguration('torchscript_model_path')
+    cpp_policy_backend = LaunchConfiguration('cpp_policy_backend')
+    cpp_policy_device = LaunchConfiguration('cpp_policy_device')
     start_hardware = LaunchConfiguration('start_hardware')
     use_fake_hardware = LaunchConfiguration('use_fake_hardware')
     start_rviz = LaunchConfiguration('start_rviz')
@@ -48,6 +51,9 @@ def generate_launch_description():
             config_file,
             {
                 'actor_model_path': actor_model_path,
+                'torchscript_model_path': torchscript_model_path,
+                'cpp_policy_backend': cpp_policy_backend,
+                'cpp_policy_device': cpp_policy_device,
                 'cpp_model_version': 'arm_delivery_pitch_hold_v4',
                 'gripper_pitch_hold_enabled': True,
                 'gripper_pitch_target': 0.0,
@@ -73,6 +79,25 @@ def generate_launch_description():
                 'arm_delivery_pitch_hold_v4',
                 'policy_actor.bin',
             ]),
+        ),
+        DeclareLaunchArgument(
+            'torchscript_model_path',
+            default_value=PathJoinSubstitution([
+                FindPackageShare('omx_rl_control_cpp'),
+                'models',
+                'arm_delivery_pitch_hold_v4',
+                'policy_actor.pt',
+            ]),
+        ),
+        DeclareLaunchArgument(
+            'cpp_policy_backend',
+            default_value='auto',
+            choices=['auto', 'torchscript', 'eigen'],
+        ),
+        DeclareLaunchArgument(
+            'cpp_policy_device',
+            default_value='auto',
+            choices=['auto', 'cuda', 'cpu'],
         ),
         DeclareLaunchArgument('start_hardware', default_value='false'),
         DeclareLaunchArgument('use_fake_hardware', default_value='true'),

@@ -10,7 +10,7 @@
 | 항목 | Python | C++ |
 |---|---|---|
 | 33차원 관측 및 정규화 | 지원 | 지원 |
-| deterministic PPO actor | SB3/PyTorch | Eigen 순전파 |
+| deterministic PPO actor | SB3/PyTorch | TorchScript CUDA/CPU + Eigen fallback |
 | 기준 waypoint와 numerical IK | 지원 | 지원 |
 | PPO 10% residual·EMA·관절 제한 | 지원 | 지원 |
 | joint1 물체 방위 정렬 | 지원 | 지원 |
@@ -20,10 +20,18 @@
 | PLACE 후 release·Stay 복귀 | 지원 | 지원 |
 | 외부 베이스 운반 중 Stay hold | 지원 | 지원 |
 
-SB3 `policy.zip`은 C++에서 직접 읽지 않는다. 학습 PC에서 actor 가중치를
-`policy_actor.bin`으로 내보내고, 로봇에서는 Eigen만 사용해 추론한다.
-파일에는 magic, 버전, 입출력 크기와 모든 actor weight가 들어가며 로딩 시
-크기·유한값·trailing data를 검사한다.
+SB3 `policy.zip`은 C++에서 직접 읽지 않는다. 학습 PC에서 동일한 actor를
+TorchScript `policy_actor.pt`와 Eigen fallback용 `policy_actor.bin`으로
+내보낸다. `cpp_policy_backend=auto`는 LibTorch가 빌드에 포함되면 TorchScript를
+우선 사용하고, `cpp_policy_device=auto`는 CUDA가 실제로 사용 가능하면
+`cuda:0`, 아니면 CPU를 선택한다. LibTorch 자체가 없으면 Eigen CPU로
+fallback한다.
+
+CMake build type을 별도로 지정하지 않으면 이 패키지는 `Release(-O3)`로
+빌드한다. `-ffast-math`와 `-march=native`는 정책 패리티와 로봇 간 이식성을
+해칠 수 있어 사용하지 않는다. 실행 중에는 actor 추론 500회마다
+`mean/p95/p99/max` 지연을 로그로 출력하며 `inference_timing_window`로 표본
+크기를 조정할 수 있다.
 
 ## 빌드 및 실행
 
@@ -35,6 +43,14 @@ colcon build --symlink-install \
 source install/setup.bash
 
 ros2 launch omx_rl_control_cpp rl_control_cpp.launch.py
+```
+
+CMake는 현재 `python3`에서 PyTorch의 LibTorch 경로를 자동 탐색한다. GPU를
+강제 검증할 때는 다음과 같이 실행하며 CUDA가 없으면 시작을 실패시킨다.
+
+```bash
+ros2 launch omx_rl_control_cpp rl_control_cpp.launch.py \
+  cpp_policy_backend:=torchscript cpp_policy_device:=cuda
 ```
 
 통합 런치에서는 기본 Python을 유지하며 다음 인자로 C++을 선택한다.
@@ -54,6 +70,8 @@ Python과 C++ 노드는 같은 이름과 출력 토픽을 사용하므로 동시
 python3 omx_rl_control_cpp/tools/export_sb3_actor.py \
   --policy omx_rl_control/models/policies/arm_delivery_pitch_hold_v4/policy.zip \
   --output omx_rl_control_cpp/models/arm_delivery_pitch_hold_v4/policy_actor.bin \
+  --torchscript-output \
+    omx_rl_control_cpp/models/arm_delivery_pitch_hold_v4/policy_actor.pt \
   --metadata omx_rl_control_cpp/models/arm_delivery_pitch_hold_v4/policy_actor.yaml \
   --model-version arm_delivery_pitch_hold_v4
 ```
