@@ -121,6 +121,7 @@ ArUco freshness, joint state, base gate, controller와 최종
 - [C++ 매니퓰레이터 제어 구현 및 검증](<./docs/8. C++ 매니퓰레이터 제어 구현 및 검증.md>)
 - [변경 이력](<./docs/9. 변경 이력.md>)
 - [배송 정책 v4 실제 로봇 배포](<./docs/10. 배송 정책 v4 실제 로봇 배포.md>)
+- [C++ PPO 로봇 제어 코드가 긴 이유](<./docs/11. C++ PPO 로봇 제어 코드가 긴 이유.md>)
 
 ## 안전 경계
 
