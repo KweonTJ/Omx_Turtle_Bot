@@ -1,5 +1,23 @@
 # OMX TurtleBot Delivery Robot
 
+## 최신 계획: 2단 정리대에서 ID 지정 픽앤플레이스
+
+고정된 리더가 약 4개 물체 중 **요청한 ArUco ID의 현재 위치**를 찾아 파지하고,
+선반 밖으로 꺼내 옆 팔로워에 놓는 새 프로젝트를 진행한다. 서랍 열기는 제외한다.
+[새 임무 계획](<./docs/13. 2단 정리대 ArUco ID 기반 픽앤플레이스 계획.md>)과
+[호스트 모니터](<./docs/14. 리더 픽앤플레이스 호스트 모니터.md>)를 참고한다.
+기존 v4는 이 새 임무를 학습/검증한 모델이 아니다. 아래 기존 배송 구현 내용과 구분한다.
+
+호스트 화면만 실행 (먼저 `omx_leader_monitor` 빌드, 로봇 제어 명령 없음):
+
+```bash
+cd /home/ktj/omx_turtle_ws
+bash src/omx_leader_monitor/scripts/run_leader_pick_place_monitor.sh --demo
+# 실데이터: --demo를 빼고 --domain <호스트 domain> 사용
+```
+
+## 기존 v4 배송 구현
+
 TurtleBot3 Waffle Pi와 OpenMANIPULATOR-X를 사용하는 ROS 2 Humble 실제 로봇
 워크스페이스다. EEF 카메라의 ArUco 자세를 `base_link`로 변환하고, 학습된
 PPO residual 정책과 결정론적 기준 경로로 물체를 파지한다.
@@ -35,7 +53,8 @@ Python과 C++ 런타임은 선택 관계이며 동시에 실행하지 않는다.
 | `turtlebot3_manipulation_*` | 하드웨어, ros2_control, URDF, 카메라 TF | upstream 기반 확장 |
 | `turtlebot3_position` | UWB 위치·이동 제어 | 패키지 미구현 |
 
-전체 24개 ROS 패키지 중 위 다섯 영역이 프로젝트의 직접 변경 범위이며,
+추가 `omx_leader_monitor`는 호스트 전용 수신 GUI이며 실기 제어 패키지와 분리한다.
+위 다섯 영역은 기존 배송 프로젝트의 직접 변경 범위이며,
 DynamixelSDK와 TurtleBot3 기본 패키지는 기반 의존성이다.
 
 ## 기본 모델

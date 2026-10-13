@@ -1,0 +1,12 @@
+/**:
+  ros__parameters:
+    input_prefix: /leader_monitor/input
+    host_request_topic: /leader_monitor/host_request
+    image_transport: raw
+    telemetry_timeout_s: 2.0
+    image_timeout_s: 2.0
+    near_distance_m: 0.22
+    far_distance_m: 0.28
+    fullscreen: false
+    enable_3d: true
+    demo_mode: false

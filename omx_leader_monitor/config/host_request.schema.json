@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Host request observation, not a robot command endpoint",
+  "type": "object",
+  "required": ["request_id", "object_id", "command"],
+  "properties": {
+    "request_id": {"type": "string", "minLength": 1, "maxLength": 128},
+    "object_id": {"type": "integer", "minimum": 0, "maximum": 1000000},
+    "command": {"enum": ["PICK", "PLACE", "PICK_PLACE", "CANCEL"]},
+    "issued_at": {"type": "string", "maxLength": 80, "description": "Optional UTC/offset ISO-8601 host send time (display metadata, not freshness)"}
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="7" failures="0" disabled="0" errors="0" time="0.003" timestamp="2026-10-14T00:00:10" name="AllTests">
+  <testsuite name="Request" tests="2" failures="0" disabled="0" errors="0" time="0.001" timestamp="2026-10-14T00:00:10">
+    <testcase name="ValidAndDeduplication" status="run" result="completed" time="0" timestamp="2026-10-14T00:00:10" classname="omx_leader_monitor.Request" />
+    <testcase name="RejectInvalid" status="run" result="completed" time="0.001" timestamp="2026-10-14T00:00:10" classname="omx_leader_monitor.Request" />
+  </testsuite>
+  <testsuite name="States" tests="1" failures="0" disabled="0" errors="0" time="0" timestamp="2026-10-14T00:00:10">
+    <testcase name="ExistingCppPythonAndShelfStates" status="run" result="completed" time="0" timestamp="2026-10-14T00:00:10" classname="omx_leader_monitor.States" />
+  </testsuite>
+  <testsuite name="Joints" tests="1" failures="0" disabled="0" errors="0" time="0" timestamp="2026-10-14T00:00:10">
+    <testcase name="PartialAndInvalidDoNotInventZeroes" status="run" result="completed" time="0" timestamp="2026-10-14T00:00:10" classname="omx_leader_monitor.Joints" />
+  </testsuite>
+  <testsuite name="Freshness" tests="1" failures="0" disabled="0" errors="0" time="0" timestamp="2026-10-14T00:00:10">
+    <testcase name="MonotonicTimeout" status="run" result="completed" time="0" timestamp="2026-10-14T00:00:10" classname="omx_leader_monitor.Freshness" />
+  </testsuite>
+  <testsuite name="Proximity" tests="1" failures="0" disabled="0" errors="0" time="0" timestamp="2026-10-14T00:00:10">
+    <testcase name="HysteresisAndLoss" status="run" result="completed" time="0" timestamp="2026-10-14T00:00:10" classname="omx_leader_monitor.Proximity" />
+  </testsuite>
+  <testsuite name="Image" tests="1" failures="0" disabled="0" errors="0" time="0.002" timestamp="2026-10-14T00:00:10">
+    <testcase name="PaddingColorAndMalformedInput" status="run" result="completed" time="0.002" timestamp="2026-10-14T00:00:10" classname="omx_leader_monitor.Image" />
+  </testsuite>
+</testsuites>

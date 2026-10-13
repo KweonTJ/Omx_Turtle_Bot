@@ -1,0 +1,6 @@
+TELEMETRY 231:/joint_states -> 230:/leader_monitor/input/joint_states
+TELEMETRY 231:/eef_camera/image_raw -> 230:/leader_monitor/input/eef/image_raw
+TELEMETRY 231:/rl_control/status -> 230:/leader_monitor/input/status
+TELEMETRY 231:/target/aruco_pose -> 230:/leader_monitor/input/aruco_pose
+TELEMETRY 231:/target/valid -> 230:/leader_monitor/input/target_valid
+TELEMETRY 231:/target/selected_info -> 230:/leader_monitor/input/target_info

@@ -1,0 +1,11 @@
+# Explicit ONE-WAY telemetry allowlist. No command or hardware control topics.
+# Run on the host with an explicitly supplied source domain; host defaults to 16.
+topics:
+  - {source: /joint_states, destination: /leader_monitor/input/joint_states, type: sensor_msgs/msg/JointState}
+  - {source: /eef_camera/image_raw, destination: /leader_monitor/input/eef/image_raw, type: sensor_msgs/msg/Image, transport: raw}
+  - {source: /eef_camera/image_raw/compressed, destination: /leader_monitor/input/eef/image_raw/compressed, type: sensor_msgs/msg/CompressedImage, transport: compressed}
+  - {source: /rl_control/status, destination: /leader_monitor/input/status, type: std_msgs/msg/String}
+  - {source: /target/aruco_pose, destination: /leader_monitor/input/aruco_pose, type: geometry_msgs/msg/PoseStamped}
+  - {source: /target/valid, destination: /leader_monitor/input/target_valid, type: std_msgs/msg/Bool}
+  # New perception metadata contract; NOT yet emitted by existing eef_vision.
+  - {source: /target/selected_info, destination: /leader_monitor/input/target_info, type: std_msgs/msg/String}
