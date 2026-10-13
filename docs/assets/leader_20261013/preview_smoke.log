@@ -1,0 +1,52 @@
+[INFO] [launch]: All log files can be found below /tmp/leader_urdf_review.ERMK2p/ros_logs/2026-10-13-21-28-43-448906-ktj-28143
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [robot_state_publisher-1]: process started with pid [28191]
+[INFO] [joint_state_publisher-2]: process started with pid [28193]
+[robot_state_publisher-1] [INFO] [1791894523.755728305] [leader_preview_state_publisher]: got segment base_footprint
+[robot_state_publisher-1] [INFO] [1791894523.755862809] [leader_preview_state_publisher]: got segment base_link
+[robot_state_publisher-1] [INFO] [1791894523.755867981] [leader_preview_state_publisher]: got segment camera_astra_visual_frame
+[robot_state_publisher-1] [INFO] [1791894523.755871430] [leader_preview_state_publisher]: got segment camera_color_frame
+[robot_state_publisher-1] [INFO] [1791894523.755874351] [leader_preview_state_publisher]: got segment camera_color_optical_frame
+[robot_state_publisher-1] [INFO] [1791894523.755877074] [leader_preview_state_publisher]: got segment camera_depth_frame
+[robot_state_publisher-1] [INFO] [1791894523.755879540] [leader_preview_state_publisher]: got segment camera_depth_optical_frame
+[robot_state_publisher-1] [INFO] [1791894523.755882080] [leader_preview_state_publisher]: got segment camera_link
+[robot_state_publisher-1] [INFO] [1791894523.755884671] [leader_preview_state_publisher]: got segment camera_plate_link
+[robot_state_publisher-1] [INFO] [1791894523.755887257] [leader_preview_state_publisher]: got segment caster_back_left_link
+[robot_state_publisher-1] [INFO] [1791894523.755889763] [leader_preview_state_publisher]: got segment caster_back_right_link
+[robot_state_publisher-1] [INFO] [1791894523.755892218] [leader_preview_state_publisher]: got segment dummy_mimic_fix
+[robot_state_publisher-1] [INFO] [1791894523.755894750] [leader_preview_state_publisher]: got segment eef_usb_camera_link
+[robot_state_publisher-1] [INFO] [1791894523.755897293] [leader_preview_state_publisher]: got segment eef_usb_camera_optical_frame
+[robot_state_publisher-1] [INFO] [1791894523.755899891] [leader_preview_state_publisher]: got segment end_effector_link
+[robot_state_publisher-1] [INFO] [1791894523.755902456] [leader_preview_state_publisher]: got segment gripper_left_link
+[robot_state_publisher-1] [INFO] [1791894523.755904934] [leader_preview_state_publisher]: got segment gripper_right_link
+[robot_state_publisher-1] [INFO] [1791894523.755907362] [leader_preview_state_publisher]: got segment imu_link
+[robot_state_publisher-1] [INFO] [1791894523.755909832] [leader_preview_state_publisher]: got segment link1
+[robot_state_publisher-1] [INFO] [1791894523.755912353] [leader_preview_state_publisher]: got segment link2
+[robot_state_publisher-1] [INFO] [1791894523.755914759] [leader_preview_state_publisher]: got segment link3
+[robot_state_publisher-1] [INFO] [1791894523.755917212] [leader_preview_state_publisher]: got segment link4
+[robot_state_publisher-1] [INFO] [1791894523.755919719] [leader_preview_state_publisher]: got segment link5
+[robot_state_publisher-1] [INFO] [1791894523.755922152] [leader_preview_state_publisher]: got segment support_back_left_link
+[robot_state_publisher-1] [INFO] [1791894523.755924720] [leader_preview_state_publisher]: got segment support_back_right_link
+[robot_state_publisher-1] [INFO] [1791894523.755927264] [leader_preview_state_publisher]: got segment support_front_left_link
+[robot_state_publisher-1] [INFO] [1791894523.755929754] [leader_preview_state_publisher]: got segment support_front_right_link
+[robot_state_publisher-1] [INFO] [1791894523.755932160] [leader_preview_state_publisher]: got segment track_left_link
+[robot_state_publisher-1] [INFO] [1791894523.755934761] [leader_preview_state_publisher]: got segment track_right_link
+[robot_state_publisher-1] [INFO] [1791894523.755937283] [leader_preview_state_publisher]: got segment upper_waffle_plate
+[robot_state_publisher-1] [INFO] [1791894523.755939751] [leader_preview_state_publisher]: got segment wheel_left_link
+[robot_state_publisher-1] [INFO] [1791894523.755942276] [leader_preview_state_publisher]: got segment wheel_right_link
+[joint_state_publisher-2] [INFO] [1791894523.972534528] [leader_preview_joints]: Waiting for robot_description to be published on the robot_description topic...
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[INFO] [joint_state_publisher-2]: sending signal 'SIGINT' to process[joint_state_publisher-2]
+[INFO] [robot_state_publisher-1]: sending signal 'SIGINT' to process[robot_state_publisher-1]
+[robot_state_publisher-1] [INFO] [1791894541.035173008] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[robot_state_publisher-1] [INFO] [1791894541.039726373] [rclcpp]: signal_handler(SIGINT/SIGTERM)
+[joint_state_publisher-2] Traceback (most recent call last):
+[joint_state_publisher-2]   File "/opt/ros/humble/lib/joint_state_publisher/joint_state_publisher", line 33, in <module>
+[joint_state_publisher-2]     sys.exit(load_entry_point('joint-state-publisher==2.4.0', 'console_scripts', 'joint_state_publisher')())
+[joint_state_publisher-2]   File "/opt/ros/humble/lib/python3.10/site-packages/joint_state_publisher/joint_state_publisher.py", line 470, in main
+[joint_state_publisher-2]     jsp.destroy_node()
+[joint_state_publisher-2]   File "/opt/ros/humble/local/lib/python3.10/dist-packages/rclpy/node.py", line 1696, in destroy_node
+[joint_state_publisher-2]     self.__node.destroy_when_not_in_use()
+[joint_state_publisher-2] KeyboardInterrupt
+[ERROR] [joint_state_publisher-2]: process has died [pid 28193, exit code -2, cmd '/opt/ros/humble/lib/joint_state_publisher/joint_state_publisher --ros-args -r __node:=leader_preview_joints --params-file /tmp/launch_params_3f780nn6 -r joint_states:=/leader_preview/joint_states -r robot_description:=/leader_preview/robot_description'].
+[INFO] [robot_state_publisher-1]: process has finished cleanly [pid 28191]

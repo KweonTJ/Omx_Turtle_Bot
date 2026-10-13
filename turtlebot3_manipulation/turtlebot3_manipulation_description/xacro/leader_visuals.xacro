@@ -1,0 +1,276 @@
+<?xml version="1.0"?>
+<!-- Video 20261013_204330.mp4: ROBOTIS tracked leader, visual reconstruction.
+     Metres. Local mesh proxies are not exact manufacturer CAD. No control TFs
+     are calibrated from the video. See docs/12 in the robot workspace. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <!-- Inspection palette, not measured paint/PBR properties. STL has no UVs;
+       textured PCB primitives and physical fins/ports provide surface detail. -->
+  <material name="leader_black"><color rgba="0.12 0.14 0.17 1"/></material>
+  <material name="leader_plate"><color rgba="0.34 0.39 0.46 1"/></material>
+  <material name="leader_motor"><color rgba="0.24 0.40 0.55 1"/></material>
+  <material name="leader_arm"><color rgba="0.46 0.51 0.58 1"/></material>
+  <material name="leader_rubber"><color rgba="0.055 0.065 0.08 1"/></material>
+  <material name="leader_sprocket"><color rgba="0.50 0.54 0.61 1"/></material>
+  <material name="leader_metal"><color rgba="0.80 0.84 0.89 1"/></material>
+  <material name="leader_brass"><color rgba="0.88 0.64 0.24 1"/></material>
+  <material name="leader_pcb"><color rgba="0.06 0.48 0.24 1"/></material>
+  <material name="leader_connector"><color rgba="0.87 0.89 0.83 1"/></material>
+  <material name="leader_jetson_pcb"><color rgba="0.04 0.46 0.36 1"/></material>
+  <material name="leader_opencr_surface">
+    <color rgba="0.06 0.48 0.24 1"/>
+    <texture filename="package://turtlebot3_manipulation_description/meshes/leader_video/opencr_pcb.png"/>
+  </material>
+  <material name="leader_jetson_surface">
+    <color rgba="0.04 0.46 0.36 1"/>
+    <texture filename="package://turtlebot3_manipulation_description/meshes/leader_video/jetson_pcb.png"/>
+  </material>
+  <material name="leader_battery"><color rgba="0.04 0.23 0.65 1"/></material>
+  <material name="leader_lens"><color rgba="0.04 0.37 0.58 1"/></material>
+  <xacro:property name="leader_mesh_dir" value="package://turtlebot3_manipulation_description/meshes/leader_video"/>
+  <!-- Front octagon (two opposed halves) + rear half at narrow edge, rear end open.
+       Three unscaled ROBOTIS half plates on all four levels.
+       Rounded-up envelope of the extracted assembly. -->
+  <xacro:property name="leader_plate_size" value="0.20155 0.13755 0.009"/>
+  <!-- Latest user correction: place arm base on the added REAR half plate.
+       Assembly centre X=-64 mm + rear-half local centre X=-64 mm. -->
+  <xacro:property name="leader_arm_mount_x" value="${-0.064 - 0.064}"/>
+  <!-- Motor case is 28.5 mm high around the verified source shaft centre.
+       Keep motor/wheel/belt axes fixed; raise the bottom mounting plate to it. -->
+  <xacro:property name="leader_floor_plate_z" value="${0.023 - 0.0285/2 - 0.009/2}"/>
+  <xacro:property name="leader_floor_top_z" value="${leader_floor_plate_z + 0.009/2}"/>
+  <!-- User-confirmed CONNECTING SUPPORT lengths, not plate-centre spacing.
+       Seat both ends on plate faces; retain the source 9 mm plate envelope.
+       Only the display profile uses these new measured stack dimensions. -->
+  <xacro:property name="leader_lower_support_length" value="0.040"/>
+  <xacro:property name="leader_middle_support_length" value="0.055"/>
+  <xacro:property name="leader_upper_support_length" value="0.055"/>
+  <xacro:property name="leader_second_plate_z" value="${leader_floor_plate_z + 0.009 + leader_lower_support_length}"/>
+  <xacro:property name="leader_camera_plate_z" value="${leader_second_plate_z + 0.009 + leader_middle_support_length}"/>
+  <xacro:property name="leader_upper_plate_z" value="${leader_camera_plate_z + 0.009 + leader_upper_support_length}"/>
+  <xacro:property name="leader_lower_support_center_z" value="${leader_floor_top_z + leader_lower_support_length/2}"/>
+  <xacro:property name="leader_middle_support_center_z" value="${leader_second_plate_z + 0.009/2 + leader_middle_support_length/2}"/>
+  <xacro:property name="leader_upper_support_center_z" value="${leader_camera_plate_z + 0.009/2 + leader_upper_support_length/2}"/>
+  <!-- Preserve the existing arm-origin offset from its mounting plate.
+       New stack raises both by 3.75 mm; this is not hardware calibration. -->
+  <xacro:property name="leader_arm_mount_z" value="${leader_upper_plate_z + (0.178 - 0.1775)}"/>
+  <xacro:property name="leader_support_front_x" value="0.018"/>
+  <xacro:property name="leader_support_back_x" value="-0.146"/>
+  <!-- Display-only body camera recess: retain camera-relative extrinsics.
+       Base-relative height follows the measured third-floor stack.
+       Front face after offset is base X=0.0355, inside plate X=0.0367735.
+       Keep camera dimensions; this is not a measured extrinsic correction. -->
+  <xacro:property name="leader_depth_camera_visual_x" value="-0.033"/>
+  <!-- User asks to enlarge the camera to suit the measured third floor.
+       Uniformly scale the previous 53.5 mm complete display assembly to 55 mm,
+       including housing, rounded ends, lenses and pedestal (not just the post).
+       Anchor its frontmost face and floor so it stays recessed and seated.
+       This does NOT identify/resize a physical camera or calibrate its TF. -->
+  <xacro:property name="leader_camera_scale" value="${leader_upper_support_length / 0.0535}"/>
+  <xacro:property name="leader_camera_front_x" value="${0.0235 + leader_depth_camera_visual_x}"/>
+  <xacro:property name="leader_camera_body_x" value="${leader_camera_front_x - 0.021*leader_camera_scale}"/>
+  <xacro:property name="leader_camera_pedestal_x" value="${leader_camera_front_x - 0.030*leader_camera_scale}"/>
+  <xacro:property name="leader_camera_lens_x" value="${leader_camera_front_x - 0.0005*leader_camera_scale}"/>
+  <xacro:property name="leader_camera_pedestal_bottom" value="${0.009/2 - 0.0025}"/>
+  <xacro:property name="leader_camera_pedestal_height" value="${0.0235*leader_camera_scale}"/>
+  <xacro:property name="leader_camera_body_z" value="${leader_camera_pedestal_bottom + leader_camera_pedestal_height + 0.015*leader_camera_scale}"/>
+  <!-- Upper front posts sit behind the recessed housing; lower posts unchanged. -->
+  <xacro:property name="leader_tower_support_front_x" value="-0.018"/>
+  <!-- User measured 95 mm EMPTY SPACE between left/right inner case faces.
+       Source meshes reach 45 mm inward from each shaft (case width 40.4 mm).
+       Half axle spacing = 95/2 + 45 = 92.5 mm. This supersedes the old
+       98 mm estimate from plate-hole alignment; actual fasteners uncalibrated.
+       Move all four motors AND their coaxial wheels/belts together, no scaling.
+       Motor cases still project ~19.1 mm outside the plate. -->
+  <xacro:property name="leader_lateral_motor_case_gap" value="0.095"/>
+  <xacro:property name="leader_motor_lateral_inward_extent" value="0.045"/>
+  <xacro:property name="leader_track_y" value="${leader_lateral_motor_case_gap/2 + leader_motor_lateral_inward_extent}"/>
+  <!-- User measured ~68 mm of empty space BETWEEN the facing motor cases.
+       Each source case extends 35.25 mm inward from its shaft; front X=0.
+       Axle spacing = 68 + 2*35.25 = 138.5 mm. Retain lateral protrusion. -->
+  <xacro:property name="leader_drive_front_x" value="0.0"/>
+  <xacro:property name="leader_motor_case_gap" value="0.068"/>
+  <xacro:property name="leader_motor_inward_extent" value="0.03525"/>
+  <xacro:property name="leader_drive_rear_x" value="${leader_drive_front_x-leader_motor_case_gap-2*leader_motor_inward_extent}"/>
+  <xacro:property name="leader_drive_spacing" value="${leader_drive_front_x-leader_drive_rear_x}"/>
+  <xacro:property name="leader_drive_center_x" value="${(leader_drive_front_x+leader_drive_rear_x)/2}"/>
+
+  <xacro:macro name="leader_mesh_visual" params="file xyz:='0 0 0' rpy:='0 0 0' color:=leader_plate">
+    <visual><origin xyz="${xyz}" rpy="${rpy}"/>
+      <geometry><mesh filename="${leader_mesh_dir}/${file}"/></geometry>
+      <material name="${color}"/>
+    </visual>
+  </xacro:macro>
+  <xacro:macro name="leader_box_visual" params="size xyz color:=leader_black">
+    <visual><origin xyz="${xyz}"/><geometry><box size="${size}"/></geometry>
+      <material name="${color}"/></visual>
+  </xacro:macro>
+  <xacro:macro name="leader_cylinder_visual" params="radius length xyz rpy:='0 0 0' color:=leader_black">
+    <visual><origin xyz="${xyz}" rpy="${rpy}"/>
+      <geometry><cylinder radius="${radius}" length="${length}"/></geometry>
+      <material name="${color}"/></visual>
+  </xacro:macro>
+
+  <xacro:macro name="leader_base_visuals">
+    <xacro:leader_mesh_visual file="lower_plate.stl" xyz="-0.064 0 ${leader_floor_plate_z}"/>
+    <!-- Explicit mounting surface, in addition to the legacy coarse chassis envelope. -->
+    <collision name="leader_floor_plate_collision"><origin xyz="-0.064 0 ${leader_floor_plate_z}"/>
+      <geometry><box size="${leader_plate_size}"/></geometry></collision>
+    <xacro:leader_mesh_visual file="lower_plate.stl" xyz="-0.064 0 ${leader_second_plate_z}"/>
+    <!-- Same THREE half plates on all four layers, including these lower two. -->
+    <xacro:leader_lower_supports x="${leader_support_front_x}"/>
+    <xacro:leader_lower_supports x="${leader_support_back_x}"/>
+    <!-- Original unidentified board proxy is replaced by opencr_link below. -->
+    <!-- User requested removal of the blue second-floor battery placeholder. -->
+  </xacro:macro>
+  <xacro:macro name="leader_lower_supports" params="x">
+    <xacro:leader_cylinder_visual radius="0.003" length="${leader_lower_support_length}" xyz="${x} 0.04 ${leader_lower_support_center_z}" color="leader_brass"/>
+    <xacro:leader_cylinder_visual radius="0.003" length="${leader_lower_support_length}" xyz="${x} -0.04 ${leader_lower_support_center_z}" color="leader_brass"/>
+    <xacro:leader_cylinder_visual radius="0.003" length="${leader_middle_support_length}" xyz="${x} 0.05 ${leader_middle_support_center_z}" color="leader_brass"/>
+    <xacro:leader_cylinder_visual radius="0.003" length="${leader_middle_support_length}" xyz="${x} -0.05 ${leader_middle_support_center_z}" color="leader_brass"/>
+  </xacro:macro>
+
+  <xacro:macro name="leader_tracks" params="prefix">
+    <xacro:leader_track_side prefix="${prefix}" side="left" sign="1"/>
+    <xacro:leader_track_side prefix="${prefix}" side="right" sign="-1"/>
+  </xacro:macro>
+  <xacro:macro name="leader_track_side" params="prefix side sign">
+    <joint name="${prefix}track_${side}_joint" type="fixed">
+      <parent link="${prefix}base_link"/><child link="${prefix}track_${side}_link"/>
+      <origin xyz="0 ${sign*leader_track_y} 0.023"/>
+    </joint>
+    <link name="${prefix}track_${side}_link">
+      <xacro:leader_mesh_visual file="track.stl" color="leader_rubber"/>
+      <!-- Coarse stationary envelope only; no belt contact/slip dynamics. -->
+      <collision><origin xyz="${leader_drive_center_x} 0 0"/>
+        <geometry><box size="${leader_drive_spacing+0.079} 0.042 0.079"/></geometry></collision>
+    </link>
+    <xacro:leader_drive_unit prefix="${prefix}" side="${side}" sign="${sign}" end="front" x="${leader_drive_front_x}" pitch="0"/>
+    <xacro:leader_drive_unit prefix="${prefix}" side="${side}" sign="${sign}" end="rear" x="${leader_drive_rear_x}" pitch="${pi}"/>
+  </xacro:macro>
+
+  <xacro:macro name="leader_drive_unit" params="prefix side sign end x pitch">
+    <!-- Four actual drive-motor bodies; rear bodies point toward the chassis.
+         The fixed motor frame is at the output axis / wheel centre. -->
+    <joint name="${prefix}motor_${end}_${side}_mount" type="fixed">
+      <parent link="${prefix}base_link"/><child link="${prefix}motor_${end}_${side}_link"/>
+      <origin xyz="${x} ${sign*leader_track_y} 0.023" rpy="0 ${pitch} 0"/>
+    </joint>
+    <link name="${prefix}motor_${end}_${side}_link">
+      <xacro:leader_mesh_visual file="motor_${side}.stl" color="leader_motor"/>
+      <collision><origin xyz="-0.012 ${-sign*0.0248} 0"/>
+        <geometry><box size="0.0465 0.0404 0.0285"/></geometry></collision>
+    </link>
+    <joint name="${prefix}drive_${end}_${side}_joint" type="continuous">
+      <parent link="${prefix}motor_${end}_${side}_link"/>
+      <child link="${prefix}sprocket_${end}_${side}_link"/>
+      <origin xyz="0 0 0"/><axis xyz="0 1 0"/>
+      <!-- Display synchronization from the existing two side encoders only.
+           NOT four independently measured positions or motor bus/ID config. -->
+      <mimic joint="${prefix}wheel_${side}_joint" multiplier="1" offset="0"/>
+    </joint>
+    <link name="${prefix}sprocket_${end}_${side}_link">
+      <xacro:leader_mesh_visual file="sprocket.stl" color="leader_sprocket"/>
+      <!-- Coaxial output hub bridges motor horn to wheel; visual approximation. -->
+      <xacro:leader_cylinder_visual radius="0.008" length="0.012" xyz="0 ${-sign*0.004} 0" rpy="${pi/2} 0 0" color="leader_metal"/>
+    </link>
+  </xacro:macro>
+
+  <!-- Board footprints from official specs; connector/cooler geometry and
+       standoff locations are illustrative, NOT manufacturer mounting CAD.
+       Mount origins are on the second/third plate's top face. No control IO. -->
+  <xacro:macro name="leader_electronics" params="prefix">
+    <joint name="${prefix}opencr_mount" type="fixed">
+      <parent link="${prefix}base_link"/><child link="${prefix}opencr_link"/>
+      <origin xyz="-0.032 0 ${leader_second_plate_z + 0.009/2}"/>
+    </joint>
+    <link name="${prefix}opencr_link">
+      <xacro:leader_box_visual size="0.105 0.075 0.0016" xyz="0 0 0.0068" color="leader_opencr_surface"/>
+      <xacro:leader_board_feet x="0.046" y="0.030"/>
+      <!-- MCU, Arduino headers, DYNAMIXEL connector banks, USB and power. -->
+      <xacro:leader_box_visual size="0.014 0.014 0.002" xyz="0 0 0.0086"/>
+      <xacro:leader_box_visual size="0.063 0.005 0.008" xyz="0 -0.030 0.0116"/>
+      <xacro:leader_box_visual size="0.050 0.005 0.008" xyz="0 0.016 0.0116"/>
+      <xacro:leader_opencr_connector x="-0.028"/>
+      <xacro:leader_opencr_connector x="0"/>
+      <xacro:leader_opencr_connector x="0.028"/>
+      <xacro:leader_box_visual size="0.009 0.008 0.004" xyz="0.047 0 0.0096" color="leader_metal"/>
+      <xacro:leader_box_visual size="0.011 0.012 0.010" xyz="-0.045 -0.013 0.0126"/>
+      <xacro:leader_cylinder_visual radius="0.0035" length="0.008" xyz="-0.030 -0.013 0.0116" color="leader_metal"/>
+      <collision><origin xyz="0 0 0.009"/><geometry><box size="0.105 0.075 0.018"/></geometry></collision>
+    </link>
+    <joint name="${prefix}jetson_orin_nano_mount" type="fixed">
+      <parent link="${prefix}camera_plate_link"/><child link="${prefix}jetson_orin_nano_link"/>
+      <origin xyz="-0.026 0 0.0045"/>
+    </joint>
+    <link name="${prefix}jetson_orin_nano_link">
+      <xacro:leader_box_visual size="0.100 0.079 0.0016" xyz="0 0 0.0068" color="leader_jetson_surface"/>
+      <xacro:leader_board_feet x="0.044" y="0.033"/>
+      <!-- Module, black finned cooler and stationary fan: 35 mm total proxy.
+           Actual cooler height/custom carrier must be measured separately. -->
+      <xacro:leader_box_visual size="0.048 0.042 0.004" xyz="0.006 0 0.0096" color="leader_jetson_pcb"/>
+      <xacro:leader_box_visual size="0.052 0.046 0.003" xyz="0.006 0 0.0131"/>
+      <xacro:leader_heatsink_fins remaining="12"/>
+      <xacro:leader_cylinder_visual radius="0.020" length="0.004" xyz="0.006 0 0.030"/>
+      <xacro:leader_fan_spokes remaining="7"/>
+      <xacro:leader_cylinder_visual radius="0.007" length="0.002" xyz="0.006 0 0.034" color="leader_metal"/>
+      <xacro:leader_box_visual size="0.005 0.051 0.008" xyz="0.044 0 0.0116"/>
+      <!-- Rear-facing reference-kit I/O: two dual USB blocks, RJ45, DP. -->
+      <xacro:leader_jetson_usb y="-0.027"/>
+      <xacro:leader_jetson_usb y="-0.007"/>
+      <xacro:leader_box_visual size="0.017 0.017 0.014" xyz="-0.041 0.014 0.0146" color="leader_metal"/>
+      <xacro:leader_box_visual size="0.0005 0.011 0.009" xyz="-0.0496 0.014 0.0146"/>
+      <xacro:leader_box_visual size="0.012 0.014 0.005" xyz="-0.044 0.032 0.0101" color="leader_metal"/>
+      <xacro:leader_box_visual size="0.011 0.009 0.010" xyz="0.028 0.034 0.0126"/>
+      <xacro:leader_box_visual size="0.007 0.008 0.003" xyz="0.040 -0.033 0.0091" color="leader_metal"/>
+      <collision><origin xyz="0 0 0.0175"/><geometry><box size="0.100 0.079 0.035"/></geometry></collision>
+    </link>
+  </xacro:macro>
+  <xacro:macro name="leader_board_feet" params="x y">
+    <xacro:leader_cylinder_visual radius="0.0025" length="0.006" xyz="${x} ${y} 0.003" color="leader_brass"/>
+    <xacro:leader_cylinder_visual radius="0.0025" length="0.006" xyz="${x} ${-y} 0.003" color="leader_brass"/>
+    <xacro:leader_cylinder_visual radius="0.0025" length="0.006" xyz="${-x} ${y} 0.003" color="leader_brass"/>
+    <xacro:leader_cylinder_visual radius="0.0025" length="0.006" xyz="${-x} ${-y} 0.003" color="leader_brass"/>
+  </xacro:macro>
+  <xacro:macro name="leader_opencr_connector" params="x">
+    <xacro:leader_box_visual size="0.010 0.006 0.006" xyz="${x-0.006} 0.031 0.0106" color="leader_connector"/>
+    <xacro:leader_box_visual size="0.012 0.006 0.006" xyz="${x+0.007} 0.031 0.0106" color="leader_connector"/>
+  </xacro:macro>
+  <xacro:macro name="leader_jetson_usb" params="y">
+    <xacro:leader_box_visual size="0.017 0.014 0.016" xyz="-0.041 ${y} 0.0156" color="leader_metal"/>
+    <xacro:leader_box_visual size="0.0005 0.011 0.004" xyz="-0.0496 ${y} 0.012" color="leader_battery"/>
+    <xacro:leader_box_visual size="0.0005 0.011 0.004" xyz="-0.0496 ${y} 0.019" color="leader_battery"/>
+  </xacro:macro>
+  <xacro:macro name="leader_heatsink_fins" params="remaining">
+    <xacro:if value="${remaining > 0}">
+      <xacro:leader_box_visual size="0.052 0.0015 0.0134" xyz="0.006 ${-0.021+0.0038*(remaining-1)} 0.0213"/>
+      <xacro:leader_heatsink_fins remaining="${remaining-1}"/>
+    </xacro:if>
+  </xacro:macro>
+  <xacro:macro name="leader_fan_spokes" params="remaining">
+    <xacro:if value="${remaining > 0}">
+      <visual><origin xyz="0.006 0 0.0325" rpy="0 0 ${2*pi*remaining/7}"/>
+        <geometry><box size="0.036 0.002 0.001"/></geometry><material name="leader_sprocket"/></visual>
+      <xacro:leader_fan_spokes remaining="${remaining-1}"/>
+    </xacro:if>
+  </xacro:macro>
+
+  <xacro:macro name="leader_depth_camera_visuals">
+    <!-- Housing top touches the ceiling; pedestal joins floor to housing. -->
+    <xacro:property name="s" value="${leader_camera_scale}"/>
+    <xacro:leader_box_visual size="${0.04*s} ${0.135*s} ${0.03*s}" xyz="${leader_camera_body_x} 0 ${leader_camera_body_z}"/>
+    <xacro:leader_cylinder_visual radius="${0.015*s}" length="${0.04*s}" xyz="${leader_camera_body_x} ${0.0675*s} ${leader_camera_body_z}" rpy="0 ${pi/2} 0"/>
+    <xacro:leader_cylinder_visual radius="${0.015*s}" length="${0.04*s}" xyz="${leader_camera_body_x} ${-0.0675*s} ${leader_camera_body_z}" rpy="0 ${pi/2} 0"/>
+    <xacro:leader_box_visual size="${0.06*s} ${0.06*s} ${leader_camera_pedestal_height}" xyz="${leader_camera_pedestal_x} 0 ${leader_camera_pedestal_bottom+leader_camera_pedestal_height/2}"/>
+    <xacro:leader_cylinder_visual radius="${0.008*s}" length="${0.001*s}" xyz="${leader_camera_lens_x} ${0.045*s} ${leader_camera_body_z}" rpy="0 ${pi/2} 0" color="leader_lens"/>
+    <xacro:leader_cylinder_visual radius="${0.008*s}" length="${0.001*s}" xyz="${leader_camera_lens_x} ${-0.017*s} ${leader_camera_body_z}" rpy="0 ${pi/2} 0" color="leader_lens"/>
+    <xacro:leader_cylinder_visual radius="${0.005*s}" length="${0.001*s}" xyz="${leader_camera_lens_x} ${-0.045*s} ${leader_camera_body_z}" rpy="0 ${pi/2} 0" color="leader_lens"/>
+  </xacro:macro>
+  <xacro:macro name="leader_eef_camera_visuals">
+    <xacro:leader_box_visual size="0.05 0.058 0.032" xyz="0.025 0 0"/>
+    <xacro:leader_cylinder_visual radius="0.016" length="0.05" xyz="0.025 0.029 0" rpy="0 ${pi/2} 0"/>
+    <xacro:leader_cylinder_visual radius="0.016" length="0.05" xyz="0.025 -0.029 0" rpy="0 ${pi/2} 0"/>
+    <xacro:leader_cylinder_visual radius="0.010" length="0.003" xyz="0.051 0 0" rpy="0 ${pi/2} 0" color="leader_metal"/>
+    <xacro:leader_cylinder_visual radius="0.007" length="0.004" xyz="0.052 0 0" rpy="0 ${pi/2} 0" color="leader_lens"/>
+    <xacro:leader_box_visual size="0.026 0.030 0.043" xyz="0.013 0 -0.0375"/>
+  </xacro:macro>
+</robot>

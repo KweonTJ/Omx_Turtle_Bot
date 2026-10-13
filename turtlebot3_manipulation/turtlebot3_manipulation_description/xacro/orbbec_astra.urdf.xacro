@@ -24,7 +24,8 @@ limitations under the License.
                        robot_namespace:=''
                        component_name:=''
                        use_tf_prefix:=True
-                       publish_internal_frames:=True">
+                       publish_internal_frames:=True
+                       leader_visuals:=False">
 
     <xacro:if value="${component_name == ''}">
       <xacro:property name="component_name" value="camera" />
@@ -53,6 +54,10 @@ limitations under the License.
     </joint>
 
     <link name="${component_name_underscore}astra_visual_frame">
+      <xacro:if value="${leader_visuals}">
+        <xacro:leader_depth_camera_visuals/>
+      </xacro:if>
+      <xacro:unless value="${leader_visuals}">
       <!-- Astra mesh is not present in this repository, so the model uses primitive visuals. -->
       <visual>
         <origin xyz="${0.0225-0.04/2.0} 0.0 ${0.019+0.03/2.0}" rpy="0.0 0.0 0.0" />
@@ -73,19 +78,27 @@ limitations under the License.
         </material>
       </visual>
 
+      </xacro:unless>
+      <!-- Move collision with the leader display housing, not the sensor TF. -->
+      <xacro:property name="camera_geometry_scale" value="${leader_camera_scale if leader_visuals else 1.0}"/>
+      <xacro:property name="camera_body_x" value="${leader_camera_body_x if leader_visuals else 0.0225-0.04/2.0}"/>
+      <xacro:property name="camera_body_z" value="${leader_camera_body_z if leader_visuals else 0.019+0.03/2.0}"/>
+      <xacro:property name="camera_pedestal_x" value="${leader_camera_pedestal_x if leader_visuals else 0.0235-0.06/2.0}"/>
+      <xacro:property name="camera_pedestal_bottom" value="${leader_camera_pedestal_bottom if leader_visuals else 0.0}"/>
+      <xacro:property name="camera_pedestal_height" value="${leader_camera_pedestal_height if leader_visuals else 0.019}"/>
       <!-- camera module collision -->
       <collision>
-        <origin xyz="${0.0225-0.04/2.0} 0.0 ${0.019+0.03/2.0}" rpy="0.0 0.0 0.0" />
+        <origin xyz="${camera_body_x} 0.0 ${camera_body_z}" rpy="0.0 0.0 0.0" />
         <geometry>
-          <box size="0.04 0.165 0.03" />
+          <box size="${0.04*camera_geometry_scale} ${0.165*camera_geometry_scale} ${0.03*camera_geometry_scale}" />
         </geometry>
       </collision>
 
       <!-- mounting base model collision -->
       <collision>
-        <origin xyz="${0.0235-0.06/2.0} 0.0 ${0.019/2.0}" rpy="0.0 0.0 0.0" />
+        <origin xyz="${camera_pedestal_x} 0.0 ${camera_pedestal_bottom+camera_pedestal_height/2.0}" rpy="0.0 0.0 0.0" />
         <geometry>
-          <box size="0.06 0.06 0.019" />
+          <box size="${0.06*camera_geometry_scale} ${0.06*camera_geometry_scale} ${camera_pedestal_height}" />
         </geometry>
       </collision>
 

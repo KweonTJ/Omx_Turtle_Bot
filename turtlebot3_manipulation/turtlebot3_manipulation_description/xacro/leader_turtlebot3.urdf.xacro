@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!-- Read-only digital twin profile. Hardware launch retains the legacy model.
+     All levels: three original half plates. Arm moved onto rear half plate
+     per user instruction; support lengths 40/55/55 mm, mounting RPY retained.
+     Not a validated tracked-vehicle dynamics or mass model. -->
+<robot name="leader_turtlebot3" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="leader_visuals" default="true"/>
+  <xacro:include filename="turtlebot3_manipulation.urdf.xacro"/>
+</robot>

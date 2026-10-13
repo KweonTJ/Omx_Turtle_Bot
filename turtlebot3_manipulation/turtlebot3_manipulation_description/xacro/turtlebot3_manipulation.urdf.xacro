@@ -2,6 +2,8 @@
 <robot name="turtlebot3_manipulation" xmlns:xacro="http://www.ros.org/wiki/xacro">
   <xacro:arg name="prefix" default="" />
   <xacro:arg name="use_sim" default="false" />
+  <xacro:arg name="leader_visuals" default="false" />
+  <xacro:property name="leader_visuals" value="$(arg leader_visuals)"/>
 
   <xacro:arg name="use_fake_hardware" default="false" />
   <xacro:arg name="fake_sensor_commands" default="false" />
@@ -12,6 +14,7 @@
   <xacro:arg name="eef_usb_camera_rpy" default="0.0 0.0 0.0" />
 
   <xacro:include filename="$(find turtlebot3_manipulation_description)/gazebo/materials.xacro" />
+  <xacro:include filename="leader_visuals.xacro"/>
 
   <xacro:include filename="$(find turtlebot3_manipulation_description)/xacro/turtlebot3_waffle_pi.urdf.xacro" />
 
@@ -25,26 +28,37 @@
 
   <xacro:turtlebot3_waffle_pi
     prefix="$(arg prefix)"
+    leader_visuals="${leader_visuals}"
     use_camera_driver_tf="$(arg use_camera_driver_tf)" />
+  <xacro:if value="${leader_visuals}">
+    <xacro:leader_tracks prefix="$(arg prefix)"/>
+    <xacro:leader_electronics prefix="$(arg prefix)"/>
+  </xacro:if>
+  <xacro:unless value="${leader_visuals}">
   <xacro:turtlebot3_waffle_pi_gazebo prefix="$(arg prefix)" />
+  </xacro:unless>
 
   <xacro:property name="support_radius" value="0.005" />
-  <xacro:property name="support_length" value="0.055" />
+  <xacro:property name="support_length" value="${leader_upper_support_length if leader_visuals else 0.055}" />
   <xacro:property name="support_center_z" value="0.145" />
 
   <xacro:macro name="plate_support" params="name x y">
+    <!-- Keep legacy support frames, move only display/collision geometry onto
+         the corrected three-piece stack. All robot/control TFs are unchanged. -->
+    <xacro:property name="support_visual_x" value="${(leader_tower_support_front_x if x > 0 else leader_support_back_x) - x if leader_visuals else 0}"/>
+    <xacro:property name="support_visual_z" value="${leader_upper_support_center_z - support_center_z if leader_visuals else 0}"/>
     <link name="$(arg prefix)${name}_link">
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="${support_visual_x} 0 ${support_visual_z}" rpy="0 0 0"/>
         <geometry>
           <cylinder length="${support_length}" radius="${support_radius}"/>
         </geometry>
-        <material name="dark_grey">
-          <color rgba="0.2 0.2 0.2 1"/>
+        <material name="${'leader_support_metal' if leader_visuals else 'dark_grey'}">
+          <color rgba="${'0.65 0.67 0.69 1' if leader_visuals else '0.2 0.2 0.2 1'}"/>
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <origin xyz="${support_visual_x} 0 ${support_visual_z}" rpy="0 0 0"/>
         <geometry>
           <cylinder length="${support_length}" radius="${support_radius}"/>
         </geometry>
@@ -68,6 +82,13 @@
   <xacro:plate_support name="support_back_right" x="-0.182" y="-0.05"/>
 
   <link name="$(arg prefix)upper_waffle_plate">
+    <xacro:if value="${leader_visuals}">
+      <!-- +28 mm visual offset aligns all layers at base x=-.064 while retaining
+           upper_waffle_plate_joint and the arm mounting transform. -->
+      <xacro:leader_mesh_visual file="upper_plate.stl" xyz="0.028 0 0"/>
+      <xacro:leader_box_visual size="0.030 0.026 0.004" xyz="0.105 0 0.007" color="leader_pcb"/>
+    </xacro:if>
+    <xacro:unless value="${leader_visuals}">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -77,10 +98,11 @@
         <color rgba="0.2 0.2 0.2 1"/>
       </material>
     </visual>
+    </xacro:unless>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <origin xyz="${'0.028 0 0' if leader_visuals else '0 0 0'}" rpy="0 0 0"/>
       <geometry>
-        <box size="0.290 0.136 0.01"/>
+        <box size="${leader_plate_size if leader_visuals else '0.290 0.136 0.01'}"/>
       </geometry>
     </collision>
     <inertial>
@@ -93,17 +115,22 @@
   <joint name="$(arg prefix)upper_waffle_plate_joint" type="fixed">
     <parent link="$(arg prefix)base_link"/>
     <child link="$(arg prefix)upper_waffle_plate"/>
-    <origin xyz="-0.092 0.0 0.1775" rpy="0 0 0"/>
+    <origin xyz="-0.092 0.0 ${leader_upper_plate_z if leader_visuals else 0.1775}" rpy="0 0 0"/>
   </joint>
 
   <joint name="$(arg prefix)base_fixed" type="fixed">
     <parent link="$(arg prefix)base_link"/>
     <child link="$(arg prefix)link1"/>
-    <origin xyz="-0.092 0.0 0.178" rpy="0 0 0"/>
+    <!-- Latest user correction supersedes the standard XY display mount:
+         leader arm moves 36 mm rearward onto the added half plate. Keep
+         height .178 and RPY; hardware-default mount is not changed. -->
+    <origin xyz="${leader_arm_mount_x if leader_visuals else -0.092} 0.0 ${leader_arm_mount_z if leader_visuals else 0.178}" rpy="0 0 0"/>
   </joint>
 
-  <xacro:open_manipulator_x prefix="$(arg prefix)" />
+  <xacro:open_manipulator_x prefix="$(arg prefix)" visual_material="${'leader_arm' if leader_visuals else 'grey'}" show_tool_marker="${not leader_visuals}"/>
+  <xacro:unless value="${leader_visuals}">
   <xacro:open_manipulator_x_gazebo prefix="$(arg prefix)" />
+  </xacro:unless>
 
   <xacro:if value="$(arg use_eef_usb_camera)">
     <joint name="$(arg prefix)eef_usb_camera_joint" type="fixed">
@@ -113,6 +140,10 @@
     </joint>
 
     <link name="$(arg prefix)eef_usb_camera_link">
+      <xacro:if value="${leader_visuals}">
+        <xacro:leader_eef_camera_visuals/>
+      </xacro:if>
+      <xacro:unless value="${leader_visuals}">
       <visual>
         <origin xyz="0.025 0 0" rpy="0 0 0"/>
         <geometry>
@@ -122,6 +153,7 @@
           <color rgba="0.1 0.1 0.1 1"/>
         </material>
       </visual>
+      </xacro:unless>
       <collision>
         <origin xyz="0.025 0 0" rpy="0 0 0"/>
         <geometry>
@@ -157,6 +189,8 @@
     </xacro:if>
   </xacro:if>
 
+  <!-- A display-only profile must not expose a hardware/control plugin. -->
+  <xacro:unless value="${leader_visuals}">
   <xacro:turtlebot3_manipulation_system
     name="TurtleBot3ManipulationSystem" prefix="$(arg prefix)" use_sim="$(arg use_sim)"
     use_fake_hardware="$(arg use_fake_hardware)"
@@ -168,5 +202,6 @@
       <parameters>$(find turtlebot3_manipulation_bringup)/config/gazebo_controller_manager.yaml</parameters>
     </plugin>
   </gazebo>
+  </xacro:unless>
   
 </robot>

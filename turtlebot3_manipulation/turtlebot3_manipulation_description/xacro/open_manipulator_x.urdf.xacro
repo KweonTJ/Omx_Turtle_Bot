@@ -6,7 +6,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:macro name="open_manipulator_x" params="prefix">
+  <xacro:macro name="open_manipulator_x" params="prefix visual_material:=grey show_tool_marker:=true">
 
     <xacro:property
       name="meshes_file_direction"
@@ -18,7 +18,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
         <geometry>
           <mesh filename="${meshes_file_direction}/link1.stl" scale="0.001 0.001 0.001"/>
         </geometry>
-        <material name="grey"/>
+        <material name="${visual_material}"/>
       </visual>
 
       <collision>
@@ -52,7 +52,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
         <geometry>
           <mesh filename="${meshes_file_direction}/link2.stl" scale="0.001 0.001 0.001"/>
         </geometry>
-        <material name="grey"/>
+        <material name="${visual_material}"/>
       </visual>
 
       <collision>
@@ -86,7 +86,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
         <geometry>
           <mesh filename="${meshes_file_direction}/link3.stl" scale="0.001 0.001 0.001"/>
         </geometry>
-        <material name="grey"/>
+        <material name="${visual_material}"/>
       </visual>
 
       <collision>
@@ -120,7 +120,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
         <geometry>
           <mesh filename="${meshes_file_direction}/link4.stl" scale="0.001 0.001 0.001"/>
         </geometry>
-        <material name="grey"/>
+        <material name="${visual_material}"/>
       </visual>
 
       <collision>
@@ -154,7 +154,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
         <geometry>
           <mesh filename="${meshes_file_direction}/link5.stl" scale="0.001 0.001 0.001"/>
         </geometry>
-        <material name="grey"/>
+        <material name="${visual_material}"/>
       </visual>
 
       <collision>
@@ -188,7 +188,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
         <geometry>
           <mesh filename="${meshes_file_direction}/gripper_left_palm.stl" scale="0.001 0.001 0.001"/>
         </geometry>
-        <material name="grey"/>
+        <material name="${visual_material}"/>
       </visual>
 
       <collision>
@@ -229,7 +229,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
         <geometry>
           <mesh filename="${meshes_file_direction}/gripper_right_palm.stl" scale="0.001 0.001 0.001"/>
         </geometry>
-        <material name="grey"/>
+        <material name="${visual_material}"/>
       </visual>
 
       <collision>
@@ -255,6 +255,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
     </joint>
 
     <link name="${prefix}end_effector_link">
+      <xacro:if value="${show_tool_marker}">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
@@ -262,6 +263,7 @@ https://github.com/ROBOTIS-GIT/open_manipulator/blob/kinetic-devel/open_manipula
         </geometry>
         <material name="red"/>
        </visual>
+      </xacro:if>
     </link>
 
   </xacro:macro>

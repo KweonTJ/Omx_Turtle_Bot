@@ -1,0 +1,73 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Class: rviz_default_plugins/Grid
+      Name: Ground
+      Enabled: true
+      Cell Size: 0.1
+      Plane Cell Count: 20
+      Color: 165; 172; 184
+      Reference Frame: <Fixed Frame>
+    - Class: rviz_default_plugins/RobotModel
+      Name: Tracked leader
+      Enabled: true
+      Visual Enabled: true
+      Collision Enabled: false
+      Alpha: 1
+      Description Source: Topic
+      Description Topic:
+        Value: /leader_preview/robot_description
+        Depth: 1
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+      Links:
+        All Links Enabled: true
+        Expand Tree: false
+    - Class: rviz_default_plugins/TF
+      Name: TF
+      Enabled: false
+  Global Options:
+    Background Color: 220; 226; 235
+    Fixed Frame: base_footprint
+    Frame Rate: 30
+  Tools:
+    - Class: rviz_default_plugins/Interact
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 0.85
+      Focal Point:
+        X: -0.064
+        Y: 0
+        Z: 0.21
+      Pitch: 0.3
+      Yaw: 2.55
+    Saved:
+      - Class: rviz_default_plugins/Orbit
+        Name: Electronics - L2 OpenCR / L3 Jetson
+        Distance: 0.43
+        Focal Point:
+          X: -0.065
+          Y: 0
+          Z: 0.12
+        Pitch: 0.14
+        Yaw: 2.55
+      - Class: rviz_default_plugins/Orbit
+        Name: Front - Camera and motors
+        Distance: 0.85
+        Focal Point:
+          X: -0.064
+          Y: 0
+          Z: 0.21
+        Pitch: 0.3
+        Yaw: 0.65
+Window Geometry:
+  Width: 1800
+  Height: 1080

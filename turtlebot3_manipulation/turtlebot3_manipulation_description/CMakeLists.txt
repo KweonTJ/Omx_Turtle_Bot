@@ -16,6 +16,8 @@ install(DIRECTORY launch rviz urdf meshes ros2_control gazebo xacro
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(DIRECTORY scripts DESTINATION share/${PROJECT_NAME})
+
 ################################################################################
 # Macro for ament package
 ################################################################################

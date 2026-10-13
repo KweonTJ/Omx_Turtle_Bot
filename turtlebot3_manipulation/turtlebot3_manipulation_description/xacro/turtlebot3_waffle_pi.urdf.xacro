@@ -6,7 +6,7 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
 -->
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-  <xacro:macro name="turtlebot3_waffle_pi" params="prefix use_camera_driver_tf:=false">
+  <xacro:macro name="turtlebot3_waffle_pi" params="prefix use_camera_driver_tf:=false leader_visuals:=false">
 
   <xacro:property
     name="meshes_file_direction"
@@ -21,6 +21,10 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
   </joint>
 
   <link name="${prefix}base_link">
+    <xacro:if value="${leader_visuals}">
+      <xacro:leader_base_visuals/>
+    </xacro:if>
+    <xacro:unless value="${leader_visuals}">
     <visual>
       <origin xyz="-0.064 0 0.0" rpy="0 0 0"/>
       <geometry>
@@ -28,11 +32,12 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
       </geometry>
       <material name="light_black"/>
     </visual>
+    </xacro:unless>
 
     <collision>
       <origin xyz="-0.064 0 0.047" rpy="0 0 0"/>
       <geometry>
-        <box size="0.266 0.266 0.094"/>
+        <box size="${'0.20155 0.13755 0.094' if leader_visuals else '0.266 0.266 0.094'}"/>
       </geometry>
     </collision>
 
@@ -53,6 +58,9 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
   </joint>
 
   <link name="${prefix}wheel_left_link">
+    <!-- Wheel TFs/joint states are retained; tracked visuals are on base_link.
+         A whole belt cannot be rigidly rotated by wheel_left_joint. -->
+    <xacro:unless value="${leader_visuals}">
     <visual>
       <origin xyz="0 0 0" rpy="1.57 0 0"/>
       <geometry>
@@ -67,6 +75,7 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
         <cylinder length="0.018" radius="0.033"/>
       </geometry>
     </collision>
+    </xacro:unless>
 
     <inertial>
       <origin xyz="0 0 0" />
@@ -85,6 +94,7 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
   </joint>
 
   <link name="${prefix}wheel_right_link">
+    <xacro:unless value="${leader_visuals}">
     <visual>
       <origin xyz="0 0 0" rpy="1.57 0 0"/>
       <geometry>
@@ -99,6 +109,7 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
         <cylinder length="0.018" radius="0.033"/>
       </geometry>
     </collision>
+    </xacro:unless>
 
     <inertial>
       <origin xyz="0 0 0" />
@@ -116,12 +127,14 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
   </joint>
 
   <link name="${prefix}caster_back_right_link">
+    <xacro:unless value="${leader_visuals}">
     <collision>
       <origin xyz="0 0.001 0" rpy="0 0 0"/>
       <geometry>
         <box size="0.028 0.009 0.020"/>
       </geometry>
     </collision>
+    </xacro:unless>
 
     <inertial>
       <origin xyz="0 0 0" />
@@ -139,12 +152,14 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
   </joint>
 
   <link name="${prefix}caster_back_left_link">
+    <xacro:unless value="${leader_visuals}">
     <collision>
       <origin xyz="0 0.001 0" rpy="0 0 0"/>
       <geometry>
         <box size="0.028 0.009 0.020"/>
       </geometry>
     </collision>
+    </xacro:unless>
 
     <inertial>
       <origin xyz="0 0 0" />
@@ -195,6 +210,10 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
 
 
   <link name="${prefix}camera_plate_link">
+    <xacro:if value="${leader_visuals}">
+      <xacro:leader_mesh_visual file="camera_plate.stl"/>
+    </xacro:if>
+    <xacro:unless value="${leader_visuals}">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -202,10 +221,11 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
       </geometry>
       <material name="dark"/>
     </visual>
+    </xacro:unless>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.266 0.266 0.005"/>
+        <box size="${leader_plate_size if leader_visuals else '0.266 0.266 0.005'}"/>
       </geometry>
     </collision>
     <inertial>
@@ -218,7 +238,7 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
   <joint name="${prefix}base_to_camera_plate_joint" type="fixed">
     <parent link="${prefix}base_link"/>
     <child link="${prefix}camera_plate_link"/>
-    <origin xyz="-0.064 0.0 0.115" rpy="0 0 0"/>
+    <origin xyz="-0.064 0.0 ${leader_camera_plate_z if leader_visuals else 0.115}" rpy="0 0 0"/>
   </joint>
 
   <xacro:include filename="$(find turtlebot3_manipulation_description)/xacro/orbbec_astra.urdf.xacro" />
@@ -229,6 +249,7 @@ https://github.com/ROBOTIS-GIT/turtlebot3/blob/kinetic-devel/turtlebot3_descript
     rpy="0 0 0" 
     robot_namespace="${prefix}" 
     component_name="camera"
+    leader_visuals="${leader_visuals}"
     publish_internal_frames="${use_camera_driver_tf not in ['True', 'true', True]}" />
 
   </xacro:macro>
