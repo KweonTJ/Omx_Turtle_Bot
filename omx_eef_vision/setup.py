@@ -17,6 +17,8 @@ setup(
             glob('config/*.yaml')),
         (os.path.join('share', package_name, 'launch'),
             glob('launch/*.launch.py')),
+        (os.path.join('share', package_name, 'markers'),
+            glob('markers/*.svg')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -32,6 +34,8 @@ setup(
     entry_points={
         'console_scripts': [
             'eef_vision_node = omx_eef_vision.eef_vision_node:main',
+            'multi_object_vision_node = omx_eef_vision.multi_object_node:main',
+            'print_shelf_markers = omx_eef_vision.print_markers:main',
         ],
     },
 )

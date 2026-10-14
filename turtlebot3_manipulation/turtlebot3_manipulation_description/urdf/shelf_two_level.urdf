@@ -1,0 +1,4987 @@
+<?xml version="1.0"?>
+<!-- Display approximation: no measured nesting, mass or reachability. -->
+<robot name="daiso_two_level_shelf">
+  <link name="shelf_world" />
+  <link name="shelf_origin" />
+  <joint name="shelf_origin_fixed" type="fixed">
+    <parent link="shelf_world" />
+    <child link="shelf_origin" />
+    <origin xyz="0 0 0" rpy="0 0 0.0" />
+  </joint>
+  <link name="shelf_level_1">
+    <visual name="floor">
+      <origin xyz="0 0 0.025999999999999995" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.365 0.004" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="foot_-1_-1">
+      <origin xyz="-0.13249999999999998 -0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="foot_-1_1">
+      <origin xyz="-0.13249999999999998 0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="foot_1_-1">
+      <origin xyz="0.13249999999999998 -0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="foot_1_1">
+      <origin xyz="0.13249999999999998 0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="front_lip">
+      <origin xyz="-0.13249999999999998 0 0.030999999999999996" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.365 0.006" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <collision name="floor">
+      <origin xyz="0 0 0.025999999999999995" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.365 0.004" />
+      </geometry>
+    </collision>
+    <collision name="foot_-1_-1">
+      <origin xyz="-0.13249999999999998 -0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+    </collision>
+    <collision name="foot_-1_1">
+      <origin xyz="-0.13249999999999998 0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+    </collision>
+    <collision name="foot_1_-1">
+      <origin xyz="0.13249999999999998 -0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+    </collision>
+    <collision name="foot_1_1">
+      <origin xyz="0.13249999999999998 0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+    </collision>
+    <collision name="front_lip">
+      <origin xyz="-0.13249999999999998 0 0.030999999999999996" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.365 0.006" />
+      </geometry>
+    </collision>
+    <visual name="side_-1_rail_0">
+      <origin xyz="0 -0.1795 0.032" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rail_1">
+      <origin xyz="0 -0.1795 0.068" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rail_2">
+      <origin xyz="0 -0.1795 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rail_3">
+      <origin xyz="0 -0.1795 0.13999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rail_4">
+      <origin xyz="0 -0.1795 0.176" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_0_0">
+      <origin xyz="-0.13849999999999998 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_0_1">
+      <origin xyz="-0.13849999999999998 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_0_2">
+      <origin xyz="-0.13849999999999998 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_0_3">
+      <origin xyz="-0.13849999999999998 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_1_0">
+      <origin xyz="-0.1231111111111111 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_1_1">
+      <origin xyz="-0.1231111111111111 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_1_2">
+      <origin xyz="-0.1231111111111111 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_1_3">
+      <origin xyz="-0.1231111111111111 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_2_0">
+      <origin xyz="-0.1077222222222222 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_2_1">
+      <origin xyz="-0.1077222222222222 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_2_2">
+      <origin xyz="-0.1077222222222222 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_2_3">
+      <origin xyz="-0.1077222222222222 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_3_0">
+      <origin xyz="-0.09233333333333332 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_3_1">
+      <origin xyz="-0.09233333333333332 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_3_2">
+      <origin xyz="-0.09233333333333332 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_3_3">
+      <origin xyz="-0.09233333333333332 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_4_0">
+      <origin xyz="-0.07694444444444443 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_4_1">
+      <origin xyz="-0.07694444444444443 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_4_2">
+      <origin xyz="-0.07694444444444443 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_4_3">
+      <origin xyz="-0.07694444444444443 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_5_0">
+      <origin xyz="-0.06155555555555556 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_5_1">
+      <origin xyz="-0.06155555555555556 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_5_2">
+      <origin xyz="-0.06155555555555556 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_5_3">
+      <origin xyz="-0.06155555555555556 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_6_0">
+      <origin xyz="-0.04616666666666666 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_6_1">
+      <origin xyz="-0.04616666666666666 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_6_2">
+      <origin xyz="-0.04616666666666666 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_6_3">
+      <origin xyz="-0.04616666666666666 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_7_0">
+      <origin xyz="-0.030777777777777765 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_7_1">
+      <origin xyz="-0.030777777777777765 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_7_2">
+      <origin xyz="-0.030777777777777765 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_7_3">
+      <origin xyz="-0.030777777777777765 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_8_0">
+      <origin xyz="-0.015388888888888883 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_8_1">
+      <origin xyz="-0.015388888888888883 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_8_2">
+      <origin xyz="-0.015388888888888883 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_8_3">
+      <origin xyz="-0.015388888888888883 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_9_0">
+      <origin xyz="0.0 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_9_1">
+      <origin xyz="0.0 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_9_2">
+      <origin xyz="0.0 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_9_3">
+      <origin xyz="0.0 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_10_0">
+      <origin xyz="0.015388888888888869 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_10_1">
+      <origin xyz="0.015388888888888869 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_10_2">
+      <origin xyz="0.015388888888888869 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_10_3">
+      <origin xyz="0.015388888888888869 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_11_0">
+      <origin xyz="0.030777777777777765 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_11_1">
+      <origin xyz="0.030777777777777765 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_11_2">
+      <origin xyz="0.030777777777777765 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_11_3">
+      <origin xyz="0.030777777777777765 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_12_0">
+      <origin xyz="0.04616666666666666 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_12_1">
+      <origin xyz="0.04616666666666666 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_12_2">
+      <origin xyz="0.04616666666666666 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_12_3">
+      <origin xyz="0.04616666666666666 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_13_0">
+      <origin xyz="0.06155555555555556 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_13_1">
+      <origin xyz="0.06155555555555556 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_13_2">
+      <origin xyz="0.06155555555555556 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_13_3">
+      <origin xyz="0.06155555555555556 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_14_0">
+      <origin xyz="0.07694444444444445 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_14_1">
+      <origin xyz="0.07694444444444445 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_14_2">
+      <origin xyz="0.07694444444444445 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_14_3">
+      <origin xyz="0.07694444444444445 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_15_0">
+      <origin xyz="0.09233333333333332 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_15_1">
+      <origin xyz="0.09233333333333332 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_15_2">
+      <origin xyz="0.09233333333333332 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_15_3">
+      <origin xyz="0.09233333333333332 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_16_0">
+      <origin xyz="0.10772222222222222 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_16_1">
+      <origin xyz="0.10772222222222222 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_16_2">
+      <origin xyz="0.10772222222222222 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_16_3">
+      <origin xyz="0.10772222222222222 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_17_0">
+      <origin xyz="0.12311111111111109 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_17_1">
+      <origin xyz="0.12311111111111109 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_17_2">
+      <origin xyz="0.12311111111111109 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_17_3">
+      <origin xyz="0.12311111111111109 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_18_0">
+      <origin xyz="0.13849999999999998 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_18_1">
+      <origin xyz="0.13849999999999998 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_18_2">
+      <origin xyz="0.13849999999999998 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_18_3">
+      <origin xyz="0.13849999999999998 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <collision name="side_envelope_-1">
+      <origin xyz="0 -0.17425000000000002 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.016499999999999987 0.152" />
+      </geometry>
+    </collision>
+    <visual name="side_1_rail_0">
+      <origin xyz="0 0.1795 0.032" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rail_1">
+      <origin xyz="0 0.1795 0.068" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rail_2">
+      <origin xyz="0 0.1795 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rail_3">
+      <origin xyz="0 0.1795 0.13999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rail_4">
+      <origin xyz="0 0.1795 0.176" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_0_0">
+      <origin xyz="-0.13849999999999998 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_0_1">
+      <origin xyz="-0.13849999999999998 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_0_2">
+      <origin xyz="-0.13849999999999998 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_0_3">
+      <origin xyz="-0.13849999999999998 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_1_0">
+      <origin xyz="-0.1231111111111111 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_1_1">
+      <origin xyz="-0.1231111111111111 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_1_2">
+      <origin xyz="-0.1231111111111111 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_1_3">
+      <origin xyz="-0.1231111111111111 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_2_0">
+      <origin xyz="-0.1077222222222222 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_2_1">
+      <origin xyz="-0.1077222222222222 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_2_2">
+      <origin xyz="-0.1077222222222222 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_2_3">
+      <origin xyz="-0.1077222222222222 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_3_0">
+      <origin xyz="-0.09233333333333332 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_3_1">
+      <origin xyz="-0.09233333333333332 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_3_2">
+      <origin xyz="-0.09233333333333332 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_3_3">
+      <origin xyz="-0.09233333333333332 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_4_0">
+      <origin xyz="-0.07694444444444443 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_4_1">
+      <origin xyz="-0.07694444444444443 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_4_2">
+      <origin xyz="-0.07694444444444443 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_4_3">
+      <origin xyz="-0.07694444444444443 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_5_0">
+      <origin xyz="-0.06155555555555556 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_5_1">
+      <origin xyz="-0.06155555555555556 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_5_2">
+      <origin xyz="-0.06155555555555556 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_5_3">
+      <origin xyz="-0.06155555555555556 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_6_0">
+      <origin xyz="-0.04616666666666666 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_6_1">
+      <origin xyz="-0.04616666666666666 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_6_2">
+      <origin xyz="-0.04616666666666666 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_6_3">
+      <origin xyz="-0.04616666666666666 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_7_0">
+      <origin xyz="-0.030777777777777765 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_7_1">
+      <origin xyz="-0.030777777777777765 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_7_2">
+      <origin xyz="-0.030777777777777765 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_7_3">
+      <origin xyz="-0.030777777777777765 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_8_0">
+      <origin xyz="-0.015388888888888883 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_8_1">
+      <origin xyz="-0.015388888888888883 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_8_2">
+      <origin xyz="-0.015388888888888883 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_8_3">
+      <origin xyz="-0.015388888888888883 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_9_0">
+      <origin xyz="0.0 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_9_1">
+      <origin xyz="0.0 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_9_2">
+      <origin xyz="0.0 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_9_3">
+      <origin xyz="0.0 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_10_0">
+      <origin xyz="0.015388888888888869 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_10_1">
+      <origin xyz="0.015388888888888869 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_10_2">
+      <origin xyz="0.015388888888888869 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_10_3">
+      <origin xyz="0.015388888888888869 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_11_0">
+      <origin xyz="0.030777777777777765 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_11_1">
+      <origin xyz="0.030777777777777765 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_11_2">
+      <origin xyz="0.030777777777777765 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_11_3">
+      <origin xyz="0.030777777777777765 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_12_0">
+      <origin xyz="0.04616666666666666 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_12_1">
+      <origin xyz="0.04616666666666666 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_12_2">
+      <origin xyz="0.04616666666666666 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_12_3">
+      <origin xyz="0.04616666666666666 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_13_0">
+      <origin xyz="0.06155555555555556 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_13_1">
+      <origin xyz="0.06155555555555556 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_13_2">
+      <origin xyz="0.06155555555555556 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_13_3">
+      <origin xyz="0.06155555555555556 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_14_0">
+      <origin xyz="0.07694444444444445 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_14_1">
+      <origin xyz="0.07694444444444445 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_14_2">
+      <origin xyz="0.07694444444444445 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_14_3">
+      <origin xyz="0.07694444444444445 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_15_0">
+      <origin xyz="0.09233333333333332 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_15_1">
+      <origin xyz="0.09233333333333332 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_15_2">
+      <origin xyz="0.09233333333333332 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_15_3">
+      <origin xyz="0.09233333333333332 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_16_0">
+      <origin xyz="0.10772222222222222 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_16_1">
+      <origin xyz="0.10772222222222222 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_16_2">
+      <origin xyz="0.10772222222222222 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_16_3">
+      <origin xyz="0.10772222222222222 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_17_0">
+      <origin xyz="0.12311111111111109 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_17_1">
+      <origin xyz="0.12311111111111109 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_17_2">
+      <origin xyz="0.12311111111111109 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_17_3">
+      <origin xyz="0.12311111111111109 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_18_0">
+      <origin xyz="0.13849999999999998 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_18_1">
+      <origin xyz="0.13849999999999998 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_18_2">
+      <origin xyz="0.13849999999999998 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_18_3">
+      <origin xyz="0.13849999999999998 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <collision name="side_envelope_1">
+      <origin xyz="0 0.17425000000000002 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.016499999999999987 0.152" />
+      </geometry>
+    </collision>
+    <visual name="back_rail_0">
+      <origin xyz="0.13949999999999999 0 0.032" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rail_1">
+      <origin xyz="0.13949999999999999 0 0.068" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rail_2">
+      <origin xyz="0.13949999999999999 0 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rail_3">
+      <origin xyz="0.13949999999999999 0 0.13999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rail_4">
+      <origin xyz="0.13949999999999999 0 0.176" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_0_0">
+      <origin xyz="0.13949999999999999 -0.1785 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_0_1">
+      <origin xyz="0.13949999999999999 -0.1785 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_0_2">
+      <origin xyz="0.13949999999999999 -0.1785 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_0_3">
+      <origin xyz="0.13949999999999999 -0.1785 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_1_0">
+      <origin xyz="0.13949999999999999 -0.1629782608695652 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_1_1">
+      <origin xyz="0.13949999999999999 -0.1629782608695652 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_1_2">
+      <origin xyz="0.13949999999999999 -0.1629782608695652 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_1_3">
+      <origin xyz="0.13949999999999999 -0.1629782608695652 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_2_0">
+      <origin xyz="0.13949999999999999 -0.14745652173913043 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_2_1">
+      <origin xyz="0.13949999999999999 -0.14745652173913043 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_2_2">
+      <origin xyz="0.13949999999999999 -0.14745652173913043 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_2_3">
+      <origin xyz="0.13949999999999999 -0.14745652173913043 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_3_0">
+      <origin xyz="0.13949999999999999 -0.13193478260869565 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_3_1">
+      <origin xyz="0.13949999999999999 -0.13193478260869565 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_3_2">
+      <origin xyz="0.13949999999999999 -0.13193478260869565 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_3_3">
+      <origin xyz="0.13949999999999999 -0.13193478260869565 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_4_0">
+      <origin xyz="0.13949999999999999 -0.11641304347826087 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_4_1">
+      <origin xyz="0.13949999999999999 -0.11641304347826087 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_4_2">
+      <origin xyz="0.13949999999999999 -0.11641304347826087 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_4_3">
+      <origin xyz="0.13949999999999999 -0.11641304347826087 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_5_0">
+      <origin xyz="0.13949999999999999 -0.10089130434782609 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_5_1">
+      <origin xyz="0.13949999999999999 -0.10089130434782609 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_5_2">
+      <origin xyz="0.13949999999999999 -0.10089130434782609 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_5_3">
+      <origin xyz="0.13949999999999999 -0.10089130434782609 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_6_0">
+      <origin xyz="0.13949999999999999 -0.0853695652173913 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_6_1">
+      <origin xyz="0.13949999999999999 -0.0853695652173913 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_6_2">
+      <origin xyz="0.13949999999999999 -0.0853695652173913 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_6_3">
+      <origin xyz="0.13949999999999999 -0.0853695652173913 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_7_0">
+      <origin xyz="0.13949999999999999 -0.06984782608695653 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_7_1">
+      <origin xyz="0.13949999999999999 -0.06984782608695653 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_7_2">
+      <origin xyz="0.13949999999999999 -0.06984782608695653 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_7_3">
+      <origin xyz="0.13949999999999999 -0.06984782608695653 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_8_0">
+      <origin xyz="0.13949999999999999 -0.05432608695652173 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_8_1">
+      <origin xyz="0.13949999999999999 -0.05432608695652173 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_8_2">
+      <origin xyz="0.13949999999999999 -0.05432608695652173 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_8_3">
+      <origin xyz="0.13949999999999999 -0.05432608695652173 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_9_0">
+      <origin xyz="0.13949999999999999 -0.03880434782608694 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_9_1">
+      <origin xyz="0.13949999999999999 -0.03880434782608694 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_9_2">
+      <origin xyz="0.13949999999999999 -0.03880434782608694 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_9_3">
+      <origin xyz="0.13949999999999999 -0.03880434782608694 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_10_0">
+      <origin xyz="0.13949999999999999 -0.023282608695652185 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_10_1">
+      <origin xyz="0.13949999999999999 -0.023282608695652185 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_10_2">
+      <origin xyz="0.13949999999999999 -0.023282608695652185 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_10_3">
+      <origin xyz="0.13949999999999999 -0.023282608695652185 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_11_0">
+      <origin xyz="0.13949999999999999 -0.007760869565217404 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_11_1">
+      <origin xyz="0.13949999999999999 -0.007760869565217404 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_11_2">
+      <origin xyz="0.13949999999999999 -0.007760869565217404 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_11_3">
+      <origin xyz="0.13949999999999999 -0.007760869565217404 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_12_0">
+      <origin xyz="0.13949999999999999 0.007760869565217404 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_12_1">
+      <origin xyz="0.13949999999999999 0.007760869565217404 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_12_2">
+      <origin xyz="0.13949999999999999 0.007760869565217404 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_12_3">
+      <origin xyz="0.13949999999999999 0.007760869565217404 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_13_0">
+      <origin xyz="0.13949999999999999 0.023282608695652185 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_13_1">
+      <origin xyz="0.13949999999999999 0.023282608695652185 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_13_2">
+      <origin xyz="0.13949999999999999 0.023282608695652185 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_13_3">
+      <origin xyz="0.13949999999999999 0.023282608695652185 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_14_0">
+      <origin xyz="0.13949999999999999 0.03880434782608694 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_14_1">
+      <origin xyz="0.13949999999999999 0.03880434782608694 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_14_2">
+      <origin xyz="0.13949999999999999 0.03880434782608694 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_14_3">
+      <origin xyz="0.13949999999999999 0.03880434782608694 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_15_0">
+      <origin xyz="0.13949999999999999 0.05432608695652172 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_15_1">
+      <origin xyz="0.13949999999999999 0.05432608695652172 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_15_2">
+      <origin xyz="0.13949999999999999 0.05432608695652172 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_15_3">
+      <origin xyz="0.13949999999999999 0.05432608695652172 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_16_0">
+      <origin xyz="0.13949999999999999 0.06984782608695653 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_16_1">
+      <origin xyz="0.13949999999999999 0.06984782608695653 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_16_2">
+      <origin xyz="0.13949999999999999 0.06984782608695653 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_16_3">
+      <origin xyz="0.13949999999999999 0.06984782608695653 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_17_0">
+      <origin xyz="0.13949999999999999 0.08536956521739131 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_17_1">
+      <origin xyz="0.13949999999999999 0.08536956521739131 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_17_2">
+      <origin xyz="0.13949999999999999 0.08536956521739131 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_17_3">
+      <origin xyz="0.13949999999999999 0.08536956521739131 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_18_0">
+      <origin xyz="0.13949999999999999 0.10089130434782612 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_18_1">
+      <origin xyz="0.13949999999999999 0.10089130434782612 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_18_2">
+      <origin xyz="0.13949999999999999 0.10089130434782612 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_18_3">
+      <origin xyz="0.13949999999999999 0.10089130434782612 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_19_0">
+      <origin xyz="0.13949999999999999 0.11641304347826087 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_19_1">
+      <origin xyz="0.13949999999999999 0.11641304347826087 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_19_2">
+      <origin xyz="0.13949999999999999 0.11641304347826087 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_19_3">
+      <origin xyz="0.13949999999999999 0.11641304347826087 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_20_0">
+      <origin xyz="0.13949999999999999 0.13193478260869562 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_20_1">
+      <origin xyz="0.13949999999999999 0.13193478260869562 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_20_2">
+      <origin xyz="0.13949999999999999 0.13193478260869562 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_20_3">
+      <origin xyz="0.13949999999999999 0.13193478260869562 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_21_0">
+      <origin xyz="0.13949999999999999 0.14745652173913043 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_21_1">
+      <origin xyz="0.13949999999999999 0.14745652173913043 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_21_2">
+      <origin xyz="0.13949999999999999 0.14745652173913043 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_21_3">
+      <origin xyz="0.13949999999999999 0.14745652173913043 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_22_0">
+      <origin xyz="0.13949999999999999 0.16297826086956518 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_22_1">
+      <origin xyz="0.13949999999999999 0.16297826086956518 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_22_2">
+      <origin xyz="0.13949999999999999 0.16297826086956518 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_22_3">
+      <origin xyz="0.13949999999999999 0.16297826086956518 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_23_0">
+      <origin xyz="0.13949999999999999 0.17850000000000005 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_23_1">
+      <origin xyz="0.13949999999999999 0.17850000000000005 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_23_2">
+      <origin xyz="0.13949999999999999 0.17850000000000005 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_23_3">
+      <origin xyz="0.13949999999999999 0.17850000000000005 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <collision name="back_envelope">
+      <origin xyz="0.1325 0 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.01999999999999999 0.332 0.152" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="shelf_level_1_fixed" type="fixed">
+    <parent link="shelf_origin" />
+    <child link="shelf_level_1" />
+    <origin xyz="0 0 0.0" rpy="0 0 0" />
+  </joint>
+  <link name="shelf_floor_1" />
+  <joint name="shelf_floor_1_fixed" type="fixed">
+    <parent link="shelf_level_1" />
+    <child link="shelf_floor_1" />
+    <origin xyz="0 0 0.027999999999999997" rpy="0 0 0" />
+  </joint>
+  <link name="shelf_level_2">
+    <visual name="floor">
+      <origin xyz="0 0 0.025999999999999995" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.365 0.004" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="foot_-1_-1">
+      <origin xyz="-0.13249999999999998 -0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="foot_-1_1">
+      <origin xyz="-0.13249999999999998 0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="foot_1_-1">
+      <origin xyz="0.13249999999999998 -0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="foot_1_1">
+      <origin xyz="0.13249999999999998 0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="front_lip">
+      <origin xyz="-0.13249999999999998 0 0.030999999999999996" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.365 0.006" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <collision name="floor">
+      <origin xyz="0 0 0.025999999999999995" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.365 0.004" />
+      </geometry>
+    </collision>
+    <collision name="foot_-1_-1">
+      <origin xyz="-0.13249999999999998 -0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+    </collision>
+    <collision name="foot_-1_1">
+      <origin xyz="-0.13249999999999998 0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+    </collision>
+    <collision name="foot_1_-1">
+      <origin xyz="0.13249999999999998 -0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+    </collision>
+    <collision name="foot_1_1">
+      <origin xyz="0.13249999999999998 0.1745 0.012" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.016 0.024" />
+      </geometry>
+    </collision>
+    <collision name="front_lip">
+      <origin xyz="-0.13249999999999998 0 0.030999999999999996" rpy="0 0 0" />
+      <geometry>
+        <box size="0.02 0.365 0.006" />
+      </geometry>
+    </collision>
+    <visual name="side_-1_rail_0">
+      <origin xyz="0 -0.1795 0.032" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rail_1">
+      <origin xyz="0 -0.1795 0.068" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rail_2">
+      <origin xyz="0 -0.1795 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rail_3">
+      <origin xyz="0 -0.1795 0.13999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rail_4">
+      <origin xyz="0 -0.1795 0.176" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_0_0">
+      <origin xyz="-0.13849999999999998 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_0_1">
+      <origin xyz="-0.13849999999999998 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_0_2">
+      <origin xyz="-0.13849999999999998 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_0_3">
+      <origin xyz="-0.13849999999999998 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_1_0">
+      <origin xyz="-0.1231111111111111 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_1_1">
+      <origin xyz="-0.1231111111111111 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_1_2">
+      <origin xyz="-0.1231111111111111 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_1_3">
+      <origin xyz="-0.1231111111111111 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_2_0">
+      <origin xyz="-0.1077222222222222 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_2_1">
+      <origin xyz="-0.1077222222222222 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_2_2">
+      <origin xyz="-0.1077222222222222 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_2_3">
+      <origin xyz="-0.1077222222222222 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_3_0">
+      <origin xyz="-0.09233333333333332 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_3_1">
+      <origin xyz="-0.09233333333333332 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_3_2">
+      <origin xyz="-0.09233333333333332 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_3_3">
+      <origin xyz="-0.09233333333333332 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_4_0">
+      <origin xyz="-0.07694444444444443 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_4_1">
+      <origin xyz="-0.07694444444444443 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_4_2">
+      <origin xyz="-0.07694444444444443 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_4_3">
+      <origin xyz="-0.07694444444444443 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_5_0">
+      <origin xyz="-0.06155555555555556 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_5_1">
+      <origin xyz="-0.06155555555555556 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_5_2">
+      <origin xyz="-0.06155555555555556 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_5_3">
+      <origin xyz="-0.06155555555555556 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_6_0">
+      <origin xyz="-0.04616666666666666 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_6_1">
+      <origin xyz="-0.04616666666666666 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_6_2">
+      <origin xyz="-0.04616666666666666 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_6_3">
+      <origin xyz="-0.04616666666666666 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_7_0">
+      <origin xyz="-0.030777777777777765 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_7_1">
+      <origin xyz="-0.030777777777777765 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_7_2">
+      <origin xyz="-0.030777777777777765 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_7_3">
+      <origin xyz="-0.030777777777777765 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_8_0">
+      <origin xyz="-0.015388888888888883 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_8_1">
+      <origin xyz="-0.015388888888888883 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_8_2">
+      <origin xyz="-0.015388888888888883 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_8_3">
+      <origin xyz="-0.015388888888888883 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_9_0">
+      <origin xyz="0.0 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_9_1">
+      <origin xyz="0.0 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_9_2">
+      <origin xyz="0.0 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_9_3">
+      <origin xyz="0.0 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_10_0">
+      <origin xyz="0.015388888888888869 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_10_1">
+      <origin xyz="0.015388888888888869 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_10_2">
+      <origin xyz="0.015388888888888869 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_10_3">
+      <origin xyz="0.015388888888888869 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_11_0">
+      <origin xyz="0.030777777777777765 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_11_1">
+      <origin xyz="0.030777777777777765 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_11_2">
+      <origin xyz="0.030777777777777765 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_11_3">
+      <origin xyz="0.030777777777777765 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_12_0">
+      <origin xyz="0.04616666666666666 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_12_1">
+      <origin xyz="0.04616666666666666 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_12_2">
+      <origin xyz="0.04616666666666666 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_12_3">
+      <origin xyz="0.04616666666666666 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_13_0">
+      <origin xyz="0.06155555555555556 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_13_1">
+      <origin xyz="0.06155555555555556 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_13_2">
+      <origin xyz="0.06155555555555556 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_13_3">
+      <origin xyz="0.06155555555555556 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_14_0">
+      <origin xyz="0.07694444444444445 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_14_1">
+      <origin xyz="0.07694444444444445 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_14_2">
+      <origin xyz="0.07694444444444445 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_14_3">
+      <origin xyz="0.07694444444444445 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_15_0">
+      <origin xyz="0.09233333333333332 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_15_1">
+      <origin xyz="0.09233333333333332 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_15_2">
+      <origin xyz="0.09233333333333332 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_15_3">
+      <origin xyz="0.09233333333333332 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_16_0">
+      <origin xyz="0.10772222222222222 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_16_1">
+      <origin xyz="0.10772222222222222 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_16_2">
+      <origin xyz="0.10772222222222222 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_16_3">
+      <origin xyz="0.10772222222222222 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_17_0">
+      <origin xyz="0.12311111111111109 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_17_1">
+      <origin xyz="0.12311111111111109 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_17_2">
+      <origin xyz="0.12311111111111109 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_17_3">
+      <origin xyz="0.12311111111111109 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_18_0">
+      <origin xyz="0.13849999999999998 -0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_18_1">
+      <origin xyz="0.13849999999999998 -0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_18_2">
+      <origin xyz="0.13849999999999998 -0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_-1_rib_18_3">
+      <origin xyz="0.13849999999999998 -0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <collision name="side_envelope_-1">
+      <origin xyz="0 -0.17425000000000002 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.016499999999999987 0.152" />
+      </geometry>
+    </collision>
+    <visual name="side_1_rail_0">
+      <origin xyz="0 0.1795 0.032" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rail_1">
+      <origin xyz="0 0.1795 0.068" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rail_2">
+      <origin xyz="0 0.1795 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rail_3">
+      <origin xyz="0 0.1795 0.13999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rail_4">
+      <origin xyz="0 0.1795 0.176" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.006 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_0_0">
+      <origin xyz="-0.13849999999999998 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_0_1">
+      <origin xyz="-0.13849999999999998 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_0_2">
+      <origin xyz="-0.13849999999999998 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_0_3">
+      <origin xyz="-0.13849999999999998 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_1_0">
+      <origin xyz="-0.1231111111111111 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_1_1">
+      <origin xyz="-0.1231111111111111 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_1_2">
+      <origin xyz="-0.1231111111111111 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_1_3">
+      <origin xyz="-0.1231111111111111 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_2_0">
+      <origin xyz="-0.1077222222222222 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_2_1">
+      <origin xyz="-0.1077222222222222 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_2_2">
+      <origin xyz="-0.1077222222222222 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_2_3">
+      <origin xyz="-0.1077222222222222 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_3_0">
+      <origin xyz="-0.09233333333333332 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_3_1">
+      <origin xyz="-0.09233333333333332 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_3_2">
+      <origin xyz="-0.09233333333333332 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_3_3">
+      <origin xyz="-0.09233333333333332 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_4_0">
+      <origin xyz="-0.07694444444444443 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_4_1">
+      <origin xyz="-0.07694444444444443 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_4_2">
+      <origin xyz="-0.07694444444444443 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_4_3">
+      <origin xyz="-0.07694444444444443 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_5_0">
+      <origin xyz="-0.06155555555555556 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_5_1">
+      <origin xyz="-0.06155555555555556 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_5_2">
+      <origin xyz="-0.06155555555555556 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_5_3">
+      <origin xyz="-0.06155555555555556 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_6_0">
+      <origin xyz="-0.04616666666666666 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_6_1">
+      <origin xyz="-0.04616666666666666 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_6_2">
+      <origin xyz="-0.04616666666666666 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_6_3">
+      <origin xyz="-0.04616666666666666 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_7_0">
+      <origin xyz="-0.030777777777777765 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_7_1">
+      <origin xyz="-0.030777777777777765 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_7_2">
+      <origin xyz="-0.030777777777777765 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_7_3">
+      <origin xyz="-0.030777777777777765 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_8_0">
+      <origin xyz="-0.015388888888888883 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_8_1">
+      <origin xyz="-0.015388888888888883 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_8_2">
+      <origin xyz="-0.015388888888888883 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_8_3">
+      <origin xyz="-0.015388888888888883 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_9_0">
+      <origin xyz="0.0 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_9_1">
+      <origin xyz="0.0 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_9_2">
+      <origin xyz="0.0 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_9_3">
+      <origin xyz="0.0 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_10_0">
+      <origin xyz="0.015388888888888869 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_10_1">
+      <origin xyz="0.015388888888888869 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_10_2">
+      <origin xyz="0.015388888888888869 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_10_3">
+      <origin xyz="0.015388888888888869 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_11_0">
+      <origin xyz="0.030777777777777765 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_11_1">
+      <origin xyz="0.030777777777777765 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_11_2">
+      <origin xyz="0.030777777777777765 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_11_3">
+      <origin xyz="0.030777777777777765 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_12_0">
+      <origin xyz="0.04616666666666666 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_12_1">
+      <origin xyz="0.04616666666666666 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_12_2">
+      <origin xyz="0.04616666666666666 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_12_3">
+      <origin xyz="0.04616666666666666 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_13_0">
+      <origin xyz="0.06155555555555556 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_13_1">
+      <origin xyz="0.06155555555555556 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_13_2">
+      <origin xyz="0.06155555555555556 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_13_3">
+      <origin xyz="0.06155555555555556 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_14_0">
+      <origin xyz="0.07694444444444445 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_14_1">
+      <origin xyz="0.07694444444444445 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_14_2">
+      <origin xyz="0.07694444444444445 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_14_3">
+      <origin xyz="0.07694444444444445 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_15_0">
+      <origin xyz="0.09233333333333332 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_15_1">
+      <origin xyz="0.09233333333333332 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_15_2">
+      <origin xyz="0.09233333333333332 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_15_3">
+      <origin xyz="0.09233333333333332 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_16_0">
+      <origin xyz="0.10772222222222222 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_16_1">
+      <origin xyz="0.10772222222222222 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_16_2">
+      <origin xyz="0.10772222222222222 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_16_3">
+      <origin xyz="0.10772222222222222 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_17_0">
+      <origin xyz="0.12311111111111109 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_17_1">
+      <origin xyz="0.12311111111111109 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_17_2">
+      <origin xyz="0.12311111111111109 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_17_3">
+      <origin xyz="0.12311111111111109 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_18_0">
+      <origin xyz="0.13849999999999998 0.1795 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_18_1">
+      <origin xyz="0.13849999999999998 0.1795 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_18_2">
+      <origin xyz="0.13849999999999998 0.1795 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="side_1_rib_18_3">
+      <origin xyz="0.13849999999999998 0.1795 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.004 0.006 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <collision name="side_envelope_1">
+      <origin xyz="0 0.17425000000000002 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.285 0.016499999999999987 0.152" />
+      </geometry>
+    </collision>
+    <visual name="back_rail_0">
+      <origin xyz="0.13949999999999999 0 0.032" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rail_1">
+      <origin xyz="0.13949999999999999 0 0.068" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rail_2">
+      <origin xyz="0.13949999999999999 0 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rail_3">
+      <origin xyz="0.13949999999999999 0 0.13999999999999999" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rail_4">
+      <origin xyz="0.13949999999999999 0 0.176" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.365 0.008" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_0_0">
+      <origin xyz="0.13949999999999999 -0.1785 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_0_1">
+      <origin xyz="0.13949999999999999 -0.1785 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_0_2">
+      <origin xyz="0.13949999999999999 -0.1785 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_0_3">
+      <origin xyz="0.13949999999999999 -0.1785 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_1_0">
+      <origin xyz="0.13949999999999999 -0.1629782608695652 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_1_1">
+      <origin xyz="0.13949999999999999 -0.1629782608695652 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_1_2">
+      <origin xyz="0.13949999999999999 -0.1629782608695652 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_1_3">
+      <origin xyz="0.13949999999999999 -0.1629782608695652 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_2_0">
+      <origin xyz="0.13949999999999999 -0.14745652173913043 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_2_1">
+      <origin xyz="0.13949999999999999 -0.14745652173913043 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_2_2">
+      <origin xyz="0.13949999999999999 -0.14745652173913043 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_2_3">
+      <origin xyz="0.13949999999999999 -0.14745652173913043 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_3_0">
+      <origin xyz="0.13949999999999999 -0.13193478260869565 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_3_1">
+      <origin xyz="0.13949999999999999 -0.13193478260869565 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_3_2">
+      <origin xyz="0.13949999999999999 -0.13193478260869565 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_3_3">
+      <origin xyz="0.13949999999999999 -0.13193478260869565 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_4_0">
+      <origin xyz="0.13949999999999999 -0.11641304347826087 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_4_1">
+      <origin xyz="0.13949999999999999 -0.11641304347826087 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_4_2">
+      <origin xyz="0.13949999999999999 -0.11641304347826087 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_4_3">
+      <origin xyz="0.13949999999999999 -0.11641304347826087 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_5_0">
+      <origin xyz="0.13949999999999999 -0.10089130434782609 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_5_1">
+      <origin xyz="0.13949999999999999 -0.10089130434782609 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_5_2">
+      <origin xyz="0.13949999999999999 -0.10089130434782609 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_5_3">
+      <origin xyz="0.13949999999999999 -0.10089130434782609 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_6_0">
+      <origin xyz="0.13949999999999999 -0.0853695652173913 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_6_1">
+      <origin xyz="0.13949999999999999 -0.0853695652173913 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_6_2">
+      <origin xyz="0.13949999999999999 -0.0853695652173913 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_6_3">
+      <origin xyz="0.13949999999999999 -0.0853695652173913 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_7_0">
+      <origin xyz="0.13949999999999999 -0.06984782608695653 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_7_1">
+      <origin xyz="0.13949999999999999 -0.06984782608695653 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_7_2">
+      <origin xyz="0.13949999999999999 -0.06984782608695653 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_7_3">
+      <origin xyz="0.13949999999999999 -0.06984782608695653 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_8_0">
+      <origin xyz="0.13949999999999999 -0.05432608695652173 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_8_1">
+      <origin xyz="0.13949999999999999 -0.05432608695652173 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_8_2">
+      <origin xyz="0.13949999999999999 -0.05432608695652173 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_8_3">
+      <origin xyz="0.13949999999999999 -0.05432608695652173 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_9_0">
+      <origin xyz="0.13949999999999999 -0.03880434782608694 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_9_1">
+      <origin xyz="0.13949999999999999 -0.03880434782608694 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_9_2">
+      <origin xyz="0.13949999999999999 -0.03880434782608694 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_9_3">
+      <origin xyz="0.13949999999999999 -0.03880434782608694 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_10_0">
+      <origin xyz="0.13949999999999999 -0.023282608695652185 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_10_1">
+      <origin xyz="0.13949999999999999 -0.023282608695652185 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_10_2">
+      <origin xyz="0.13949999999999999 -0.023282608695652185 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_10_3">
+      <origin xyz="0.13949999999999999 -0.023282608695652185 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_11_0">
+      <origin xyz="0.13949999999999999 -0.007760869565217404 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_11_1">
+      <origin xyz="0.13949999999999999 -0.007760869565217404 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_11_2">
+      <origin xyz="0.13949999999999999 -0.007760869565217404 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_11_3">
+      <origin xyz="0.13949999999999999 -0.007760869565217404 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_12_0">
+      <origin xyz="0.13949999999999999 0.007760869565217404 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_12_1">
+      <origin xyz="0.13949999999999999 0.007760869565217404 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_12_2">
+      <origin xyz="0.13949999999999999 0.007760869565217404 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_12_3">
+      <origin xyz="0.13949999999999999 0.007760869565217404 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_13_0">
+      <origin xyz="0.13949999999999999 0.023282608695652185 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_13_1">
+      <origin xyz="0.13949999999999999 0.023282608695652185 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_13_2">
+      <origin xyz="0.13949999999999999 0.023282608695652185 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_13_3">
+      <origin xyz="0.13949999999999999 0.023282608695652185 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_14_0">
+      <origin xyz="0.13949999999999999 0.03880434782608694 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_14_1">
+      <origin xyz="0.13949999999999999 0.03880434782608694 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_14_2">
+      <origin xyz="0.13949999999999999 0.03880434782608694 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_14_3">
+      <origin xyz="0.13949999999999999 0.03880434782608694 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_15_0">
+      <origin xyz="0.13949999999999999 0.05432608695652172 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_15_1">
+      <origin xyz="0.13949999999999999 0.05432608695652172 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_15_2">
+      <origin xyz="0.13949999999999999 0.05432608695652172 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_15_3">
+      <origin xyz="0.13949999999999999 0.05432608695652172 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_16_0">
+      <origin xyz="0.13949999999999999 0.06984782608695653 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_16_1">
+      <origin xyz="0.13949999999999999 0.06984782608695653 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_16_2">
+      <origin xyz="0.13949999999999999 0.06984782608695653 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_16_3">
+      <origin xyz="0.13949999999999999 0.06984782608695653 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_17_0">
+      <origin xyz="0.13949999999999999 0.08536956521739131 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_17_1">
+      <origin xyz="0.13949999999999999 0.08536956521739131 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_17_2">
+      <origin xyz="0.13949999999999999 0.08536956521739131 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_17_3">
+      <origin xyz="0.13949999999999999 0.08536956521739131 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_18_0">
+      <origin xyz="0.13949999999999999 0.10089130434782612 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_18_1">
+      <origin xyz="0.13949999999999999 0.10089130434782612 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_18_2">
+      <origin xyz="0.13949999999999999 0.10089130434782612 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_18_3">
+      <origin xyz="0.13949999999999999 0.10089130434782612 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_19_0">
+      <origin xyz="0.13949999999999999 0.11641304347826087 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_19_1">
+      <origin xyz="0.13949999999999999 0.11641304347826087 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_19_2">
+      <origin xyz="0.13949999999999999 0.11641304347826087 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_19_3">
+      <origin xyz="0.13949999999999999 0.11641304347826087 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_20_0">
+      <origin xyz="0.13949999999999999 0.13193478260869562 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_20_1">
+      <origin xyz="0.13949999999999999 0.13193478260869562 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_20_2">
+      <origin xyz="0.13949999999999999 0.13193478260869562 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_20_3">
+      <origin xyz="0.13949999999999999 0.13193478260869562 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_21_0">
+      <origin xyz="0.13949999999999999 0.14745652173913043 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_21_1">
+      <origin xyz="0.13949999999999999 0.14745652173913043 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_21_2">
+      <origin xyz="0.13949999999999999 0.14745652173913043 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_21_3">
+      <origin xyz="0.13949999999999999 0.14745652173913043 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_22_0">
+      <origin xyz="0.13949999999999999 0.16297826086956518 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_22_1">
+      <origin xyz="0.13949999999999999 0.16297826086956518 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_22_2">
+      <origin xyz="0.13949999999999999 0.16297826086956518 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_22_3">
+      <origin xyz="0.13949999999999999 0.16297826086956518 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_23_0">
+      <origin xyz="0.13949999999999999 0.17850000000000005 0.05" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_23_1">
+      <origin xyz="0.13949999999999999 0.17850000000000005 0.086" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_23_2">
+      <origin xyz="0.13949999999999999 0.17850000000000005 0.122" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999983" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <visual name="back_rib_23_3">
+      <origin xyz="0.13949999999999999 0.17850000000000005 0.15799999999999997" rpy="0 0 0" />
+      <geometry>
+        <box size="0.006 0.004 0.027999999999999997" />
+      </geometry>
+      <material name="shelf_plastic">
+        <color rgba=".73 .76 .79 1" />
+      </material>
+    </visual>
+    <collision name="back_envelope">
+      <origin xyz="0.1325 0 0.104" rpy="0 0 0" />
+      <geometry>
+        <box size="0.01999999999999999 0.332 0.152" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="shelf_level_2_fixed" type="fixed">
+    <parent link="shelf_origin" />
+    <child link="shelf_level_2" />
+    <origin xyz="0 0 0.156" rpy="0 0 0" />
+  </joint>
+  <link name="shelf_floor_2" />
+  <joint name="shelf_floor_2_fixed" type="fixed">
+    <parent link="shelf_level_2" />
+    <child link="shelf_floor_2" />
+    <origin xyz="0 0 0.027999999999999997" rpy="0 0 0" />
+  </joint>
+</robot>

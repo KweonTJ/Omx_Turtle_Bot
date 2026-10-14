@@ -8,6 +8,17 @@
 [호스트 모니터](<./docs/14. 리더 픽앤플레이스 호스트 모니터.md>)를 참고한다.
 기존 v4는 이 새 임무를 학습/검증한 모델이 아니다. 아래 기존 배송 구현 내용과 구분한다.
 
+2026-10-14: **인지 전용 4물체 ArUco 프로필**과 **2단 정리대 디지털 트윈**을 추가했다.
+팔 제어는 향후 새 OMX 강화학습 모델의 책임이며, 새 카메라 노드는 제어 명령을 발행하지 않는다.
+[인지·정리대 실행 안내](<./docs/15. 그리퍼 다중 물체 인지와 2단 정리대 디지털 트윈.md>)를 참고한다.
+
+```bash
+# omx_turtle_ws에서 해당 패키지 빌드 후 install/setup.bash source
+ros2 launch omx_eef_vision shelf_perception.launch.py
+# 카메라 기존 영상 구독; 하드웨어/제어기 실행 없음
+bash src/turtlebot3_manipulation/turtlebot3_manipulation_description/scripts/run_shelf_digital_twin.sh
+```
+
 호스트 화면만 실행 (먼저 `omx_leader_monitor` 빌드, 로봇 제어 명령 없음):
 
 ```bash

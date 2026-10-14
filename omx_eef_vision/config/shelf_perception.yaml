@@ -1,0 +1,21 @@
+multi_object_vision:
+  ros__parameters:
+    image_topic: /eef_camera/image_raw
+    camera_info_topic: /eef_camera/camera_info
+    dictionary: DICT_4X4_50
+    expected_ids: [1, 2, 3, 4]
+    marker_size_m: 0.04  # Black square only, excluding white margin.
+    marker_size_confirmed: false  # Set only after measuring the printed square.
+    extrinsics_confirmed: false  # Verify real camera-to-arm TF, not display URDF.
+    target_frame: base_link
+    stable_frames: 3
+    min_perimeter_px: 48.0
+    max_reprojection_error_px: 3.0
+    depth_min_m: 0.05
+    depth_max_m: 1.2
+    max_position_jump_m: 0.08
+    max_angle_jump_rad: 0.8
+    max_image_age_s: 0.4
+    image_timeout_s: 0.5
+    future_tolerance_s: 0.05
+    publish_debug_image: true

@@ -1,5 +1,43 @@
 # OMX EEF Vision
 
+## 새 선반 임무: 인지 전용 4물체 프로필 (2026-10-14)
+
+`shelf_perception.launch.py` / `multi_object_vision_node`를 사용한다.
+사용자 지정 ID **1~4**, Dictionary **DICT_4X4_50**, A4 인쇄용 검은 사각형 **40 mm**다.
+마커 크기·카메라 TF 실측 확인 플래그는 기본 false이며, 거리 좌표를 제어기에 연결하지 않는다.
+아래 기존 단일 마커 launch/설정과 구분한다. 기존 AprilTag 설정은 그대로 보존했다.
+
+- 한 프레임에서 모든 ID, 코너, 픽셀 중심, 중복 여부를 검출한다. CameraInfo가 없어도 2D 검출 가능.
+- 보정 해상도/optical frame 일치, 거리·재투영 오차, 촬영 시각 TF를 확인한 마커 중심 자세를 제공한다.
+- 처음 4개 동시 인지 3프레임을 확인한 뒤, 요청 ID만 선택한다. 근접 시 다른 ID가 화면 밖으로 나가도
+  선택한 ID는 계속 추적한다. 요청 ID의 미검출·중복·영상 지연·TF 실패는 무효 처리한다.
+- 목표가 이동하면 현재 검출 위치를 사용한다. ID별 고정 좌표나 오래된 위치를 재사용하지 않는다.
+- **인지 결과만 제공한다.** 팔/그리퍼/베이스 제어, 파지점 계산, 경로·충돌·도달성 판단, RL 추론 없음.
+- `/target/*`에 출력하지 않는다. 새 OMX 모델이 사용할 관측 계약은 추후 별도로 연결한다.
+
+```bash
+source /opt/ros/humble/setup.bash
+cd /home/ktj/omx_turtle_ws
+colcon build --symlink-install --packages-select omx_eef_vision
+source install/setup.bash
+ros2 launch omx_eef_vision shelf_perception.launch.py
+```
+
+새 터미널에서 인지 대상만 선택:
+
+```bash
+ros2 topic pub --once /perception/target_request std_msgs/msg/String \
+  '{data: "{\"request_id\":\"scan-001\",\"command\":\"SELECT\",\"object_id\":3}"}'
+ros2 topic echo /perception/selected_info
+```
+
+해상도/보정, camera-only 드라이버 실행, 토픽 계약, 시험 및 정리대는
+[15번 문서](<../docs/15. 그리퍼 다중 물체 인지와 2단 정리대 디지털 트윈.md>)를 참고한다.
+인쇄 파일: [01. ArUco ID 1-4 인쇄용.svg](<./markers/01. ArUco ID 1-4 인쇄용.svg>).
+100% 인쇄하고 검은 부분 한 변을 재측정한 뒤 설정한다. 물체마다 서로 다른 ID를 한 장씩 부착한다.
+
+## 기존 배송 v4 단일 마커 프로필
+
 OpenMANIPULATOR-X의 EEF USB 카메라에서 ArUco 마커를 검출하고 배송 상자의 6D 자세를 생성하는 ROS 2 패키지다. YOLO나 별도 객체 검출 모델은 사용하지 않는다.
 
 ## 처리 흐름
