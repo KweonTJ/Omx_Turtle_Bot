@@ -1,0 +1,12 @@
+# Physical print IDs are not the policy's 1-based object labels.
+# Pose outputs below remain MARKER poses in the camera optical frame.
+# They are not grasp points or a complete 69D PPO observation.
+dictionary: DICT_4X4_50
+marker_size_m: 0.040
+marker_size_confirmed: true  # User measured/confirmed on 2026-11-20.
+bindings:
+  - {physical_marker_id: 0, policy_object_id: 1, policy_slot: 0}
+  - {physical_marker_id: 1, policy_object_id: 2, policy_slot: 1}
+model_version: omx_turtlebot3_v6
+motor_commands_enabled: false
+

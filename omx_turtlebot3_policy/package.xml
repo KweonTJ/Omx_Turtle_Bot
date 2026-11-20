@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>omx_turtlebot3_policy</name>
+  <version>0.1.0</version>
+  <description>Non-actuating inference verification for omx_turtlebot3_v6.</description>
+  <maintainer email="kweontj0701@naver.com">ktj</maintainer>
+  <license>Apache-2.0</license>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <build_depend>eigen</build_depend>
+  <exec_depend>python3-numpy</exec_depend>
+  <export><build_type>ament_cmake</build_type></export>
+</package>

@@ -1,0 +1,329 @@
+{
+  "name": "omx_turtlebot3_v6",
+  "status": "training_completed_not_deployment_validated",
+  "pid": 26645,
+  "started_utc": "2026-11-20T12:20:43.833162+00:00",
+  "fresh_weights": false,
+  "parent_checkpoint": "/home/ktj/omx_train_ws/policies/latest/omx_turtlebot3_v5/20261120_210549_836746/omx_turtlebot3_v5_400000_steps.zip",
+  "parent_checkpoint_sha256": "a4727118721ffa4dc5eda2e9e54cb18eec8f4927a1b6d85153afe5e3d589af95",
+  "speed_profile": {
+    "travel_multiplier": 1.2,
+    "precision_multiplier": 1.0,
+    "reach_precision_waypoints": 2,
+    "preserve_absolute_residual_step": true
+  },
+  "total_timesteps": 200000,
+  "n_envs": 4,
+  "device": "cpu",
+  "cuda_device": null,
+  "observation_fields": [
+    [
+      "joint_position",
+      4
+    ],
+    [
+      "joint_velocity",
+      4
+    ],
+    [
+      "finger_position",
+      2
+    ],
+    [
+      "eef_position",
+      3
+    ],
+    [
+      "joint_goal",
+      4
+    ],
+    [
+      "phase_onehot",
+      9
+    ],
+    [
+      "waypoint_fraction",
+      1
+    ],
+    [
+      "perceived_object_positions",
+      6
+    ],
+    [
+      "perception_valid",
+      2
+    ],
+    [
+      "requested_id_onehot",
+      2
+    ],
+    [
+      "selected_position",
+      3
+    ],
+    [
+      "selected_minus_eef",
+      3
+    ],
+    [
+      "place_position",
+      3
+    ],
+    [
+      "bilateral_and_deck_contact",
+      2
+    ],
+    [
+      "previous_action",
+      4
+    ],
+    [
+      "perceived_object_quaternions_xyzw",
+      8
+    ],
+    [
+      "pnp_reprojection_error_px",
+      2
+    ],
+    [
+      "time_since_live_target_plan",
+      1
+    ],
+    [
+      "recognition_stage_onehot",
+      2
+    ],
+    [
+      "currently_visible",
+      2
+    ],
+    [
+      "pose_cache_age",
+      2
+    ]
+  ],
+  "observation_size": 69,
+  "action_size": 4,
+  "action_semantics": "4 arm residuals; fixed base; pitch joints masked during yaw transport",
+  "base_fixed": true,
+  "object_count": 2,
+  "marker_ids": [
+    1,
+    2
+  ],
+  "active_shelf_levels": [
+    2
+  ],
+  "depth_used": false,
+  "base_odometry_used": false,
+  "placement_distribution": "conditioned_random_xyz_and_upright_yaw",
+  "observation_image_based": false,
+  "pixel_corner_pnp_surrogate": true,
+  "fixture_mocap_only": true,
+  "object_attachment": false,
+  "perception_mode": "rgb_corner_pnp_pose_surrogate",
+  "real_robot_deployable": false,
+  "config": {
+    "name": "omx_turtlebot3_v6",
+    "schema_version": 3,
+    "scene": "assets/mjcf/omx_turtlebot3_v6/scene.xml",
+    "stay": [
+      0.104311,
+      0.027612,
+      -0.001534,
+      -1.638291
+    ],
+    "physics_timestep": 0.002,
+    "frame_skip": 10,
+    "joint_step": 0.012,
+    "residual_scale": 0.12,
+    "gripper_open": 0.019,
+    "gripper_close": -0.01,
+    "gripper_force_limit": 2.0,
+    "joint_margin": 0.015,
+    "max_episode_steps": 4500,
+    "phase_timeout_steps": 900,
+    "position_tolerance": 0.007,
+    "grasp_offset_z": 0.006,
+    "joint_tolerance": 0.04,
+    "stable_steps": 12,
+    "seed": 642,
+    "scene_layout": {
+      "shelf_position": [
+        0.3,
+        0.0,
+        0.1
+      ],
+      "shelf_stack_pitch": 0.156,
+      "support_size": [
+        0.4,
+        0.4,
+        0.1
+      ],
+      "follower_position": [
+        -0.052,
+        -0.32,
+        0.0
+      ],
+      "follower_deck_z": 0.07,
+      "object_count": 2,
+      "active_shelf_level": 2,
+      "object_size": [
+        0.05,
+        0.05,
+        0.05
+      ],
+      "object_mass": 0.035,
+      "object_friction": 0.9,
+      "object_x": 0.237,
+      "object_y": [
+        -0.055,
+        0.055
+      ]
+    },
+    "base": {
+      "fixed": true,
+      "position": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "motion": {
+      "scan_pose": [
+        0.0,
+        -1.0,
+        0.8,
+        0.6
+      ],
+      "upper_pick_pitch": 0.0,
+      "upper_lift": 0.025,
+      "rotation_height_tolerance": 0.006,
+      "rotation_yaw_tolerance": 0.02,
+      "rotation_velocity_tolerance": 0.03
+    },
+    "perception": {
+      "mode": "rgb_corner_pnp_pose_surrogate",
+      "marker_ids": [
+        1,
+        2
+      ],
+      "marker_size": 0.04,
+      "camera_info_source": "/home/ktj/omx_turtle_ws/src/turtlebot3_manipulation/turtlebot3_manipulation_bringup/config/eef_usb_camera.yaml",
+      "image_size": [
+        320,
+        240
+      ],
+      "intrinsics": [
+        301.875153,
+        436.170105,
+        181.997119,
+        113.619615
+      ],
+      "lens_position": [
+        0.057,
+        0.0,
+        0.0
+      ],
+      "frame_margin_px": 3,
+      "min_marker_side_px": 12,
+      "position_noise_std": 0.001,
+      "dropout_probability": 0.01,
+      "stable_frames": 3,
+      "cache_max_age_seconds": 40.0,
+      "sample_every_steps": 5,
+      "corner_noise_px": 0.12,
+      "reprojection_limit_px": 1.5,
+      "replan_min_interval_s": 0.25,
+      "replan_position_change_m": 0.002,
+      "pose_max_age_before_reach_s": 15.0,
+      "depth_range": [
+        0.04,
+        1.2
+      ]
+    },
+    "curriculum": {
+      "target_levels": [
+        2
+      ],
+      "require_reachable_target": true
+    },
+    "ppo": {
+      "total_timesteps": 200000,
+      "n_envs": 4,
+      "n_steps": 512,
+      "batch_size": 256,
+      "n_epochs": 5,
+      "learning_rate": 0.00015,
+      "gamma": 0.995,
+      "gae_lambda": 0.95,
+      "ent_coef": 0.002,
+      "net_arch": [
+        128,
+        128
+      ],
+      "device": "auto",
+      "checkpoint_steps": 20000
+    },
+    "randomization": {
+      "upper_x": [
+        0.212,
+        0.238
+      ],
+      "negative_y": [
+        -0.09,
+        -0.035
+      ],
+      "positive_y": [
+        0.035,
+        0.09
+      ],
+      "upper_support_height": [
+        0.0,
+        0.04
+      ],
+      "object_yaw_degrees": [
+        -12.0,
+        12.0
+      ],
+      "pedestal_half_width": 0.017,
+      "reset_attempts": 100,
+      "path_check_samples": 7,
+      "minimum_object_gap": 0.01,
+      "reset_frame_margin_px": 8
+    },
+    "control_speed": {
+      "travel_multiplier": 1.2,
+      "precision_multiplier": 1.0,
+      "reach_precision_waypoints": 2,
+      "preserve_absolute_residual_step": true
+    }
+  },
+  "source_sha256": {
+    "configs/omx_turtlebot3_v6.yaml": "56444daca2869a709e928aa81fec5e300a4ee64e02d71c7a5d5cbe613537ab70",
+    "assets/mjcf/omx_turtlebot3_v6/scene.xml": "3910c3c935bc7849f3166708008cd4f7a14ed235832b4048f42df70d492fb43b",
+    "assets/mjcf/omx_turtlebot3_v6/manifest.json": "824fac88fe0c88c52bf62d11d1ff3f817827a270cf6b10ffb389846f5333ab82",
+    "envs/omx_turtlebot3_shelf_env.py": "22fe0ce0eb2faf969fe1e05b25babafacb20dbd99f2f8fe3902f3b55d81de9cc",
+    "envs/omx_turtlebot3_v1_env.py": "e74371e2b6f6afde78f37efa478c833cc167ae2db612ce07cfacb07d825ccbd4",
+    "envs/omx_turtlebot3_v2_env.py": "72aee5c6420f7950281fbd9aa4da2438dae2897d4a38623c95781397d4d5c9db",
+    "envs/omx_turtlebot3_v3_env.py": "7c52dd364983acbda1f7ebb45cdd9f3f5c83f3be7b7aa36a21b9bca84286652d",
+    "envs/omx_turtlebot3_v4_env.py": "3074859fbe0787e037afa50db18b699b8e15d8e8ff98b4139b058db8cba9d57a",
+    "envs/omx_turtlebot3_v5_env.py": "ec77f16f01ca38cdcab3a024ece01c0438861b111e083639897e3081ed82daa0",
+    "envs/omx_turtlebot3_v6_env.py": "c9b32bff138e788b6caf84a75de3de3a47fbc7f67db8d3d732da648a74b02953",
+    "train/train_omx_turtlebot3.py": "5080c5f5dfade5c712ab93a6dc91dfe2f82dff44d1c3e78df3edbabf78af3d8e",
+    "scripts/build_omx_turtlebot3_v6_scene.py": "d6eb7f9cf5c5b1099030534c8fb4589145c19de9650c8880635076f1b4f17099",
+    "assets/mjcf/omx_turtlebot3_v6/source/alignment_core.py": "e47af84bd61d454b460d977967b1bba20b93b3e4bf187b7185ac22d0f35cf2bb",
+    "assets/mjcf/omx_turtlebot3_v3/source/alignment_core.py": "e47af84bd61d454b460d977967b1bba20b93b3e4bf187b7185ac22d0f35cf2bb",
+    "train/train_omx_turtlebot3_v6.py": "4a5ec76ef7186f89199d2a4258038eedda17c41ec4b0a88f24651bbbc95df996"
+  },
+  "parent_checkpoint_steps": 400000,
+  "actual_timesteps": 200704,
+  "by_level": {
+    "2": {
+      "episodes": 140,
+      "successes": 138
+    }
+  },
+  "parent_plus_adaptation_steps": 600704,
+  "finished_utc": "2026-11-20T12:26:19.351942+00:00"
+}

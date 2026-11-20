@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-20",
+  "remote_host": "a@192.168.0.11",
+  "package": "omx_turtlebot3_policy",
+  "source_checkpoint_sha256": "6d8fc7f6607cc49a654dc577260e61947aa9e1b8fe23f6160330c15e0558c8c1",
+  "remote_build_passed": true,
+  "model_checksums_verified": true,
+  "hardware_motion_validated": false,
+  "motor_commands_sent": 0,
+  "tests": [
+    {"location": "robot", "backend": "cpp_eigen_cpu", "samples": 973, "max_abs_error": 3.57628e-7, "mean_inference_us": 4.97419},
+    {"location": "robot", "backend": "torchscript_cpu", "samples": 973, "max_abs_error": 5.960464477539062e-7, "mean_inference_us": 124.77132999993046},
+    {"location": "robot", "backend": "torchscript_cuda", "samples": 973, "max_abs_error": 2.980232238769531e-7, "mean_inference_us": 455.7425239997883},
+    {"location": "host", "backend": "onnxruntime_cpu", "samples": 973, "max_abs_error": 6.556510925292969e-7, "mean_inference_us": 6.120743999417755}
+  ],
+  "heldout_simulation": {"episodes": 10, "seed_start": 8000, "successes": 7, "stale_rgb_target_seeds": [8003, 8004, 8007]},
+  "user_confirmed_power": {"adapter_volts": 12, "adapter_amps": 5, "jetson_powered_from_opencr": true, "symptom": "all_boards_power_off_when_astra_connected"},
+  "power_root_cause_confirmed": false,
+  "power_hypothesis": "shared_supply_voltage_drop_or_protection_trip; short_or_bad_connection_not_excluded",
+  "recommended_next_step": "separate_jetson_and_usb_power_from_opencr_motor_power"
+}

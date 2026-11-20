@@ -1,0 +1,3443 @@
+{
+  "date_local": "2026-11-20",
+  "timezone": "Asia/Seoul",
+  "host": "turtlebot3_leader",
+  "test": "OpenCR joint1 bounded unloaded excursion and return",
+  "success": true,
+  "ppo_control": false,
+  "payload_test": false,
+  "visual_confirmation": false,
+  "commanded_excursion_deg": 2.021484375,
+  "measured_excursion_deg": 2.021484375,
+  "return_error_deg": 0.087890625,
+  "feedback_duration_s": 8.486,
+  "min_voltage_v": 12.15,
+  "max_voltage_v": 12.19,
+  "max_other_joint_deviation_ticks": [
+    1,
+    1,
+    1
+  ],
+  "max_wheel_deviation_ticks": [
+    0,
+    0
+  ],
+  "postcheck": {
+    "read_only": true,
+    "millis": 1886976,
+    "voltage_v": 12.19,
+    "joint_ticks": [
+      2097,
+      686,
+      2041,
+      2372
+    ],
+    "wheel_ticks": [
+      1222,
+      746
+    ],
+    "wheel_velocity": [
+      0,
+      0
+    ],
+    "gripper_ticks": 2115,
+    "heartbeat_active": false,
+    "torque_enabled": true,
+    "acceleration": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "velocity": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "scope_note": "Hardware transport and encoder test only; no PPO inference connected to physical commands and no object payload. No torque, wheel goal, gripper goal, homing or EEPROM writes. No full-cycle or high-load power validation.",
+  "execution": [
+    {
+      "event": "plan",
+      "execute": true,
+      "start": {
+        "millis": 1867488,
+        "voltage": 12.17,
+        "connected": 1,
+        "ros": 0,
+        "torque": 1,
+        "q": [
+          2096,
+          686,
+          2041,
+          2372
+        ],
+        "wheel_q": [
+          1222,
+          746
+        ],
+        "wheel_v": [
+          0,
+          0
+        ],
+        "base_cmd": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "gripper": 2115,
+        "acceleration": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "velocity": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "joint1_delta_degrees": 2.021484375,
+      "steps": 66,
+      "period_s": 0.1,
+      "ppo_control": false,
+      "payload_test": false
+    },
+    {
+      "event": "result",
+      "success": true,
+      "execute": true,
+      "error": null,
+      "start": {
+        "millis": 1867488,
+        "voltage": 12.17,
+        "connected": 1,
+        "ros": 0,
+        "torque": 1,
+        "q": [
+          2096,
+          686,
+          2041,
+          2372
+        ],
+        "wheel_q": [
+          1222,
+          746
+        ],
+        "wheel_v": [
+          0,
+          0
+        ],
+        "base_cmd": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "gripper": 2115,
+        "acceleration": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "velocity": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "end": {
+        "millis": 1875974,
+        "voltage": 12.17,
+        "connected": 1,
+        "ros": 1,
+        "torque": 1,
+        "q": [
+          2097,
+          686,
+          2041,
+          2372
+        ],
+        "wheel_q": [
+          1222,
+          746
+        ],
+        "wheel_v": [
+          0,
+          0
+        ],
+        "base_cmd": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "gripper": 2115,
+        "acceleration": [
+          5,
+          5,
+          5,
+          5
+        ],
+        "velocity": [
+          5,
+          5,
+          5,
+          5
+        ]
+      },
+      "samples": [
+        {
+          "step": 0,
+          "goal": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1867657,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 1,
+          "goal": [
+            2098,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1867785,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2116,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 2,
+          "goal": [
+            2099,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1867911,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 3,
+          "goal": [
+            2100,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1868037,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2098,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 4,
+          "goal": [
+            2101,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1868163,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2099,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 5,
+          "goal": [
+            2102,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1868287,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2100,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 6,
+          "goal": [
+            2103,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1868413,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2101,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 7,
+          "goal": [
+            2104,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1868539,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2102,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 8,
+          "goal": [
+            2105,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1868665,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2103,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2116,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 9,
+          "goal": [
+            2106,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1868791,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2104,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2116,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 10,
+          "goal": [
+            2107,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1868919,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2105,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2116,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 11,
+          "goal": [
+            2108,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1869047,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2106,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 12,
+          "goal": [
+            2109,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1869175,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2107,
+            687,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 13,
+          "goal": [
+            2110,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1869303,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2108,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 14,
+          "goal": [
+            2111,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1869431,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2109,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 15,
+          "goal": [
+            2112,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1869559,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2110,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 16,
+          "goal": [
+            2113,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1869687,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2112,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 17,
+          "goal": [
+            2114,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1869813,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2112,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 18,
+          "goal": [
+            2115,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1869941,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2113,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 19,
+          "goal": [
+            2116,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1870067,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2114,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 20,
+          "goal": [
+            2117,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1870193,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2115,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 21,
+          "goal": [
+            2118,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1870319,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2116,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 22,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1870445,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2117,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 23,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1870571,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 24,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1870697,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 25,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1870823,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 26,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1870949,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 27,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1871075,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 28,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1871201,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2119,
+            687,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 29,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1871327,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2118,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 30,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1871453,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 31,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1871579,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2118,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 32,
+          "goal": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1871705,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2118,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 33,
+          "goal": [
+            2118,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1871831,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 34,
+          "goal": [
+            2117,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1871957,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2119,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 35,
+          "goal": [
+            2116,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1872083,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2118,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 36,
+          "goal": [
+            2115,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1872192,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2117,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2116,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 37,
+          "goal": [
+            2114,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1872318,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2116,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 38,
+          "goal": [
+            2113,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1872444,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2115,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 39,
+          "goal": [
+            2112,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1872590,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2114,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 40,
+          "goal": [
+            2111,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1872696,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2113,
+            687,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 41,
+          "goal": [
+            2110,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1872822,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2112,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 42,
+          "goal": [
+            2109,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1872950,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2111,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 43,
+          "goal": [
+            2108,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1873076,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2110,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 44,
+          "goal": [
+            2107,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1873202,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2109,
+            687,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 45,
+          "goal": [
+            2106,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1873328,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2108,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 46,
+          "goal": [
+            2105,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1873454,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2107,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 47,
+          "goal": [
+            2104,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1873580,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2106,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 48,
+          "goal": [
+            2103,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1873706,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2105,
+            687,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2116,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 49,
+          "goal": [
+            2102,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1873832,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2104,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 50,
+          "goal": [
+            2101,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1873958,
+          "voltage": 12.19,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2103,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 51,
+          "goal": [
+            2100,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1874084,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2102,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2116,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 52,
+          "goal": [
+            2099,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1874208,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2101,
+            686,
+            2041,
+            2371
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2116,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 53,
+          "goal": [
+            2098,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1874334,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2100,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 54,
+          "goal": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1874460,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2099,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 55,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1874586,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2098,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 56,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1874712,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2098,
+            687,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 57,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1874838,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 58,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1874964,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 59,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1875090,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 60,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1875218,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 61,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1875344,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 62,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1875470,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2116,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 63,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1875596,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2040,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 64,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1875722,
+          "voltage": 12.17,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2041,
+            2372
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        },
+        {
+          "step": 65,
+          "goal": [
+            2096,
+            686,
+            2041,
+            2372
+          ],
+          "millis": 1875848,
+          "voltage": 12.15,
+          "connected": 1,
+          "ros": 1,
+          "torque": 1,
+          "q": [
+            2097,
+            686,
+            2040,
+            2371
+          ],
+          "wheel_q": [
+            1222,
+            746
+          ],
+          "wheel_v": [
+            0,
+            0
+          ],
+          "base_cmd": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          "gripper": 2115,
+          "acceleration": [
+            5,
+            5,
+            5,
+            5
+          ],
+          "velocity": [
+            5,
+            5,
+            5,
+            5
+          ]
+        }
+      ],
+      "writes_sent": 212,
+      "torque_changed": false,
+      "ppo_control": false,
+      "payload_test": false
+    }
+  ]
+}
