@@ -7,6 +7,7 @@ import json
 from pathlib import Path
 import time
 import math
+import sys
 
 import numpy as np
 import yaml
@@ -40,7 +41,13 @@ class Runtime(Node):
         self.training = yaml.safe_load((args.model_dir/'training_config.yaml').read_text())
         if args.execute and commissioning_issues(self.cfg):
             raise Fault('Execute blocked: '+', '.join(commissioning_issues(self.cfg)))
-        self.actor = Actor(args.model_dir, args.backend, args.device)
+        native = args.backend == 'cpp_onnx'
+        if native:
+            from .cpp_backend import NativeActor
+            urdf = args.scene.parent/self.cfg['vision']['robot_urdf_asset']
+            self.actor = NativeActor(args.model_dir, args.config, urdf)
+        else:
+            self.actor = Actor(args.model_dir, args.backend, args.device)
         self.planner = Planner(args.scene, self.training, self.cfg)
         self.mission = Mission(self.cfg, self.training, self.planner, self.actor)
         self.detector, self.bridge = Detector(self.cfg['vision']), CvBridge()
@@ -68,10 +75,16 @@ class Runtime(Node):
         self.create_subscription(String, '/omx_v6/request', self.on_request, 10)
         self.create_subscription(Bool, '/omx_v6/deadman', self.on_deadman, 10)
         self.create_subscription(Bool, '/omx_v6/cancel', self.on_cancel, 10)
-        self.transport = transport_factory(self.cfg, execute=args.execute)
+        if native:
+            from .cpp_backend import NativeTransport
+            self.transport = NativeTransport(self.cfg, args.config, urdf, execute=args.execute)
+        else:
+            self.transport = transport_factory(self.cfg, execute=args.execute)
         self.history.append(self.transport.last)
         self.timer = self.create_timer(self.cfg['control']['period_s'], self.tick)
         self.emit('READY', execute=args.execute, commissioning_issues=commissioning_issues(self.cfg),
+                  inference_backend=self.actor.backend,
+                  motor_transport='cpp_opencr' if native else 'python_opencr',
                   estimator_semantics='physical_proxy_not_mujoco_contact', motor_writes=0,
                   command_route=self.cfg['control'].get('command_route', 'direct'),
                   robot_urdf_sha256=self.cfg['vision'].get('robot_urdf_sha256'),
@@ -307,6 +320,8 @@ class Runtime(Node):
             self.emit('EXIT', motor_writes=self.transport.writes, camera_counts=self.camera_counts)
             self.log.close()
             self.pool.shutdown(wait=True, cancel_futures=True)
+            if hasattr(self.actor, 'close'):
+                self.actor.close()
             self.destroy_node()
 
 
@@ -342,13 +357,15 @@ def main(argv=None):
     parser.add_argument('--execute', action='store_true')
     parser.add_argument('--check-plan-id', type=int, choices=[0, 1],
                         help='Read-only actor and path check on fresh camera/encoder data; never arm')
-    parser.add_argument('--backend', choices=['torchscript', 'onnx'], default='torchscript')
+    parser.add_argument('--backend', choices=['torchscript', 'onnx', 'cpp_onnx'], default='torchscript')
     parser.add_argument('--device', choices=['cpu', 'cuda'], default='cpu')
     parser.add_argument('--duration', type=float, default=0.)
     parser.add_argument('--log-dir', type=Path, default=Path('/tmp')/f'omx_v6_runtime_{time.time_ns()}')
     args, ros_args = parser.parse_known_args(argv)
     if args.execute and args.check_plan_id is not None:
         parser.error('--check-plan-id cannot be combined with --execute')
+    if args.backend == 'cpp_onnx' and args.device != 'cpu':
+        parser.error('cpp_onnx uses explicit OpenCV DNN CPU inference; choose --device cpu')
     rclpy.init(args=ros_args)
     node = None
     try:
@@ -362,6 +379,13 @@ def main(argv=None):
         if node is not None:
             node.finish()
         rclpy.shutdown()
+
+
+def main_cpp():
+    """Explicit C++ control entry point; no automatic Python/Torch fallback."""
+    if '--backend' in sys.argv[1:] or any(a.startswith('--backend=') for a in sys.argv[1:]):
+        raise Fault('runtime_cpp selects cpp_onnx; use runtime to select another backend')
+    main(['--backend', 'cpp_onnx', *sys.argv[1:]])
 
 
 if __name__ == '__main__':

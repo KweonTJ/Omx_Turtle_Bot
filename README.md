@@ -60,12 +60,14 @@ Python과 C++ 런타임은 선택 관계이며 동시에 실행하지 않는다.
 | [`omx_eef_vision`](./omx_eef_vision/) | ArUco 검출, 품질 판정, TF, 목표 자세 | 구현 |
 | [`omx_rl_control`](./omx_rl_control/) | SB3/PyTorch 기반 Python PPO 런타임 | 구현 |
 | [`omx_rl_control_cpp`](./omx_rl_control_cpp/) | TorchScript CUDA/CPU와 Eigen fallback 기반 C++ PPO actor | 구현, 실기 검증 전 |
+| [`omx_turtlebot3_control_cpp`](./omx_turtlebot3_control_cpp/) | v6 69차원 ONNX 추론·보정 제어·OpenCR 전송 | 로컬 검증 완료, 로봇 배포 전 |
+| [`omx_turtlebot3_runtime`](./omx_turtlebot3_runtime/) | v6 영상·기구학·충돌 검사·임무 단계, C++ 제어 연결 | 로컬 검증 완료, 실기 보정 필요 |
 | [`turtlebot3_control`](./turtlebot3_control/) | 통합 launch, 베이스 mux, 배송 coordinator | 구현 |
 | `turtlebot3_manipulation_*` | 하드웨어, ros2_control, URDF, 카메라 TF | upstream 기반 확장 |
 | `turtlebot3_position` | UWB 위치·이동 제어 | 패키지 미구현 |
 
 추가 `omx_leader_monitor`는 호스트 전용 수신 GUI이며 실기 제어 패키지와 분리한다.
-위 다섯 영역은 기존 배송 프로젝트의 직접 변경 범위이며,
+위 제어·인지 영역은 배송 프로젝트의 직접 변경 범위이며,
 DynamixelSDK와 TurtleBot3 기본 패키지는 기반 의존성이다.
 
 ## 기본 모델

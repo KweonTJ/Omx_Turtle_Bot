@@ -13,4 +13,5 @@ setup(name='omx_turtlebot3_runtime', version='0.1.0', packages=find_packages(),
                   ('share/omx_turtlebot3_runtime/config', glob('config/*.yaml'))]+assets,
       install_requires=['setuptools'], zip_safe=False,
       entry_points={'console_scripts': ['runtime = omx_turtlebot3_runtime.node:main',
+                                       'runtime_cpp = omx_turtlebot3_runtime.node:main_cpp',
                                        'preflight = omx_turtlebot3_runtime.preflight:main']})

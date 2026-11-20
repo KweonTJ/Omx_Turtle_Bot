@@ -98,18 +98,25 @@ class Mission:
                           1 if self.phase == Phase.RECOGNIZE else len(self.plans[self.phase]), cache, self.selected, self.place,
                           self.evidence.contact, self.evidence.placed, self.prev_action,
                           self.last_plan, self.recognition_stage, now)
-        delta, action = residual_step(self.target, self.goal, self.actor(obs), self.phase,
-                                      self.waypoint, len(self.plans[self.phase]), sample.q, self.t, dt)
-        candidate = np.clip(self.target+self.limiter.step(delta, dt), self.planner.low, self.planner.high)
-        if self.phase == Phase.ROTATE_RIGHT:
-            candidate[1:] = self.rotation_joint_hold
         requested_grip = self.t['gripper_open']
         if self.phase == Phase.RECOGNIZE or self.phase == Phase.RETURN_STAY and self.waypoint == len(self.plans[self.phase])-1:
             requested_grip = 0.
         elif Phase.GRIP <= self.phase <= Phase.EXTEND_LOWER:
             requested_grip = self.t['gripper_close']
-        grip_step = c['gripper_velocity_m_s']*dt
-        finger = self.gripper_target+np.clip(requested_grip-self.gripper_target, -grip_step, grip_step)
+        if hasattr(self.actor, 'control_step'):
+            candidate, action, velocity, finger = self.actor.control_step(
+                obs, self.target, self.goal, sample.q, self.limiter.velocity,
+                self.phase, self.waypoint, len(self.plans[self.phase]), dt,
+                self.gripper_target, requested_grip, self.planner.low, self.planner.high)
+            self.limiter.velocity[:] = velocity
+        else:
+            delta, action = residual_step(self.target, self.goal, self.actor(obs), self.phase,
+                                          self.waypoint, len(self.plans[self.phase]), sample.q, self.t, dt)
+            candidate = np.clip(self.target+self.limiter.step(delta, dt), self.planner.low, self.planner.high)
+            grip_step = c['gripper_velocity_m_s']*dt
+            finger = self.gripper_target+np.clip(requested_grip-self.gripper_target, -grip_step, grip_step)
+        if self.phase == Phase.ROTATE_RIGHT:
+            candidate[1:] = self.rotation_joint_hold
         self.planner.path(sample.q, candidate, self.phase, Phase.RETRACT <= self.phase <= Phase.EXTEND_LOWER)
         arrived = np.linalg.norm(sample.q-self.goal) < self.t['joint_tolerance']
         last = self.waypoint == len(self.plans[self.phase])-1

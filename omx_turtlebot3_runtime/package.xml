@@ -9,6 +9,7 @@
   <exec_depend>message_filters</exec_depend>
   <exec_depend>ament_index_python</exec_depend><exec_depend>dynamixel_sdk</exec_depend>
   <exec_depend>aruco_eef_tracker</exec_depend><exec_depend>omx_turtlebot3_policy</exec_depend>
+  <exec_depend>omx_turtlebot3_control_cpp</exec_depend>
   <exec_depend>python3-numpy</exec_depend><exec_depend>python3-scipy</exec_depend>
   <exec_depend>python3-yaml</exec_depend><exec_depend>python3-serial</exec_depend>
   <test_depend>python3-pytest</test_depend>
