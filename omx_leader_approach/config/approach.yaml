@@ -1,0 +1,14 @@
+leader_approach:
+  ros__parameters:
+    imu_topic: /imu_broadcaster/imu
+    odom_topic: /diff_drive_controller/odom
+    odom_frame: odom
+    objects_topic: /perception/objects
+    # Proposal only. This package does not select a mux or replace /cmd_vel.
+    command_topic: /leader_approach/cmd_vel
+    distance_m: 0.382
+    speed_mps: 0.055
+    sensor_timeout_s: 0.3
+    overview_timeout_s: 10.0
+    alignment_timeout_s: 16.0
+    drive_timeout_s: 18.0
