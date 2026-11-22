@@ -22,7 +22,7 @@ class Mission:
         if not all(cache.fresh(i, now) for i in (0, 1)):
             raise Fault('Both physical IDs must have fresh poses before mission planning')
         if np.max(np.abs(sample.q-self.planner.stay)) > self.cfg['control']['start_stay_tolerance_rad']:
-            raise Fault('Robot not at verified Stay; automatic homing is prohibited')
+            raise Fault('Robot not at verified Stay; complete startup before requesting a mission')
         self.plans, self.place = self.planner.plan(cache, physical_id)
         self.selected = physical_id  # Physical 0/1 -> policy slot 0/1, label 1/2.
         self.phase, self.waypoint, self.recognition_stage = Phase.RECOGNIZE, 0, 0

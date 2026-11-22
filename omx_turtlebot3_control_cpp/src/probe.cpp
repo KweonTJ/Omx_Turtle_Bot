@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
       for (double x : actual) { double expected; if (!(f >> expected) || !std::isfinite(expected)) throw std::runtime_error("Invalid expected output"); error = std::max(error, std::abs(x-expected)); }
     }
     std::string extra; if (f >> extra) throw std::runtime_error("Trailing parity data");
-    if (error > 1e-5) throw std::runtime_error("ONNX parity failed");
+    if (error > 1e-5) throw std::runtime_error("ONNX parity failed: max_abs_error="+std::to_string(error));
     const double start = omx_v6::now();
     for (int i = 0; i < 2000; ++i) actor.infer(obs);
     std::cout << "{\"backend\":\"cpp_opencv_dnn_onnx_cpu\",\"samples\":" << count << ",\"max_abs_error\":" << error << ",\"mean_inference_us\":" << (omx_v6::now()-start)*1e6/2000 << ",\"motor_writes\":0}\n";

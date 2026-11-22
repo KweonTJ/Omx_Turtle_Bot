@@ -5,6 +5,7 @@ import math
 
 import numpy as np
 from scipy.spatial.transform import Rotation
+from .commissioning import commissioning_issues, thresholds_calibrated
 
 
 class Fault(RuntimeError):
@@ -185,9 +186,7 @@ class Evidence:
         self.reason = 'WAIT_SIGNALS'
 
     def calibrated(self):
-        fields = ('current_idle_raw', 'current_grip_delta_raw', 'current_release_delta_raw')
-        return all(isinstance(self.c.get(k), (int, float)) and math.isfinite(self.c[k])
-                   for k in fields) and 0 <= self.c[fields[2]] < self.c[fields[1]]
+        return thresholds_calibrated(self.c)
 
     def update(self, phase, sample, eef, cache, selected, now, closed=-.01, opened=.019):
         if not self.calibrated():
@@ -256,15 +255,3 @@ class Evidence:
                         and self.place_frames >= c['release_min_frames']):
                     self.placed = True
                     self.reason = 'PLACE_VERIFIED_VISUAL_DECK_AND_RELEASE'
-
-
-def commissioning_issues(cfg):
-    issues = [name for name, value in cfg['commissioning'].items()
-              if name.endswith('_verified') and value is not True]
-    if cfg.get('vision', {}).get('camera_mount_candidate', False) is not False:
-        issues.append('camera_mount_is_unmeasured_candidate')
-    if not cfg['commissioning'].get('evidence_directory'):
-        issues.append('evidence_directory_missing')
-    if not Evidence(cfg['estimation']).calibrated():
-        issues.append('current_thresholds_missing')
-    return issues

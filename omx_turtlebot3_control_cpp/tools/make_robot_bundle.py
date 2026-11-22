@@ -10,7 +10,7 @@ import tarfile
 import time
 
 PACKAGES = ('omx_turtlebot3_control_cpp', 'omx_turtlebot3_runtime',
-            'omx_turtlebot3_policy', 'aruco_eef_tracker', 'DynamixelSDK')
+            'omx_turtlebot3_policy', 'aruco_eef_tracker', 'DynamixelSDK', 'mp_control', 'turtlebot3_control')
 
 
 def main():

@@ -29,6 +29,14 @@ def test_bad_limits_and_unreachable(planner):
         planner.ik([2, 0, .3])
 
 
+def test_stay_path_checks_measured_opening_and_rejects_unmapped_start(planner):
+    planner.stay_path(planner.stay+np.array([.02, 0, 0, 0]), .01)
+    with pytest.raises(Fault, match='outside commissioned model limits'):
+        planner.stay_path(np.array([-.1994, -2.0893, -.0215, .5446]), .01)
+    with pytest.raises(Fault, match='gripper feedback'):
+        planner.stay_path(planner.stay, float('nan'))
+
+
 def test_marker_object_roundtrip(planner):
     q = planner.stay
     camera, optical = planner.camera_pose(q)

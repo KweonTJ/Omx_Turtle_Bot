@@ -47,8 +47,23 @@ struct Sample {
   double finger{}, finger_velocity{}, current{}, voltage{};
   std::array<int32_t, 2> wheels{};
   uint32_t millis{};
-  bool ros{};
+  bool ros{}, torque{};
   std::array<int32_t, 4> currents{};
+};
+// Coordinated minimum-jerk startup motion, independent of PPO residuals.
+class StayTrajectory {
+ public:
+  StayTrajectory(const Config &config, const Sample &start, const Joints &goal, double stamp);
+  Joints update(const Sample &sample, double stamp);
+  bool ready() const { return ready_; }
+  double duration() const { return duration_; }
+ private:
+  friend class Transport;
+  void restart_clock(double stamp);
+  Joints start_{}, goal_{};
+  double started_{}, previous_{}, duration_{}, timeout_{}, max_cycle_{};
+  double position_tolerance_{}, velocity_tolerance_{}, stable_s_{}, settled_since_{-1};
+  bool ready_{};
 };
 class Bus {
  public:
@@ -64,6 +79,10 @@ class Transport {
   ~Transport();
   Sample read();
   void arm();
+  void begin_stay(const Joints &goal);
+  bool stay_step();
+  void finish_stay();
+  bool torque_enabled();
   void command(const Joints &q, double finger);
   void hold();
   uint64_t writes() const { return writes_.load(); }
@@ -73,6 +92,7 @@ class Transport {
   void write(uint16_t address, const std::vector<uint8_t> &bytes);
   void beat();
   void goals(const Joints &q, double finger, bool include_gripper = true);
+  void arm_impl(bool enable_torque);
   Config config_;
   std::unique_ptr<Bus> bus_;
   bool execute_{}, armed_{}, have_sample_{};
@@ -85,5 +105,6 @@ class Transport {
   Sample last_;
   Joints commanded_{};
   double finger_command_{}, command_time_{};
+  std::unique_ptr<StayTrajectory> stay_;
 };
 }  // namespace omx_v6

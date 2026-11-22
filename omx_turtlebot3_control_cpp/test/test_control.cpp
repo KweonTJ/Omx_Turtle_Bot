@@ -1,5 +1,6 @@
 #include "omx_turtlebot3_control_cpp/control.hpp"
 #include <gtest/gtest.h>
+#include <algorithm>
 #include <chrono>
 #include <limits>
 #include <thread>
@@ -13,14 +14,25 @@ struct FakeBus : v::Bus {
   std::vector<std::pair<uint16_t, std::vector<uint8_t>>> writes;
   uint32_t millis = 1000;
   bool tick = true;
+  int repeat_reads = 0, write_delay_ms = 0;
   FakeBus() {
     bytes[16] = bytes[199] = 1; put(bytes, 42, 1217);
     for (size_t i = 0; i < 4; ++i) put(bytes, 224+4*i, 2048);
     put(bytes, 240, 2048); bytes[272] = 0xec; bytes[273] = 0xff;
   }
   uint16_t ping() override { return 20480; }
-  std::vector<uint8_t> read() override { if (tick) millis += 50; put(bytes, 10, millis); return bytes; }
-  void write(uint16_t a, const std::vector<uint8_t> &b) override { writes.emplace_back(a, b); if (a == 19) bytes[15] = 1; }
+  std::vector<uint8_t> read() override {
+    if (repeat_reads > 0) --repeat_reads;
+    else if (tick) millis += 50;
+    put(bytes, 10, millis); return bytes;
+  }
+  void write(uint16_t a, const std::vector<uint8_t> &b) override {
+    writes.emplace_back(a, b);
+    std::this_thread::sleep_for(std::chrono::milliseconds(write_delay_ms));
+    if (a+b.size() <= bytes.size()) std::copy(b.begin(), b.end(), bytes.begin()+a);
+    if (a == 19) bytes[15] = 1;
+    if (a == 220) std::copy_n(bytes.begin()+200, 16, bytes.begin()+224);
+  }
 };
 v::Config commissioned() {
   auto c = config();
@@ -33,7 +45,11 @@ v::Config commissioned() {
 }
 TEST(Model, ExecutesOnnxAndRejectsNonfinite) {
   v::Actor actor(root+"/omx_turtlebot3_policy/models/omx_turtlebot3_v6");
-  v::Observation obs{}; EXPECT_NO_THROW(actor.infer(obs));
+  v::Observation obs{};
+  const auto action = actor.infer(obs);
+  // Jetson OpenCV 4.5.4 ReLU6 incorrectly returned zero for these negatives.
+  EXPECT_NEAR(action[0], -.0559722148, 1e-6);
+  EXPECT_NEAR(action[2], -.1057149619, 1e-6);
   obs[1] = std::numeric_limits<float>::quiet_NaN(); EXPECT_THROW(actor.infer(obs), std::runtime_error);
 }
 TEST(Trajectory, SameReferenceAvoidsRatchetAndDoubleWristCorrection) {
@@ -79,16 +95,108 @@ TEST(Transport, PreservesSignedCurrentAndVoltage) {
   auto s = transport.read(); EXPECT_DOUBLE_EQ(s.current, -20); EXPECT_DOUBLE_EQ(s.voltage, 12.17);
   for (double x : s.q) EXPECT_DOUBLE_EQ(x, 0);
 }
-TEST(Transport, RejectsStaleCounterBaseMotionAndTorqueLoss) {
-  for (int variant = 0; variant < 4; ++variant) {
+TEST(Transport, AwaitsNewCounterWithinTheReadDeadlineWithoutWrites) {
+  auto bus = std::make_unique<FakeBus>(); auto *fake = bus.get();
+  v::Transport transport(config(), false, std::move(bus));
+  const auto old = transport.last().millis; fake->repeat_reads = 3;
+  const auto sample = transport.read();
+  EXPECT_GT(sample.millis, old); EXPECT_EQ(fake->repeat_reads, 0);
+  EXPECT_EQ(transport.writes(), 0u);
+}
+TEST(Transport, StayClockStartsAfterProfileAndTorqueSetup) {
+  auto bus = std::make_unique<FakeBus>(); auto *fake = bus.get(); fake->bytes[199] = 0;
+  fake->write_delay_ms = 8;  // Total setup exceeds the 150 ms control deadline.
+  v::Transport transport(commissioned(), true, std::move(bus));
+  transport.begin_stay({0, 0, 0, 0});
+  EXPECT_NO_THROW(transport.stay_step());
+}
+TEST(Transport, RejectsStaleCounterAndBaseMotion) {
+  for (int variant = 0; variant < 3; ++variant) {
     auto bus = std::make_unique<FakeBus>(); auto *fake = bus.get();
     v::Transport transport(config(), false, std::move(bus));
     if (variant == 0) fake->tick = false;
     if (variant == 1) put(fake->bytes, 150, 1);
     if (variant == 2) put(fake->bytes, 128, 10);
-    if (variant == 3) fake->bytes[199] = 0;
     EXPECT_THROW(transport.read(), std::runtime_error); EXPECT_EQ(transport.writes(), 0u);
   }
+}
+TEST(Transport, IdleTorqueOffIsReadableButArmedTorqueLossIsRejected) {
+  auto bus = std::make_unique<FakeBus>(); auto *fake = bus.get(); fake->bytes[199] = 0;
+  v::Transport transport(commissioned(), true, std::move(bus));
+  EXPECT_FALSE(transport.read().torque);
+  EXPECT_THROW(transport.arm(), std::runtime_error); EXPECT_EQ(transport.writes(), 0u);
+  transport.begin_stay({0, 0, 0, 0}); EXPECT_TRUE(transport.last().torque);
+  EXPECT_THROW(transport.finish_stay(), std::runtime_error);
+  fake->bytes[199] = 0;
+  EXPECT_THROW(transport.read(), std::runtime_error);
+}
+TEST(Transport, StayEnablesOnlyArmAfterPreloadingGoalsAndProfiles) {
+  auto bus = std::make_unique<FakeBus>(); auto *fake = bus.get(); fake->bytes[199] = 0;
+  v::Transport transport(commissioned(), true, std::move(bus));
+  EXPECT_THROW(transport.begin_stay({0, 0, -3, 0}), std::runtime_error);
+  EXPECT_EQ(transport.writes(), 0u);
+  transport.begin_stay({0, 0, 0, 0});
+  bool goal = false, profile = false, torque = false;
+  for (const auto &[address, bytes] : fake->writes) {
+    EXPECT_NE(address, 149); EXPECT_NE(address, 150); EXPECT_NE(address, 198);
+    if (address == 220) goal = true;
+    if (address == 328) profile = true;
+    if (address == 199) { EXPECT_TRUE(goal && profile); EXPECT_EQ(bytes, std::vector<uint8_t>{1}); torque = true; }
+  }
+  EXPECT_TRUE(torque);
+}
+TEST(Stay, RespectsCoordinatedVelocityAndAccelerationAndMeasuredArrival) {
+  const auto c = config(); v::Sample sample; sample.stamp = 10;
+  const v::Joints goal{.1, .2, -.1, -.25};
+  v::StayTrajectory move(c, sample, goal, 10);
+  v::Joints previous{}, velocity{};
+  const double dt = .01;
+  for (int tick = 1; tick <= int((move.duration()+1)/dt); ++tick) {
+    sample.stamp = 10+tick*dt; sample.q = previous; sample.dq = velocity;
+    const auto q = move.update(sample, sample.stamp);
+    for (size_t i = 0; i < 4; ++i) {
+      const double speed = (q[i]-previous[i])/dt;
+      EXPECT_LE(std::abs(speed), c.velocity+1e-7);
+      EXPECT_LE(std::abs(speed-velocity[i])/dt, c.acceleration+1e-5);
+      EXPECT_NEAR(q[i]/goal[i], q[0]/goal[0], 1e-10);
+      velocity[i] = speed;
+    }
+    previous = q;
+    if (tick*dt < move.duration()+c.data["control"]["stable_s"].as<double>()) EXPECT_FALSE(move.ready());
+  }
+  EXPECT_TRUE(move.ready());
+  for (size_t i = 0; i < 4; ++i) EXPECT_DOUBLE_EQ(previous[i], goal[i]);
+}
+TEST(Stay, ElapsedTimeAloneCannotCompleteAndTimeoutIsEnforced) {
+  auto c = config(); c.data["control"]["stay_timeout_s"] = 4.;
+  v::Sample sample; sample.stamp = 10;
+  v::StayTrajectory move(c, sample, {.05, 0, 0, 0}, 10);
+  for (int tick = 1; tick <= 39; ++tick) {
+    sample.stamp = 10+tick*.1; move.update(sample, sample.stamp); EXPECT_FALSE(move.ready());
+  }
+  sample.stamp = 14.; move.update(sample, sample.stamp);
+  sample.stamp = 14.1; EXPECT_THROW(move.update(sample, sample.stamp), std::runtime_error);
+}
+TEST(Stay, RejectsMovingStartAndMissedControlDeadline) {
+  const auto c = config(); v::Sample sample; sample.stamp = 10; sample.dq[0] = .1;
+  EXPECT_THROW(v::StayTrajectory(c, sample, {}, 10), std::runtime_error);
+  sample.dq[0] = 0;
+  v::StayTrajectory move(c, sample, {}, 10);
+  sample.stamp = 10.2;
+  EXPECT_THROW(move.update(sample, sample.stamp), std::runtime_error);
+}
+TEST(Stay, ArrivalRequiresStoppedEncodersForTheWholeSettleWindow) {
+  const auto c = config(); v::Sample sample; sample.stamp = 10;
+  v::StayTrajectory move(c, sample, {}, 10);
+  for (int tick = 1; tick <= 40; ++tick) {
+    sample.stamp = 10+tick*.1;
+    sample.dq[0] = tick < 36 ? .04 : 0;
+    move.update(sample, sample.stamp);
+    if (tick < 39) EXPECT_FALSE(move.ready());
+  }
+  EXPECT_TRUE(move.ready());
+  sample.dq[0] = .04; sample.stamp = 14.1;
+  move.update(sample, sample.stamp); EXPECT_FALSE(move.ready());
 }
 TEST(Transport, RequiresCommissioningBeforeAnyWrite) {
   auto bus = std::make_unique<FakeBus>();

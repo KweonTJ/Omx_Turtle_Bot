@@ -177,6 +177,19 @@ class Planner:
         for t in np.linspace(0, 1, count):
             self.check(start+(goal-start)*t, phase, .0035 if carry else .019, carry)
 
+    def stay_path(self, start, finger):
+        """Validate startup at the measured finger opening, without PPO or IK.
+
+        Before camera recognition this uses the commissioned scene geometry.
+        It is a collision preflight, never a substitute for measured feedback.
+        """
+        start = finite(start, (4,))
+        if not math.isfinite(finger) or not -.010 <= finger <= .019:
+            raise Fault('Invalid startup gripper feedback')
+        count = max(7, int(np.max(np.abs(self.stay-start))/.025)+2)
+        for t in np.linspace(0, 1, count):
+            self.check(start+(self.stay-start)*t, Phase.RECOGNIZE, finger, False)
+
     def ik(self, point, pitch=0.):
         point = finite(point, (3,))
         yaw = math.atan2(point[1]-self.origin[1], point[0]-self.origin[0])

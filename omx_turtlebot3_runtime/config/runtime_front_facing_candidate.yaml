@@ -32,6 +32,10 @@ control:
   gripper_velocity_m_s: 0.006
   max_tracking_error_rad: 0.12
   start_stay_tolerance_rad: 0.08
+  stay_min_duration_s: 3.0
+  stay_timeout_s: 60.0
+  stay_position_tolerance_rad: 0.025
+  stay_velocity_tolerance_rad_s: 0.03
   pose_timeout_s: 0.5
   deadman_timeout_s: 0.5
   phase_timeout_s: 60.0

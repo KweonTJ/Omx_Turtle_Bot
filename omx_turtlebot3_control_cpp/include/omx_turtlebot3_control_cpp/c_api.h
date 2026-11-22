@@ -16,6 +16,11 @@ void omx_v6_transport_destroy(void *handle);
 /* stamp q4 dq4 finger finger_velocity current voltage wheel2 millis */
 int omx_v6_read(void *handle, double sample[16]);
 int omx_v6_arm(void *handle);
+int omx_v6_begin_stay(void *handle, const double goal[4]);
+/* ready is 1 only after measured position AND velocity settle. */
+int omx_v6_stay_step(void *handle, int *ready);
+int omx_v6_finish_stay(void *handle);
+int omx_v6_torque_enabled(void *handle);
 int omx_v6_command(void *handle, const double q[4], double finger);
 int omx_v6_hold(void *handle);
 uint64_t omx_v6_writes(void *handle);

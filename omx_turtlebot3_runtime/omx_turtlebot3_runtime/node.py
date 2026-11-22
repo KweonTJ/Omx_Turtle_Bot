@@ -80,9 +80,17 @@ class Runtime(Node):
             self.transport = NativeTransport(self.cfg, args.config, urdf, execute=args.execute)
         else:
             self.transport = transport_factory(self.cfg, execute=args.execute)
+        self.startup = None
+        if native and args.execute:
+            from .startup import StayStartup
+            self.startup = StayStartup(self.transport, self.planner)
         self.history.append(self.transport.last)
         self.timer = self.create_timer(self.cfg['control']['period_s'], self.tick)
-        self.emit('READY', execute=args.execute, commissioning_issues=commissioning_issues(self.cfg),
+        self.emit('WAITING_FOR_STAY' if self.startup else 'READ_ONLY_READY' if native else 'READY',
+                  startup_state=self.startup.state if self.startup else 'READ_ONLY' if native else 'LEGACY',
+                  stay_q=self.planner.stay,
+                  torque_enabled=getattr(self.transport, 'torque_enabled', None),
+                  execute=args.execute, commissioning_issues=commissioning_issues(self.cfg),
                   inference_backend=self.actor.backend,
                   motor_transport='cpp_opencr' if native else 'python_opencr',
                   estimator_semantics='physical_proxy_not_mujoco_contact', motor_writes=0,
@@ -109,7 +117,7 @@ class Runtime(Node):
 
     def on_deadman(self, message):
         self.deadman, self.deadman_time = bool(message.data), time.monotonic()
-        if not self.deadman and self.mission.active:
+        if not self.deadman and (self.mission.active or (self.startup and self.startup.active)):
             self.stop('Operator deadman released')
 
     def on_cancel(self, message):
@@ -197,6 +205,8 @@ class Runtime(Node):
         try:
             if self.fault or self.pending is not None or self.mission.active or self.mission.done:
                 raise Fault('Runtime is latched/active; explicit restart required')
+            if self.startup and self.startup.state != 'READY':
+                raise Fault('Stay startup incomplete: '+self.startup.state)
             if len(message.data) > 2048:
                 raise Fault('Request too long')
             request = json.loads(message.data)
@@ -242,6 +252,15 @@ class Runtime(Node):
             # Raw current is not JointState effort (N or Nm); report it only in telemetry.
             self.joint_pub.publish(joints)
             now = time.monotonic()
+            if self.startup and self.startup.state != 'MISSION':
+                previous = self.startup.state
+                fresh_deadman = self.deadman and now-self.deadman_time <= self.cfg['control']['deadman_timeout_s']
+                state = self.startup.step(sample, fresh_deadman)
+                if state != previous:
+                    self.emit(state, stay_q=self.planner.stay, measured_q=self.transport.last.q,
+                              torque_enabled=self.transport.torque_enabled,
+                              motor_writes=self.transport.writes,
+                              mission_requests_enabled=state == 'READY')
             if (getattr(self.args, 'check_plan_id', None) is not None and not self.plan_checked
                     and all(self.cache.fresh(i, now, .2) for i in (0, 1))
                     and all(self.camera_counts[f'pose_{i}'] >= 3 for i in (0, 1))):
@@ -259,7 +278,13 @@ class Runtime(Node):
                 self.mission = candidate_mission
                 self.mission.start_time = self.mission.phase_time = self.mission.last_time = now
                 if self.args.execute:
-                    self.transport.arm()
+                    if self.startup:
+                        self.startup.handoff()
+                        # Native handoff anchors to the latest encoder sample.
+                        self.mission.target = self.transport.last.q.copy()
+                        self.mission.gripper_target = self.transport.last.finger
+                    else:
+                        self.transport.arm()
                     self.mission.last_time = time.monotonic()
                     self.emit('MISSION_STARTED', **request)
                     return  # Acquire fresh telemetry on the next cycle.
@@ -277,6 +302,7 @@ class Runtime(Node):
                     self.transport.hold()
                     self.emit('MISSION_DONE', result=self.mission.reason)
             self.emit('SAMPLE', **vars(sample), phase=self.mission.phase.name,
+                      startup_state=self.startup.state if self.startup else 'READ_ONLY' if self.args.backend == 'cpp_onnx' else 'LEGACY',
                       active=self.mission.active, grasp=self.mission.evidence.grasp_confirmed,
                       placed=self.mission.evidence.placed, evidence=self.mission.evidence.reason,
                       motor_writes=self.transport.writes)
@@ -340,11 +366,16 @@ def validate_config(cfg):
     if c.get('command_route', 'direct') not in ('direct', 'mp_control_equivalent'):
         raise Fault('Invalid command route')
     for key in ('period_s', 'max_cycle_s', 'joint_velocity_rad_s', 'joint_acceleration_rad_s2',
-                'gripper_velocity_m_s', 'max_tracking_error_rad', 'pose_timeout_s', 'deadman_timeout_s'):
-        if not isinstance(c[key], (float, int)) or not math.isfinite(c[key]) or c[key] <= 0:
+                'gripper_velocity_m_s', 'max_tracking_error_rad', 'pose_timeout_s', 'deadman_timeout_s',
+                'stay_min_duration_s', 'stay_timeout_s', 'stay_position_tolerance_rad',
+                'stay_velocity_tolerance_rad_s', 'stable_s', 'start_stay_tolerance_rad'):
+        if type(c[key]) not in (float, int) or not math.isfinite(c[key]) or c[key] <= 0:
             raise Fault('Invalid control limit: '+key)
     if c['joint_velocity_rad_s'] > .72 or c['gripper_velocity_m_s'] > .02 or c['max_cycle_s'] > .2:
         raise Fault('Control limit exceeds runtime envelope')
+    if (c['stay_min_duration_s'] < 3 or c['stay_timeout_s'] <= c['stay_min_duration_s']+c['stable_s']+c['max_cycle_s']
+            or c['stay_position_tolerance_rad'] > c['start_stay_tolerance_rad']):
+        raise Fault('Invalid Stay startup limits')
 
 
 def main(argv=None):
@@ -355,30 +386,47 @@ def main(argv=None):
     parser.add_argument('--scene', type=Path, default=root/'assets/scene.xml')
     parser.add_argument('--model-dir', type=Path, default=models)
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--check-startup', action='store_true',
+                        help='Check native ONNX and geometry only; do not initialize ROS or open serial')
     parser.add_argument('--check-plan-id', type=int, choices=[0, 1],
                         help='Read-only actor and path check on fresh camera/encoder data; never arm')
     parser.add_argument('--backend', choices=['torchscript', 'onnx', 'cpp_onnx'], default='torchscript')
     parser.add_argument('--device', choices=['cpu', 'cuda'], default='cpu')
     parser.add_argument('--duration', type=float, default=0.)
+    parser.add_argument('--exit-after-mission', action='store_true',
+                        help='Exit after the requested mission finishes and the final hold is sent')
     parser.add_argument('--log-dir', type=Path, default=Path('/tmp')/f'omx_v6_runtime_{time.time_ns()}')
     args, ros_args = parser.parse_known_args(argv)
     if args.execute and args.check_plan_id is not None:
         parser.error('--check-plan-id cannot be combined with --execute')
     if args.backend == 'cpp_onnx' and args.device != 'cpu':
         parser.error('cpp_onnx uses explicit OpenCV DNN CPU inference; choose --device cpu')
+    if args.check_startup:
+        if args.check_plan_id is not None:
+            parser.error('--check-startup cannot be combined with --check-plan-id')
+        from .startup_check import check, print_report
+        cfg = yaml.safe_load(args.config.read_text())
+        validate_config(cfg)
+        training = yaml.safe_load((args.model_dir/'training_config.yaml').read_text())
+        print_report(check(args, cfg, training))
+        return
     rclpy.init(args=ros_args)
     node = None
     try:
         node = Runtime(args)
-        while (rclpy.ok() and not node.plan_checked
+        while (rclpy.ok() and not node.plan_checked and not node.fault
+               and not (args.exit_after_mission and node.mission.done)
                and (args.duration <= 0 or time.monotonic()-node.started < args.duration)):
             rclpy.spin_once(node, timeout_sec=.05)
+        if node.fault:
+            raise Fault('Runtime stopped: '+node.fault)
     except KeyboardInterrupt:
         pass
     finally:
         if node is not None:
             node.finish()
-        rclpy.shutdown()
+        if rclpy.ok():
+            rclpy.shutdown()
 
 
 def main_cpp():

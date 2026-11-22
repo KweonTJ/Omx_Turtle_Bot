@@ -30,9 +30,15 @@ def library(path=None):
     lib.omx_v6_transport_destroy.restype = None
     lib.omx_v6_read.argtypes = [ct.c_void_p, D16]
     lib.omx_v6_read.restype = ct.c_int
-    for name in ('arm', 'hold'):
+    for name in ('arm', 'hold', 'finish_stay'):
         fn = getattr(lib, 'omx_v6_'+name)
         fn.argtypes, fn.restype = [ct.c_void_p], ct.c_int
+    lib.omx_v6_begin_stay.argtypes = [ct.c_void_p, D4]
+    lib.omx_v6_begin_stay.restype = ct.c_int
+    lib.omx_v6_stay_step.argtypes = [ct.c_void_p, ct.POINTER(ct.c_int)]
+    lib.omx_v6_stay_step.restype = ct.c_int
+    lib.omx_v6_torque_enabled.argtypes = [ct.c_void_p]
+    lib.omx_v6_torque_enabled.restype = ct.c_int
     lib.omx_v6_command.argtypes = [ct.c_void_p, D4, ct.c_double]
     lib.omx_v6_command.restype = ct.c_int
     lib.omx_v6_writes.argtypes = [ct.c_void_p]
@@ -114,6 +120,21 @@ class NativeTransport:
 
     def arm(self):
         checked(self.lib, self.lib.omx_v6_arm(self.handle))
+
+    @property
+    def torque_enabled(self):
+        return bool(self.lib.omx_v6_torque_enabled(self.handle))
+
+    def begin_stay(self, goal):
+        checked(self.lib, self.lib.omx_v6_begin_stay(self.handle, D4(*finite(goal, (4,)))))
+
+    def stay_step(self):
+        ready = ct.c_int()
+        checked(self.lib, self.lib.omx_v6_stay_step(self.handle, ct.byref(ready)))
+        return bool(ready.value)
+
+    def finish_stay(self):
+        checked(self.lib, self.lib.omx_v6_finish_stay(self.handle))
 
     def command(self, q, finger):
         q = finite(q, (4,))

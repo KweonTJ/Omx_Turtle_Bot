@@ -10,10 +10,52 @@
 
 ## C++ ONNX 제어 실행
 
+기존 하드웨어 Stay 런치에 붙이는 실물 mp_control + ONNX 진입점은
+`ros_policy_pick_place.launch.py`다. 기본값은 monitor이며 `execute:=true`에서 ID 0 미션을
+한 번 시작한다. 팔 전개 중 joint4 고정 패치와 measured Stay·실제 마커·활성 제어기를 검사한다.
+[호스트 마무리와 다음 로봇 실행 절차](../omx_turtlebot3_control_cpp/docs/host_finish_20261122.md)를 참고한다.
+로봇 전원 종료 후 만든 wrist 고정 수정본은 아직 실물에 반영·재검증하지 않았다.
+
 `runtime_cpp` 또는 `--backend cpp_onnx`로 [v6 C++ 제어 패키지](../omx_turtlebot3_control_cpp/README.md)를
 선택한다. 원본 `actor.onnx` 추론, residual 계산, 관절·그리퍼 속도 제한과 모터 전송은
 C++에서 수행하고 ROS 영상·충돌 검사·단계 전환은 이 패키지에서 재사용한다. 구형
 33차원 `omx_rl_control_cpp`와는 별도다. 설치·로컬 검증·추후 로봇 배포 순서는 해당 문서를 따른다.
+
+카메라와 C++ ONNX/OpenCR 런타임을 묶은 진입점은 다음과 같다. 기본 모드는 읽기 전용이다.
+
+```bash
+ros2 launch omx_turtlebot3_runtime real_robot_cpp.launch.py
+```
+
+런치는 선택된 Python 환경에서 모델 체크섬·실제 ONNX 추론·URDF·충돌 장면을 먼저 검사하고,
+통과하면 카메라와 런타임을 시작한다. `python_executable:=/경로/가상환경/bin/python` 또는
+`OMX_CPP_PYTHON`으로 Python 환경을 지정한다. 워크스페이스의 `.venv_omx_cpp`가 있으면 자동 선택한다.
+카메라는 `v4l2_camera`가 필요하며 기존 영상 발행기를 사용할 때만 `start_camera:=false`로 실행한다.
+
+실제 구동은 `mode:=execute config:=/검증된/실물보정.yaml`을 추가한다. 현재 기본 설정으로는
+실행 모드가 모터 통신 시작 전에 거부된다. 프로세스 시작 후에도 집기는 별도의
+`/omx_v6/request` 및 현장 `/omx_v6/deadman` 신호를 요구한다. 런치가 이를 자동 생성하지 않는다.
+
+C++ 실행 모드의 시작 순서는 `WAIT_DEADMAN → MOVING_STAY → READY → MISSION`이다.
+`mp_control/launch/aruco_pick_place.launch.py`처럼 Stay 자세를 먼저 취한다.
+목표는 기존과 같은 `[0.104311, 0.027612, -0.001534, -1.638291]` rad다.
+관절 제한·충돌 경로 검사 후 C++에서 최소 3초의 동시 관절 궤적을 만들고, 속도 0.12 rad/s와
+가속도 0.3 rad/s²에 맞춰 이동 시간을 늘린다. 위치 오차 0.025 rad 이하, 속도 0.03 rad/s 이하가
+0.3초 유지되어야 `READY`가 된다. 초기화 중 요청은 거부하며, deadman 만료·취소·추종 실패·
+60초 도달 시간 초과에는 정지한다. `READY` 대기 중에도 C++ watchdog과 Stay 유지를 계속한다.
+토크 OFF라면 실행 모드에서만 현재 목표와 저속 프로파일을 먼저 설정한 뒤 팔 토크를 켠다.
+기존 ROS 하드웨어 제어기를 같이 띄우지 않으며 직렬 포트 소유자는 하나다.
+통합 런치의 실행 모드는 한 임무가 끝나면 최종 위치 유지 명령을 보낸 후 런타임과 카메라를 종료한다.
+직접 실행 시에는 `--exit-after-mission`으로 같은 동작을 선택한다.
+
+모터·ROS를 열지 않고 모델과 설정만 검사하는 명령은 다음과 같다.
+
+```bash
+python -m omx_turtlebot3_runtime.node --backend cpp_onnx --check-startup
+```
+
+`STARTUP_CHECK_PASSED`는 모델·기구학 검사 결과이며 실물 카메라·접촉·집기 성공 판정이 아니다.
+실행 준비 여부는 `execution_config_ready`와 `commissioning_issues`를 함께 확인한다.
 
 ## 구성과 입력
 
@@ -24,6 +66,7 @@ C++에서 수행하고 ROS 영상·충돌 검사·단계 전환은 이 패키지
 - `opencr.py`: OpenCR ID 200의 관절·그리퍼 제어. 바퀴 명령, 토크 변경, EEPROM 쓰기 없음.
 - `vision.py`: 기존 `aruco_eef_tracker`의 사전·검출기 도우미를 재사용하는 다중 물체 PnP.
 - `node.py`: ROS 요청·취소·현장 활성 신호, 시간 동기화, 로그 및 오류 시 정지.
+- `startup.py`: C++ Stay 초기화 순서와 임무 요청 차단·전환.
 
 실물 마커는 `DICT_4X4_50`, 검은 정사각형 한 변 40 mm, ID 0·1이다. ID 0은 모델의 첫 슬롯
 (학습 라벨 1), ID 1은 두 번째 슬롯(학습 라벨 2)으로 연결한다. 화면에서 큰 마커를 대신
@@ -151,7 +194,7 @@ PnP 오차를 다시 확인하고 영상 취득 시각의 관절값으로 변환
 `config/runtime.yaml`의 `commissioning` 항목은 기본 false이고 전류 임계값은 null이다.
 실측 자료 없이 true나 임의 임계값을 넣지 않는다. 별도 보정 설정 파일을 만들어 `--config`로 전달한다.
 
-1. 각 관절 영점·방향과 실제 Stay를 확인한다. 현재 자세가 학습 Stay와 다르면 자동으로 이동하지 않는다.
+1. 각 관절 영점·방향과 실제 Stay를 확인한다. C++ 실행 모드의 초기 Stay 이동도 검증된 매핑과 경로를 요구한다.
 2. 실제 카메라 렌즈의 link5 기준 변환, 마커 부착 변환, 카메라 보정을 검증한다.
 3. 선반·상판·팔로워·로봇의 상대 배치와 충돌 모델을 일치시킨다. 제공 값은 학습 장면 기준이다.
 4. 빈 닫힘·물체를 잡은 상태·미끄러짐·안착 데이터를 구분해 전류·벌어짐·영상 임계값을 검증한다.
@@ -159,12 +202,12 @@ PnP 오차를 다시 확인하고 영상 취득 시각의 관절값으로 변환
    팔 토크 해제나 팔 정지를 보장하는 하드웨어 비상정지가 아니다. 전원 차단 수단을 준비한다.
 6. 근거 파일 경로를 `evidence_directory`에 기록하고 모든 검증 항목이 충족된 설정만 실행한다.
 
-구동은 `--execute`, 검증된 설정, 시작 시 실제 Stay, 두 물체의 신선한 관측, 유효한 요청,
+구동은 `--execute`, 검증된 설정, Stay 초기화 성공, 두 물체의 신선한 관측, 유효한 요청,
 지속적인 현장 활성 신호를 모두 요구한다. 기본 관절 속도 상한은 초기 검증용 0.12 rad/s다.
 요청은 `std_msgs/msg/String`의 `{"request_id":"고유값","object_id":0}` 형식으로
 `/omx_v6/request`에 보낸다. object_id는 실물 ID 0 또는 1이다.
 `/omx_v6/deadman`에는 현장 준비 상태를 나타내는 Bool true가 0.5초 이내 간격으로 들어와야 한다.
-false 또는 수신 만료 시 정지한다. 자동 시작·자동 재시도는 없다.
+false 또는 수신 만료 시 정지한다. Stay 초기화는 deadman이 들어온 뒤 진행하며 임무의 자동 시작·재시도는 없다.
 
 `/omx_v6/cancel`의 Bool true는 정지 요청이다. 정지는 새 경로를 멈추고 가능한 경우 현재 관절
 위치를 유지하며, 잡은 물체를 떨어뜨리지 않도록 그리퍼를 자동으로 열거나 토크를 끄지 않는다.

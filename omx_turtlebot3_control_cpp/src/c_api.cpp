@@ -61,6 +61,14 @@ int omx_v6_read(void *p, double *out) {
   });
 }
 int omx_v6_arm(void *p) { return call([&] { valid(p); static_cast<omx_v6::Transport *>(p)->arm(); }); }
+int omx_v6_begin_stay(void *p, const double *goal) {
+  return call([&] { valid(p); valid(goal); static_cast<omx_v6::Transport *>(p)->begin_stay(joints(goal)); });
+}
+int omx_v6_stay_step(void *p, int *ready) {
+  return call([&] { valid(p); valid(ready); *ready = static_cast<omx_v6::Transport *>(p)->stay_step(); });
+}
+int omx_v6_finish_stay(void *p) { return call([&] { valid(p); static_cast<omx_v6::Transport *>(p)->finish_stay(); }); }
+int omx_v6_torque_enabled(void *p) { return p && static_cast<omx_v6::Transport *>(p)->torque_enabled(); }
 int omx_v6_command(void *p, const double *q, double finger) { return call([&] { valid(p); valid(q); static_cast<omx_v6::Transport *>(p)->command(joints(q), finger); }); }
 int omx_v6_hold(void *p) { return call([&] { valid(p); static_cast<omx_v6::Transport *>(p)->hold(); }); }
 uint64_t omx_v6_writes(void *p) { return p ? static_cast<omx_v6::Transport *>(p)->writes() : 0; }

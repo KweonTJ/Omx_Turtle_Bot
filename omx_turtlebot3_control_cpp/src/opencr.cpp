@@ -106,10 +106,23 @@ Transport::~Transport() {
 }
 Sample Transport::read() {
   std::lock_guard<std::recursive_mutex> guard(mutex_);
-  const double start = now(); const auto b = bus_->read(); const double stamp = now();
-  require(b.size() == 344 && stamp-start <= .10, "OpenCR telemetry failed/deadline exceeded");
+  const double start = now();
+  std::vector<uint8_t> b;
+  double stamp;
+  for (;;) {
+    b = bus_->read(); stamp = now();
+    require(b.size() == 344 && stamp-start <= .10, "OpenCR telemetry failed/deadline exceeded");
+    // The real firmware refreshes this table about every 20 ms. Two valid
+    // back-to-back reads can share a counter. Await a NEW sample within the
+    // same bounded read deadline; never accept duplicates as fresh feedback.
+    if (!have_sample_ || u32(b, 10) != last_.millis) break;
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+  }
   Sample sample; sample.stamp = stamp; sample.millis = u32(b, 10); sample.ros = b[15] != 0;
-  require(b[16] == 1 && b[199] == 1, "Manipulator disconnected or torque unavailable; never auto-enable");
+  require(b[16] == 1 && b[199] <= 1, "Manipulator disconnected or invalid torque feedback");
+  sample.torque = b[199] == 1;
+  // Reading an idle, torque-OFF robot must remain possible without any writes.
+  require(!armed_ || sample.torque, "Manipulator torque lost while armed");
   require(!armed_ || sample.ros, "OpenCR heartbeat lost");
   require(!have_sample_ || sample.millis > last_.millis, "Feedback counter stalled or rebooted");
   const auto s = config_.data["serial"];
@@ -144,13 +157,14 @@ void Transport::write(uint16_t address, const std::vector<uint8_t> &bytes) {
   // Validate address AND payload size: no range can spill into another register.
   size_t length = 0;
   switch (address) {
-    case 19: case 220: case 221: case 304: case 305: case 306: case 328: case 329: case 330: case 343: case 344: length = 1; break;
+    case 19: case 199: case 220: case 221: case 304: case 305: case 306: case 328: case 329: case 330: case 343: case 344: length = 1; break;
     case 200: case 284: case 308: length = 16; break;
     case 216: case 300: case 324: length = 4; break;
     case 340: length = 2; break;
     default: throw std::runtime_error("Register outside arm-only write allowlist");
   }
   require(bytes.size() == length, "Invalid register write length");
+  require(address != 199 || bytes[0] == 1, "Only explicit Stay startup may enable arm torque");
   bus_->write(address, bytes); ++writes_;
 }
 void Transport::beat() { ++heartbeat_; write(19, {heartbeat_}); }
@@ -171,7 +185,11 @@ void Transport::goals(const Joints &q, double finger, bool include_gripper) {
 }
 void Transport::arm() {
   std::lock_guard<std::recursive_mutex> guard(mutex_);
+  arm_impl(false);
+}
+void Transport::arm_impl(bool enable_torque) {
   require(execute_ && !armed_ && have_sample_ && !last_.ros && !watchdog_fault_, "Cannot arm this C++ transport");
+  require(last_.torque || enable_torque, "Torque OFF; use validated Stay startup before a mission");
   config_.require_commissioned();
   require(now()-last_.stamp <= config_.max_cycle, "Cannot arm stale feedback");
   const auto s = config_.data["serial"];
@@ -193,7 +211,47 @@ void Transport::arm() {
   write(300, packed(s["gripper_profile_acceleration"].as<int>())); write(305, {1});
   write(324, packed(s["gripper_profile_velocity"].as<int>())); write(329, {1});
   write(340, {uint8_t(current), uint8_t(current >> 8)}); write(343, {1});
+  // Preload measured goals and slow profiles before enabling only the arm.
+  // Wheel torque (149) and base commands are never written.
+  if (!last_.torque) write(199, {1});
   command_time_ = now(); armed_ = true;
+  try { read(); }
+  catch (...) {
+    watchdog_fault_ = true;
+    try { hold(); } catch (...) { armed_ = false; }
+    throw;
+  }
+}
+void Transport::begin_stay(const Joints &goal) {
+  std::lock_guard<std::recursive_mutex> guard(mutex_);
+  require(!stay_, "Stay startup already started");
+  // Complete trajectory/range/time validation before the first hardware write.
+  auto trajectory = std::make_unique<StayTrajectory>(config_, last_, goal, now());
+  arm_impl(true);
+  trajectory->restart_clock(now());  // Profile/torque setup is not trajectory time.
+  stay_ = std::move(trajectory);
+}
+bool Transport::stay_step() {
+  std::lock_guard<std::recursive_mutex> guard(mutex_);
+  require(stay_ && armed_ && !watchdog_fault_, "Stay startup is not active");
+  const auto q = stay_->update(last_, now());
+  command(q, finger_command_);
+  return stay_->ready();
+}
+void Transport::finish_stay() {
+  std::lock_guard<std::recursive_mutex> guard(mutex_);
+  require(stay_ && stay_->ready() && armed_ && !watchdog_fault_ &&
+          now()-last_.stamp <= config_.max_cycle, "Mission requires settled Stay feedback");
+  stay_->update(last_, now());
+  require(stay_->ready(), "Stay feedback changed before mission handoff");
+  // Anchor the mission's first residual step to this same measured sample.
+  beat(); goals(last_.q, finger_command_, false);
+  commanded_ = last_.q; command_time_ = now();
+  stay_.reset();
+}
+bool Transport::torque_enabled() {
+  std::lock_guard<std::recursive_mutex> guard(mutex_);
+  return last_.torque;
 }
 void Transport::command(const Joints &q, double finger) {
   std::lock_guard<std::recursive_mutex> guard(mutex_);

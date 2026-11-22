@@ -43,6 +43,7 @@ class OpenCrEmulator:
         struct.pack_into('<i', self.memory, 240, 2048)
         struct.pack_into('<h', self.memory, 272, -20)
         self.writes = []
+        self.repeat_reads = 0
         self.errors = []
         self.stop = threading.Event()
         self.thread = threading.Thread(target=self.run, daemon=True)
@@ -76,7 +77,11 @@ class OpenCrEmulator:
                         reply = status(struct.pack('<HB', 20480, 1))
                     elif instruction == 2:
                         address, size = struct.unpack('<HH', params)
-                        millis = struct.unpack_from('<I', self.memory, 10)[0]+50
+                        millis = struct.unpack_from('<I', self.memory, 10)[0]
+                        if self.repeat_reads > 0:
+                            self.repeat_reads -= 1
+                        else:
+                            millis += 50
                         struct.pack_into('<I', self.memory, 10, millis)
                         reply = status(self.memory[address:address+size])
                     elif instruction == 3:
@@ -123,16 +128,63 @@ def driver(cfg, path, execute=False):
                            library_path=os.environ.get('OMX_V6_CONTROL_TEST_LIBRARY'))
 
 
-def test_cpp_sdk_reads_real_protocol_packets_without_writes(emulated):
+@pytest.mark.parametrize('torque', [0, 1])
+def test_cpp_sdk_reads_real_protocol_packets_without_writes(emulated, torque):
     emulator, cfg, path = emulated
+    emulator.memory[199] = torque
+    emulator.repeat_reads = 2  # Same counter across the two constructor reads.
     transport = driver(cfg, path)
     try:
         sample = transport.read()
         assert sample.voltage == 12.17 and sample.gripper_current_raw == -20
         np.testing.assert_array_equal(sample.q, 0)
+        assert transport.torque_enabled == bool(torque)
         with pytest.raises(Fault, match='Cannot arm'):
             transport.arm()
         assert transport.writes == 0 and emulator.writes == []
+    finally:
+        transport.close()
+
+
+def test_cpp_sdk_stay_from_torque_off_and_feedback_handoff(emulated):
+    emulator, cfg, path = emulated
+    emulator.memory[199] = 0
+    for key in cfg['commissioning']:
+        if key.endswith('_verified'):
+            cfg['commissioning'][key] = True
+    cfg['commissioning']['evidence_directory'] = 'SYNTHETIC_PTY_STAY_TEST_ONLY'
+    cfg['estimation'].update(current_idle_raw=0, current_grip_delta_raw=10,
+                             current_release_delta_raw=5)
+    transport = driver(cfg, path, execute=True)
+    try:
+        with pytest.raises(Fault, match='outside URDF'):
+            transport.begin_stay([0, 0, -3, 0])
+        assert emulator.writes == []
+        goal = np.array([.01, -.02, .01, -.02])
+        transport.begin_stay(goal)
+        assert transport.torque_enabled
+        addresses = [a for a, _ in emulator.writes]
+        assert addresses.index(199) > addresses.index(220)
+        assert addresses.index(199) > addresses.index(328)
+        with pytest.raises(Fault, match='settled Stay'):
+            transport.finish_stay()
+        started = time.monotonic()
+        ready = False
+        while time.monotonic()-started < 5:
+            time.sleep(.04)
+            transport.read()
+            ready = transport.stay_step()
+            if ready:
+                break
+        assert ready and time.monotonic()-started >= 3.3
+        transport.read()
+        np.testing.assert_allclose(transport.last.q, goal, atol=np.pi/4096)
+        transport.finish_stay()
+        time.sleep(.03)
+        transport.read()
+        transport.command(transport.last.q, transport.last.finger)
+        assert all(a not in (149, 150, 198) for a, _ in emulator.writes)
+        assert [data for a, data in emulator.writes if a == 199] == [b'\x01']
     finally:
         transport.close()
 

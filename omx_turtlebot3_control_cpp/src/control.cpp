@@ -98,7 +98,7 @@ void verify_model(const std::string &directory) {
   const auto t = YAML::LoadFile((root / "training_config.yaml").string());
   require(number(t["joint_step"]) == .012 && number(t["residual_scale"]) == .12 && std::abs(number(t["physics_timestep"])*number(t["frame_skip"])-.02) < 1e-12, "Unsupported training control formula");
 }
-struct Actor::Impl { cv::dnn::Net net; std::mutex mutex; };
+struct Actor::Impl { cv::dnn::Net net; std::string projection; std::mutex mutex; };
 Actor::Actor(const std::string &directory) : impl_(std::make_unique<Impl>()) {
   verify_model(directory);
   cv::setNumThreads(1);
@@ -106,7 +106,43 @@ Actor::Actor(const std::string &directory) : impl_(std::make_unique<Impl>()) {
   require(!impl_->net.empty(), "ONNX network is empty");
   impl_->net.setPreferableBackend(cv::dnn::DNN_BACKEND_OPENCV);
   impl_->net.setPreferableTarget(cv::dnn::DNN_TARGET_CPU);
+  // This immutable v6 ONNX ends with Clip(l3, -1, 1). OpenCV 4.5.4 on
+  // Jetson imports Clip as ReLU6 and incorrectly zeroes negative values.
+  // Execute the original ONNX projection and apply exactly that final Clip
+  // below, without rewriting the model or switching inference backends.
+  require(sha256(fs::path(directory)/"actor.onnx") ==
+    "fe3656701f104022872ad804ac120496c4b31de8cf9e7c3a2f94250e4ceef00c",
+    "Unsupported v6 ONNX graph; review projection/Clip contract");
+  for (const auto &name : impl_->net.getLayerNames()) {
+    if (name == "l3" || (name.size() > 3 && name.substr(name.size()-3) == "!l3")) {
+      require(impl_->projection.empty(), "Ambiguous ONNX projection");
+      const auto layer = impl_->net.getLayer(impl_->net.getLayerId(name));
+      require(layer && (layer->type == "InnerProduct" || layer->type == "Gemm"), "Invalid ONNX projection layer");
+      impl_->projection = name;
+    }
+  }
+  require(!impl_->projection.empty(), "Missing immutable ONNX l3 projection");
+  impl_->net.enableFusion(false);
   infer(Observation{});  // Warm up before control timing starts; never touches hardware.
+  // A successful load is insufficient: require the frozen conformance vectors
+  // before any caller can open/arm a hardware transport.
+  std::ifstream fixture(fs::path(directory)/"parity_vectors.txt");
+  std::string magic; int count = 0;
+  require(bool(fixture >> magic >> count) && magic == "OMXV6TEST01" && count == 973, "Invalid startup parity fixture");
+  double maximum_error = 0;
+  for (int i = 0; i < count; ++i) {
+    Observation obs;
+    for (auto &x : obs) require(bool(fixture >> x) && std::isfinite(x), "Invalid startup parity observation");
+    const auto actual = infer(obs);
+    for (double x : actual) {
+      double expected;
+      require(bool(fixture >> expected) && std::isfinite(expected), "Invalid startup parity action");
+      maximum_error = std::max(maximum_error, std::abs(x-expected));
+    }
+  }
+  std::string extra;
+  require(!(fixture >> extra), "Trailing startup parity data");
+  require(maximum_error <= 1e-5, "Native ONNX startup parity failed: " + std::to_string(maximum_error));
 }
 Actor::~Actor() = default;
 Joints Actor::infer(const Observation &observation) {
@@ -114,7 +150,7 @@ Joints Actor::infer(const Observation &observation) {
   std::lock_guard<std::mutex> guard(impl_->mutex);
   cv::Mat input(1, 69, CV_32F, const_cast<float *>(observation.data()));
   impl_->net.setInput(input, "observation");
-  const cv::Mat output = impl_->net.forward("action");
+  const cv::Mat output = impl_->net.forward(impl_->projection);
   require(output.type() == CV_32F && output.total() == 4 && output.isContinuous(), "Invalid ONNX output shape/type");
   Joints action;
   for (size_t i = 0; i < 4; ++i) {

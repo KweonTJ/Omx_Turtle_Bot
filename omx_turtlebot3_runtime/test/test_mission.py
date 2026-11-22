@@ -35,7 +35,7 @@ def test_no_approach_with_stale_vision():
         m.step(sample, PoseCache(), 10.05)
 
 
-def test_no_automatic_homing():
+def test_mission_requires_completed_stay_startup():
     m, sample = instance()
     m.active = False
     cache = PoseCache()
@@ -43,7 +43,7 @@ def test_no_automatic_homing():
     for i in (0, 1):
         cache.update(ObjectPose(i, 10.05, np.array([.22, .05*(-1)**i, .32]), np.array([0, 0, 0, 1]), .1), 10.05)
     sample.q[1] += .4
-    with pytest.raises(Fault, match='automatic homing is prohibited'):
+    with pytest.raises(Fault, match='complete startup before requesting a mission'):
         m.start(0, sample, cache, 10.05)
 
 
