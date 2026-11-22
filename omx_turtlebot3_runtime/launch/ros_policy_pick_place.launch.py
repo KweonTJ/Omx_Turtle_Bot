@@ -16,6 +16,8 @@ from omx_turtlebot3_runtime.launch_support import runtime_python, calibrated_cam
 def build(context):
     def value(name):return LaunchConfiguration(name).perform(context)
     execute=value('execute')=='true'
+    selected=int(value('marker_id'))
+    if selected not in (0,1):raise ValueError('Unsupported marker ID')
     runtime=Path(get_package_share_directory('omx_turtlebot3_runtime'))
     mp=Path(get_package_share_directory('mp_control'))
     policy=Path(get_package_share_directory('omx_turtlebot3_policy'))/'models/omx_turtlebot3_v6'
@@ -24,12 +26,25 @@ def build(context):
     if logs.exists():raise ValueError('Use a new log_dir for each trial')
     domain=int(value('ros_domain_id'))
     if not 0<=domain<=232:raise ValueError('Invalid ROS domain ID')
+    wrist_offset=float(value('gripper_down_joint4_offset_rad'))
+    if not -.4<=wrist_offset<=.4:raise ValueError('Invalid wrist pitch offset')
     env={'ROS_DOMAIN_ID':str(domain),'ROS_LOG_DIR':str(logs/'ros'),'PYTHONNOUSERSITE':'1'}
     config=runtime/'config/runtime.yaml'
     camera_file=runtime/'config/eef_usb_camera.yaml';calibrated_camera(camera_file)
     profile=yaml.safe_load((mp/'config/mp_control_aruco_params.yaml').read_text())
     params=profile['mp_control_node']['ros__parameters']
-    params.update(auto_start=False,auto_start_on_bbox=False,hold_joint4_during_extension=True,
+    params.update(auto_start=False,auto_start_on_bbox=False,hold_joint4_during_extension=False,
+        pause_before_grasp=value('pause_before_grasp')=='true',
+        pause_before_rotate=value('pause_before_rotate')=='true',
+        handoff_lift_joint2_delta_rad=0.,handoff_retract_joint3_delta_rad=.65,
+        handoff_retract_hold_z=True,handoff_lower_before_release=False,
+        handoff_lift_duration_s=1.8,handoff_place_duration_s=2.,
+        pregrasp_preserve_gripper_roll=True,
+        pregrasp_move_duration_s=.35,pregrasp_settle_s=.05,pregrasp_republish_period_s=.4,
+        pregrasp_joint2_max_step_rad=.15,pregrasp_joint3_max_step_rad=.25,pregrasp_joint4_max_step_rad=.15,
+        handoff_rotate_angle_rad=-1.5707963267948966,
+        handoff_rotate_odd_angle_deg=-90.,handoff_rotate_even_angle_deg=-90.,
+        gripper_down_joint4_offset_rad=wrist_offset,
         joint_trajectory_topic='/arm_controller/joint_trajectory_raw',
         handoff_joint_trajectory_topic='/omx_v6/nominal_joint_trajectory',
         camera_info_topic='/eef_camera/camera_info',eef_camera_info_topic='/eef_camera/camera_info',
@@ -37,13 +52,15 @@ def build(context):
         handoff_grasp_settle_s=2.,aruco_joint1_align_gain=2.,aruco_joint1_align_max_step_rad=.04)
     mp_node=Node(package='mp_control',executable='mp_control_node',output='screen',parameters=[params],additional_env=env)
     relay=Node(package='omx_turtlebot3_control_cpp',executable='ros_policy_relay_cpp',
-        output='screen',parameters=[{'model_dir':str(policy),'execute':execute}],additional_env=env)
+        output='screen',parameters=[{'model_dir':str(policy),'execute':execute,'max_raw_joint3_delta_rad':.25}],additional_env=env)
     observer=ExecuteProcess(cmd=[python,'-m','omx_turtlebot3_runtime.ros_policy_observer',
         '--config',str(config),'--training',str(policy/'training_config.yaml'),
-        '--scene',str(runtime/'assets/scene.xml'),'--log-dir',str(logs/'observer')],
+        '--scene',str(runtime/'assets/scene.xml'),'--log-dir',str(logs/'observer'),
+        '--selected-id',str(selected)],
         output='screen',additional_env=env)
     gate_command=[python,'-m','omx_turtlebot3_runtime.ros_trial_gate',
-        '--output',str(logs/'gate.jsonl'),'--startup-timeout','45','--mission-timeout',value('mission_timeout_s')]
+        '--output',str(logs/'gate.jsonl'),'--startup-timeout','45','--mission-timeout',value('mission_timeout_s'),
+        '--selected-id',str(selected)]
     if execute:gate_command.append('--execute')
     gate=ExecuteProcess(cmd=gate_command,output='screen',additional_env=env)
     children=[mp_node,relay,observer,gate]
@@ -82,10 +99,14 @@ def build(context):
 def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('execute',default_value='false',choices=['true','false']),
+        DeclareLaunchArgument('marker_id',default_value='0',choices=['0','1']),
         DeclareLaunchArgument('start_camera',default_value='true',choices=['true','false']),
         DeclareLaunchArgument('video_device',default_value='/dev/v4l/by-id/usb-Jieli_Technology_USB_Composite_Device-video-index0'),
         DeclareLaunchArgument('python_executable',default_value=''),
         DeclareLaunchArgument('ros_domain_id',default_value=EnvironmentVariable('ROS_DOMAIN_ID',default_value='25')),
         DeclareLaunchArgument('mission_timeout_s',default_value='300'),
+        DeclareLaunchArgument('gripper_down_joint4_offset_rad',default_value='0.20'),
+        DeclareLaunchArgument('pause_before_grasp',default_value='false',choices=['true','false']),
+        DeclareLaunchArgument('pause_before_rotate',default_value='false',choices=['true','false']),
         DeclareLaunchArgument('log_dir',default_value='/tmp/omx_ros_policy_trial_'+str(time.time_ns())),
         OpaqueFunction(function=build)])

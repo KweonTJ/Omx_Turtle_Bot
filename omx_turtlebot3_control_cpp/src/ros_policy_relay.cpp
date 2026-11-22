@@ -19,6 +19,9 @@ class PolicyRelay : public rclcpp::Node {
  public:
   PolicyRelay() : Node("omx_v6_ros_policy_relay"), actor_(declare_parameter<std::string>("model_dir", "")) {
     execute_=declare_parameter<bool>("execute",false);
+    max_raw_joint3_delta_=declare_parameter<double>("max_raw_joint3_delta_rad",.17);
+    if(!std::isfinite(max_raw_joint3_delta_)||max_raw_joint3_delta_<=0||max_raw_joint3_delta_>.25)
+      throw std::runtime_error("Invalid raw joint3 step bound");
     input_=declare_parameter<std::string>("input_topic","/omx_v6/nominal_joint_trajectory");
     output_=declare_parameter<std::string>("output_topic","/arm_controller/joint_trajectory");
     if(input_==output_) throw std::runtime_error("Relay topic loop");
@@ -56,12 +59,12 @@ class PolicyRelay : public rclcpp::Node {
       if(signature!=raw_signature_) {raw_signature_=signature;raw_joint3_reference_=q_[2];}
       auto transformed=*m;
       for(auto &p:transformed.points) {
-        p.positions[2]=std::clamp(raw_joint3_reference_+std::clamp(raw_joint3_reference_-p.positions[2],-.17,.17),-2.70,1.38);
+        p.positions[2]=std::clamp(raw_joint3_reference_+std::clamp(raw_joint3_reference_-p.positions[2],-max_raw_joint3_delta_,max_raw_joint3_delta_),-2.70,1.38);
         if(p.velocities.size()==4) p.velocities[2]=-p.velocities[2];
         if(p.accelerations.size()==4) p.accelerations[2]=-p.accelerations[2];
         if(p.effort.size()==4) p.effort[2]=-p.effort[2];
       }
-      forward(transformed, true);
+      forward(transformed);
     });
     timer_=create_wall_timer(std::chrono::milliseconds(50),[this]{
       if(started_&&!fault_&&(omx_v6::now()-joint_time_>.2||omx_v6::now()-obs_time_>.5)) stop("Live policy/joint input expired");
@@ -78,7 +81,7 @@ class PolicyRelay : public rclcpp::Node {
     }
     RCLCPP_ERROR(get_logger(),"POLICY_RELAY_STOPPED: %s",reason.c_str());
   }
-  void forward(const Trajectory &reference, bool extension_reference=false) {
+  void forward(const Trajectory &reference) {
     if(fault_) return;
     if(omx_v6::now()-joint_time_>.2||omx_v6::now()-obs_time_>.5) {
       if(started_) stop("Active reference lost live observations");
@@ -91,9 +94,11 @@ class PolicyRelay : public rclcpp::Node {
       // This is an explicit reference-relay trial, not the 9-phase runtime's IK.
       const auto network_action=actor_.infer(obs_);
       auto action=network_action;
-      // mp_control holds the wrist during raw pregrasp/extension commands.
-      // Do not reintroduce camera motion through the PPO residual channel.
-      if(extension_reference) action[3]=0;
+      // These paths constrain height/pitch explicitly. Keep the coordinated
+      // pitch-joint curve intact; yaw residuals cannot alter its Z coordinate.
+      if(reference.header.frame_id=="mp_control_retract_z_hold" ||
+         reference.header.frame_id=="mp_control_pitch_hold")
+        for(size_t i=1;i<4;++i) action[i]=0;
       auto output=reference;
       const std::array<double,4> low{-3.14,-1.5,-2.70,-1.79},high{3.14,1.5,1.38,2.04};
       bool rotation=obs_[22]>.5; // phase one-hot starts at observation index 17; phase 5.
@@ -124,13 +129,14 @@ class PolicyRelay : public rclcpp::Node {
       if(execute_&&dispatch) {
         out_->publish(output);last_nominal_=g.data;last_dispatch_=stamp;
         const auto &d=reference.points.back().time_from_start;
-        last_duration_=std::max(1.,d.sec+d.nanosec*1e-9);
+        last_duration_=std::max(.05,d.sec+d.nanosec*1e-9);
       }
       started_=true;++count_;
       RCLCPP_INFO(get_logger(),"POLICY_REFERENCE %lu action=[%.6f,%.6f,%.6f,%.6f] nominal=[%.6f,%.6f,%.6f,%.6f] command=[%.6f,%.6f,%.6f,%.6f] executed=%d",count_,action[0],action[1],action[2],action[3],reference.points.back().positions[0],reference.points.back().positions[1],reference.points.back().positions[2],reference.points.back().positions[3],output.points.back().positions[0],output.points.back().positions[1],output.points.back().positions[2],output.points.back().positions[3],execute_&&dispatch);
     } catch(const std::exception &e) {stop(e.what());}
   }
   omx_v6::Actor actor_;omx_v6::Observation obs_{};omx_v6::Joints q_{};
+  double max_raw_joint3_delta_{.17};
   double joint_time_{-1e30},obs_time_{-1e30};bool execute_{},fault_{},started_{};uint64_t count_{};
   std::string input_,output_;
   std::vector<double> raw_signature_;double raw_joint3_reference_{};

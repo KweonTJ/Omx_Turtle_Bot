@@ -14,7 +14,7 @@ def test_stay_gate_uses_named_measured_positions_and_stopped_velocity():
 def gate(execute):
     now=time.monotonic();commands=[];events=[]
     pub=SimpleNamespace(get_subscription_count=lambda:1,publish=lambda m:commands.append(m.data))
-    node=SimpleNamespace(args=SimpleNamespace(execute=execute,startup_timeout=45.,mission_timeout=300.),
+    node=SimpleNamespace(args=SimpleNamespace(execute=execute,startup_timeout=45.,mission_timeout=300.,selected_id=0),
         completed=False,fault=None,started=False,patched=True,controllers=True,
         inputs={'observer':(True,now),'policy':(True,now)},stay=(True,now),
         since=now-.4,requested=now,query=lambda:None,start_pub=pub,

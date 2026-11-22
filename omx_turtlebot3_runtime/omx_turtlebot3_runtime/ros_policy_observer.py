@@ -53,6 +53,8 @@ class Observer(Node):
     def __init__(self, args):
         super().__init__('omx_v6_ros_policy_observer')
         self.args=args
+        self.selected=int(getattr(args,'selected_id',0))
+        if self.selected not in (0,1):raise ValueError('Unsupported marker ID')
         self.cfg=yaml.safe_load(args.config.read_text())
         self.training=yaml.safe_load(args.training.read_text())
         self.planner=Planner(args.scene,self.training,self.cfg)
@@ -78,7 +80,7 @@ class Observer(Node):
         self.info=Subscriber(self,CameraInfo,'/eef_camera/camera_info',qos_profile=qos_profile_sensor_data)
         self.sync=TimeSynchronizer([self.image,self.info],10);self.sync.registerCallback(self.camera)
         self.timer=self.create_timer(.05,self.tick)
-        self.emit('OBSERVER_STARTED',selected_id=0,current_sensor_available=False,commissioning=self.cfg['commissioning'])
+        self.emit('OBSERVER_STARTED',selected_id=self.selected,current_sensor_available=False,commissioning=self.cfg['commissioning'])
 
     def emit(self,event,**data):
         self.log.write(json.dumps(dict(event=event,monotonic=time.monotonic(),**data),default=lambda x:x.tolist() if hasattr(x,'tolist') else str(x),allow_nan=False)+'\n')
@@ -118,7 +120,7 @@ class Observer(Node):
             for marker,t,r,error in detections:
                 center,quat=self.planner.object_from_marker(q,t,r)
                 self.cache.update(ObjectPose(marker,now-age,center,quat,error),now)
-                if marker==0:
+                if marker==self.selected:
                     raw_pose=PoseStamped();raw_pose.header=image.header
                     raw_pose.pose.position.x,raw_pose.pose.position.y,raw_pose.pose.position.z=map(float,t)
                     quat_cam=Rotation.from_matrix(r).as_quat()
@@ -129,7 +131,7 @@ class Observer(Node):
                         # Match the existing ArUco bridge's lock-on-first-target
                         # contract. This is a fixed planning GOAL, not fresh PnP.
                         self.target_base=base[:3].copy()
-                        self.emit('TARGET_GOAL_LATCHED',base_goal=self.target_base,source_stamp=now-age)
+                        self.emit('TARGET_GOAL_LATCHED',selected_id=self.selected,base_goal=self.target_base,source_stamp=now-age)
                     s=.02;corners=np.asarray([[-s,s,0],[s,s,0],[s,-s,0],[-s,-s,0]])
                     uv=cv2.projectPoints(corners,cv2.Rodrigues(r)[0],t,k,d)[0].reshape(4,2)
                     box=Float32MultiArray(data=[float(uv[:,0].min()),float(uv[:,1].min()),float(np.ptp(uv[:,0])),float(np.ptp(uv[:,1]))])
@@ -145,7 +147,7 @@ class Observer(Node):
         sample=self.history[-1];eef=self.planner.forward(sample.q,sample.finger)
         goal=sample.q if self.goal is None else self.goal
         place=np.r_[self.cfg['estimation']['deck_center_xy'],self.cfg['estimation']['deck_top_z']]
-        obs=observation(sample,eef,goal,self.phase,0,1,self.cache,0,place,
+        obs=observation(sample,eef,goal,self.phase,0,1,self.cache,self.selected,place,
             False,False,self.previous,self.planned,0,now)
         # A live observation may contain aged/occluded marker slots, exactly as
         # in the model contract. Starting the trial separately requires both IDs.
@@ -159,6 +161,7 @@ class Observer(Node):
 
 def main():
     p=argparse.ArgumentParser();p.add_argument('--config',type=Path,required=True);p.add_argument('--training',type=Path,required=True);p.add_argument('--scene',type=Path,required=True);p.add_argument('--log-dir',type=Path,required=True)
+    p.add_argument('--selected-id',type=int,choices=(0,1),default=0)
     args,ros_args=p.parse_known_args();rclpy.init(args=ros_args);node=Observer(args)
     try:
         while rclpy.ok() and not node.done:rclpy.spin_once(node,timeout_sec=.1)

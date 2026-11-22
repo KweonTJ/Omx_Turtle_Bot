@@ -1,9 +1,9 @@
 # mp_control
 
-팔 전개 중 카메라 방향을 유지하려면 `hold_joint4_during_extension: true`를 사용한다.
-pregrasp 시작 시 측정한 joint4 위치를 고정하며, pregrasp·Analytic/Bezier 전진 경로의
-joint4 연동 보정을 억제한다. ONNX 연결부도 전개 명령에서 joint4 residual을 제외한다.
-handoff의 joint4 동작은 별도다. [로봇 기준 소스와 변경 근거](ROBOT_BASELINE.md)를 참고한다.
+팔 전개 중에는 `hold_joint4_during_extension: false`로 기존 joint4 자세 보상을 사용한다.
+joint2·joint3 움직임에 맞춰 joint4가 함께 움직인다. `true`는 joint4 관절각 자체를
+고정하는 별도 옵션이며 카메라 방향 보상과 다르다. ONNX의 joint4 보정도 적용한다.
+[로봇 기준 소스와 변경 근거](ROBOT_BASELINE.md)를 참고한다.
 
 리더 TurtleBot3 매니퓰레이터의 실제 로봇 파지 흐름을 제어하는 패키지다.
 

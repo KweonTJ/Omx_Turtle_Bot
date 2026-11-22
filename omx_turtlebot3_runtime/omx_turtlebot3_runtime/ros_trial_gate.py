@@ -42,7 +42,7 @@ class TrialGate(Node):
         self.create_subscription(String,'/mp_control/status',self.status,QoSProfile(depth=10,durability=DurabilityPolicy.TRANSIENT_LOCAL))
         self.parameters=self.create_client(GetParameters,'/mp_control_node/get_parameters')
         self.list_controllers=self.create_client(ListControllers,'/controller_manager/list_controllers')
-        self.emit('WAITING_FOR_STAY',execute=args.execute,selected_id=0)
+        self.emit('WAITING_FOR_STAY',execute=args.execute,selected_id=args.selected_id)
 
     def emit(self,event,**payload):
         value=json.dumps(dict(event=event,monotonic=time.monotonic(),**payload),allow_nan=False)
@@ -62,11 +62,21 @@ class TrialGate(Node):
         if time.monotonic()-self.last_query<1:return
         self.last_query=time.monotonic()
         if self.parameters.service_is_ready():
-            request=GetParameters.Request(names=['hold_joint4_during_extension'])
+            request=GetParameters.Request(names=['hold_joint4_during_extension','pregrasp_preserve_gripper_roll',
+                                                'handoff_rotate_odd_angle_deg','handoff_rotate_even_angle_deg',
+                                                'handoff_retract_joint3_delta_rad','handoff_lift_joint2_delta_rad',
+                                                'handoff_place_duration_s','handoff_retract_hold_z',
+                                                'handoff_lower_before_release'])
             def parameters_done(future):
                 try:
                     values=future.result().values
-                    self.patched=len(values)==1 and values[0].type==1 and values[0].bool_value
+                    self.patched=(len(values)==9 and all(v.type==1 for v in values[:2])
+                                  and not values[0].bool_value and values[1].bool_value
+                                  and all(v.type==3 and abs(v.double_value+90.)<1e-6 for v in values[2:4])
+                                  and all(v.type==3 and abs(v.double_value-x)<1e-6
+                                          for v,x in zip(values[4:7],[.65,0.,2.]))
+                                  and values[7].type==1 and values[7].bool_value
+                                  and values[8].type==1 and not values[8].bool_value)
                 except Exception:self.patched=False
             self.parameters.call_async(request).add_done_callback(parameters_done)
         if self.list_controllers.service_is_ready():
@@ -83,7 +93,7 @@ class TrialGate(Node):
         self.query()
         if self.started:
             if now-self.requested>self.args.mission_timeout:self.fault='Mission timeout'
-            if not self.controllers or not self.patched:self.fault='Required controller or joint4 hold became unavailable'
+            if not self.controllers or not self.patched:self.fault='Required controller or wrist/retraction/90-degree sequence configuration became unavailable'
             ready,stamp=self.inputs['policy']
             if not ready or now-stamp>.6:self.fault='C++ policy input or relay expired'
             return bool(self.fault)
@@ -96,9 +106,9 @@ class TrialGate(Node):
             if not self.args.execute:
                 self.completed=True;self.emit('MONITOR_READY',motor_commands_sent=False);return True
             self.started=True;self.requested=now
-            self.start_pub.publish(Bool(data=True));self.emit('MISSION_START_SENT',selected_id=0)
+            self.start_pub.publish(Bool(data=True));self.emit('MISSION_START_SENT',selected_id=self.args.selected_id)
         if not self.started and now-self.requested>self.args.startup_timeout:
-            self.fault='Startup requires measured Stay, both marker IDs, patched wrist hold, policy and active controllers'
+            self.fault='Startup requires measured Stay, both marker IDs, wrist/retraction/90-degree sequence configuration, policy and active controllers'
         return bool(self.fault)
 
     def finish(self):
@@ -113,6 +123,7 @@ class TrialGate(Node):
 
 def main():
     parser=argparse.ArgumentParser();parser.add_argument('--execute',action='store_true')
+    parser.add_argument('--selected-id',type=int,choices=(0,1),default=0)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--startup-timeout',type=float,default=45.)
     parser.add_argument('--mission-timeout',type=float,default=300.)

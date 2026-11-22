@@ -62,12 +62,18 @@ install(FILES README.md ROBOT_BASELINE.md DESTINATION share/${PROJECT_NAME})
 if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(test_extension_wrist test/test_extension_wrist.cpp)
+  target_include_directories(test_extension_wrist PRIVATE include)
   target_compile_features(test_extension_wrist PUBLIC cxx_std_17)
   ament_target_dependencies(test_extension_wrist
     rclcpp rclcpp_action control_msgs std_msgs std_srvs sensor_msgs
     geometry_msgs trajectory_msgs tf2 tf2_ros tf2_geometry_msgs)
   set_tests_properties(test_extension_wrist PROPERTIES
     ENVIRONMENT "ROS_DOMAIN_ID=226;ROS_LOG_DIR=/tmp/mp_control_wrist_tests")
+  find_package(Eigen3 REQUIRED)
+  ament_add_gtest(test_level_retraction test/test_level_retraction.cpp)
+  target_compile_features(test_level_retraction PUBLIC cxx_std_17)
+  target_include_directories(test_level_retraction PRIVATE include)
+  target_link_libraries(test_level_retraction Eigen3::Eigen)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files

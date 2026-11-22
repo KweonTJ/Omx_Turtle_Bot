@@ -4,6 +4,7 @@ from pathlib import Path
 import subprocess
 import time
 import numpy as np
+import pytest
 import rclpy
 from rclpy.context import Context
 from rclpy.node import Node
@@ -17,7 +18,8 @@ from omx_turtlebot3_runtime.cpp_backend import NativeActor
 ROOT=Path(__file__).resolve().parents[1]
 
 
-def test_cpp_relay_infers_mirrors_once_and_preserves_direct_handoff(tmp_path):
+@pytest.mark.parametrize('max_delta',[.17,.25])
+def test_cpp_relay_infers_mirrors_once_and_preserves_direct_handoff(tmp_path,max_delta):
     model=ROOT.parent/'omx_turtlebot3_policy/models/omx_turtlebot3_v6'
     executable=Path(get_package_prefix('omx_turtlebot3_control_cpp'))/'lib/omx_turtlebot3_control_cpp/ros_policy_relay_cpp'
     context=Context();rclpy.init(context=context,domain_id=227)
@@ -26,7 +28,7 @@ def test_cpp_relay_infers_mirrors_once_and_preserves_direct_handoff(tmp_path):
     q=np.array([.1,.1,.1,-.3]);obs=np.zeros(69,dtype=np.float32);obs[:4]=q;obs[17]=1
     actor=NativeActor(model,ROOT/'config/runtime.yaml',ROOT/'assets/robot_real.urdf')
     action=actor(obs)
-    extension_action=action.copy();extension_action[3]=0
+    extension_action=action.copy()
     joints=node.create_publisher(JointState,'/joint_states',10)
     observations=node.create_publisher(Float32MultiArray,'/omx_v6/observation',10)
     raw=node.create_publisher(JointTrajectory,'/arm_controller/joint_trajectory_raw',10)
@@ -36,7 +38,8 @@ def test_cpp_relay_infers_mirrors_once_and_preserves_direct_handoff(tmp_path):
     env=dict(os.environ,ROS_DOMAIN_ID='227',ROS_LOG_DIR=str(tmp_path/'ros'))
     with (tmp_path/'relay.log').open('w') as log:
         process=subprocess.Popen([str(executable),'--ros-args','-p','model_dir:='+str(model),
-            '-p','execute:=true','-p','output_topic:=/isolated_relay_command'],env=env,stdout=log,stderr=subprocess.STDOUT)
+            '-p','execute:=true','-p','max_raw_joint3_delta_rad:='+str(max_delta),
+            '-p','output_topic:=/isolated_relay_command'],env=env,stdout=log,stderr=subprocess.STDOUT)
         def pump(seconds,command=None,publisher=None,send_obs=True):
             end=time.monotonic()+seconds;sent=False
             while time.monotonic()<end:
@@ -68,6 +71,15 @@ def test_cpp_relay_infers_mirrors_once_and_preserves_direct_handoff(tmp_path):
             np.testing.assert_allclose(outputs[-1].points[0].positions,np.array([.1,.1,.05,-.3])+.00144*extension_action,atol=1e-8)
             pump(.4,trajectory(.2),direct)
             np.testing.assert_allclose(outputs[-1].points[0].positions,np.array([.1,.1,.2,-.3])+.00144*action,atol=1e-8)
+            pump(.4,trajectory(.8),raw)
+            np.testing.assert_allclose(outputs[-1].points[0].positions,
+                np.array([.1,.1,.12-max_delta,-.3])+.00144*extension_action,atol=1e-8)
+            protected_action=action.copy();protected_action[1:]=0.
+            for tag,value in [('mp_control_retract_z_hold',.22),('mp_control_pitch_hold',.27)]:
+                protected=trajectory(value);protected.header.frame_id=tag
+                pump(.4,protected,direct)
+                np.testing.assert_allclose(outputs[-1].points[0].positions,
+                    np.array([.1,.1,value,-.3])+.00144*protected_action,atol=1e-8)
         finally:
             process.terminate();process.wait(timeout=5)
             actor.close();executor.shutdown();node.destroy_node();rclpy.shutdown(context=context)

@@ -11,10 +11,27 @@
 ## C++ ONNX 제어 실행
 
 기존 하드웨어 Stay 런치에 붙이는 실물 mp_control + ONNX 진입점은
-`ros_policy_pick_place.launch.py`다. 기본값은 monitor이며 `execute:=true`에서 ID 0 미션을
-한 번 시작한다. 팔 전개 중 joint4 고정 패치와 measured Stay·실제 마커·활성 제어기를 검사한다.
-[호스트 마무리와 다음 로봇 실행 절차](../omx_turtlebot3_control_cpp/docs/host_finish_20261122.md)를 참고한다.
-로봇 전원 종료 후 만든 wrist 고정 수정본은 아직 실물에 반영·재검증하지 않았다.
+`ros_policy_pick_place.launch.py`다. 기본값은 monitor이며 `execute:=true`에서 선택한 마커의
+미션을 한 번 시작한다. `marker_id:=1`은 ID 1의 목표 좌표와 모델의 대상 슬롯을 함께 선택한다.
+joint4 연동 보상 설정과 measured Stay·실제 마커·활성 제어기를 검사한다.
+전개 명령은 0.35초 이동·0.05초 안정화 간격으로 실행하며 진행 중인 구간을 반복 초기화하지 않는다.
+joint3 구간 이동 한도는 0.25 rad이며, 이송 joint1은 홀수·짝수 집기 모두 −90°다.
+`gripper_down_joint4_offset_rad:=0.20`을 기본 적용해 최종 손목 목표를 약 −0.35 rad로
+조정한다. 실물에서는 −0.75 rad가 파지점을 높였으므로 반대 방향을 사용한다.
+`pause_before_grasp:=true`는 팔 전개 후 집기 높이를 확인할 때 사용하며,
+`/mp_control/continue_grasp`에 Bool true를 보내면 같은 자세에서 집기를 이어간다.
+이송은 집기 → Z 높이·그리퍼 pitch를 유지하는 후퇴 → 90° 회전 → 바로 그리퍼 열기 → Stay 복귀 순서다.
+`handoff_retract_hold_z: true`는 집은 자세를 기준으로 joint2·3·4를 함께 계산한 36개 경유점을
+사용한다. joint3 진행량은 기존 확인한 몸쪽 방향 +0.65 rad이며, joint2를 고정하는 방식은 사용하지 않는다.
+각 점과 점 사이의 높이 유지도 URDF 행렬 FK와 대조한다. 관절 피드백으로 계산한 Z가 5 mm 이상
+벗어나면 대기 중인 궤적을 현재 자세 유지 명령으로 교체하고 그리퍼를 열지 않는다.
+`handoff_lower_before_release: false`이므로 회전 후 추가 하강은 실행하지 않는다.
+`pause_before_rotate:=true`는 후퇴 자세 확인용이며 `/mp_control/continue_handoff` Bool true로 회전을 이어간다.
+관절 전개가 시작된 뒤에는 같은 경로를 유지하며 마커 가림 때문에 초기 접근 단계로
+되돌아가지 않는다. 실시간 관절 피드백과 취소·추론 입력 중단 감시는 유지한다.
+joint4 관절각을 고정하지 않고 자세에 맞게 연동한다. 높이 유지 후퇴·회전 구간은 ONNX 보정이
+joint2·3·4의 높이 제약을 깨지 않게 제한한다. 이 ROS 진입점은 mp_control 기준 경로에 ONNX
+보정을 더하는 시험 모드이며, 원본 학습 환경의 20 ms 제어 루프와 동일한 실행은 아니다.
 
 `runtime_cpp` 또는 `--backend cpp_onnx`로 [v6 C++ 제어 패키지](../omx_turtlebot3_control_cpp/README.md)를
 선택한다. 원본 `actor.onnx` 추론, residual 계산, 관절·그리퍼 속도 제한과 모터 전송은
