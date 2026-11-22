@@ -19,7 +19,7 @@ def inputs(tmp_path,monkeypatch,execute):
     context.launch_configurations.update(execute=execute,start_camera='false',
         python_executable=sys.executable,log_dir=str(tmp_path/'trial'),
         ros_domain_id='225',mission_timeout_s='300',video_device='/dev/test-only',
-        gripper_down_joint4_offset_rad='0.20',pause_before_grasp='false',pause_before_rotate='false',marker_id='0')
+        gripper_down_joint4_offset_rad='0.20',pause_before_grasp='false',pause_before_rotate='false',marker_id='0',resume_held='false',retract_mode='cartesian')
     return module,context
 
 
@@ -54,6 +54,7 @@ def test_one_trial_launch_uses_coupled_wrist_and_explicit_execution(tmp_path,mon
     assert profile['handoff_lift_joint2_delta_rad']==0.
     assert profile['handoff_retract_joint3_delta_rad']==.65
     assert profile['handoff_retract_hold_z'] is True
+    assert profile['handoff_retract_distance_m']==.05
     assert profile['handoff_lower_before_release'] is False
     assert profile['handoff_place_duration_s']==2.
     assert profile['pregrasp_republish_period_s']>=profile['pregrasp_move_duration_s']+profile['pregrasp_settle_s']
@@ -68,3 +69,34 @@ def test_invalid_onnx_never_starts_trial_components(tmp_path,monkeypatch):
     with pytest.raises(RuntimeError,match='mission not started'):
         actions[1].event_handler.handle(SimpleNamespace(returncode=1),context)
     assert not (tmp_path/'trial').exists()
+
+
+def test_explicit_joint_handoff_mode_reaches_controller_and_gate(tmp_path,monkeypatch):
+    module,context=inputs(tmp_path,monkeypatch,'true')
+    context.launch_configurations.update(retract_mode='joint',resume_held='true')
+    actions=module.build(context)
+    children=actions[1].event_handler.handle(SimpleNamespace(returncode=0),context)
+    commands=[[perform_substitutions(context,s) for s in x.cmd]
+              for x in children if isinstance(x,ExecuteProcess)]
+    gate=next(x for x in commands if 'omx_turtlebot3_runtime.ros_trial_gate' in x)
+    assert gate[gate.index('--retract-mode')+1]=='joint' and '--resume-held' in gate
+    params=yaml.safe_load((tmp_path/'trial/controller_profile.yaml').read_text())['mp_control_node']['ros__parameters']
+    assert params['handoff_retract_hold_z'] is False
+    assert params['handoff_retract_joint3_delta_rad']==.65
+    assert params['handoff_lower_before_release'] is False
+
+
+def test_lift_mode_has_no_inward_elbow_move_and_restores_grasp_pose(tmp_path,monkeypatch):
+    module,context=inputs(tmp_path,monkeypatch,'true')
+    context.launch_configurations['retract_mode']='lift'
+    actions=module.build(context)
+    children=actions[1].event_handler.handle(SimpleNamespace(returncode=0),context)
+    commands=[[perform_substitutions(context,s) for s in x.cmd]
+              for x in children if isinstance(x,ExecuteProcess)]
+    gate=next(x for x in commands if 'omx_turtlebot3_runtime.ros_trial_gate' in x)
+    assert gate[gate.index('--retract-mode')+1]=='lift'
+    params=yaml.safe_load((tmp_path/'trial/controller_profile.yaml').read_text())['mp_control_node']['ros__parameters']
+    assert params['handoff_retract_joint3_delta_rad']==0.
+    assert params['handoff_lift_joint2_delta_rad']==-.55
+    assert params['handoff_restore_grasp_pose'] is True
+    assert params['handoff_lower_before_release'] is True

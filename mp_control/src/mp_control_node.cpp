@@ -120,6 +120,11 @@ public:
           startSequence();
         }
       });
+    resume_held_sub_ = create_subscription<std_msgs::msg::Bool>(
+      "/mp_control/resume_held_handoff", default_qos,
+      [this](const std_msgs::msg::Bool::ConstSharedPtr msg) {
+        if (msg->data) startSequence(true);
+      });
     cancel_sub_ = create_subscription<std_msgs::msg::Bool>(
       cancel_topic_, default_qos,
       [this](const std_msgs::msg::Bool::ConstSharedPtr msg) {
@@ -511,6 +516,12 @@ private:
     handoff_lift_joint2_delta_rad_ = declare_parameter<double>("handoff_lift_joint2_delta_rad", 0.25);
     handoff_retract_joint3_delta_rad_ = declare_parameter<double>("handoff_retract_joint3_delta_rad", 0.0);
     handoff_retract_hold_z_ = declare_parameter<bool>("handoff_retract_hold_z", false);
+    handoff_restore_grasp_pose_ = declare_parameter<bool>("handoff_restore_grasp_pose", false);
+    handoff_lift_joint_tolerance_rad_ = declare_parameter<double>("handoff_lift_joint_tolerance_rad", 0.10);
+    if (!std::isfinite(handoff_lift_joint_tolerance_rad_) || handoff_lift_joint_tolerance_rad_ <= 0.0 ||
+        handoff_lift_joint_tolerance_rad_ > 0.15)
+      throw std::invalid_argument("Invalid lift settling tolerance");
+    handoff_retract_distance_m_ = declare_parameter<double>("handoff_retract_distance_m", 0.05);
     handoff_retract_z_tolerance_m_ = declare_parameter<double>("handoff_retract_z_tolerance_m", 0.005);
     handoff_lower_before_release_ = declare_parameter<bool>("handoff_lower_before_release", true);
     handoff_place_joint2_delta_rad_ = declare_parameter<double>("handoff_place_joint2_delta_rad", -0.20);
@@ -863,7 +874,7 @@ private:
     latest_joint_state_stamp_ = now();
   }
 
-  void startSequence()
+  void startSequence(bool resume_held = false)
   {
     if (safety_abort_latched_) {
       active_ = false;
@@ -884,6 +895,24 @@ private:
     if (active_ && !done_) {
       publishStatus("start ignored because sequence already active", false);
       return;
+    }
+
+    // Explicit operator recovery after an interrupted grasp. Never reopen a
+    // held object or restart perception/pregrasp while resuming the handoff.
+    if (resume_held) {
+      const auto q = latestArmJointPositions();
+      bool finger_closed = false;
+      {
+        std::lock_guard<std::mutex> lock(data_mutex_);
+        finger_closed = latest_gripper_position_ &&
+          std::isfinite(*latest_gripper_position_) &&
+          *latest_gripper_position_ < gripper_max_position_ - .001;
+      }
+      if (!q || !armStopped() || !finger_closed ||
+          !std::all_of(q->begin(), q->end(), [](double v) {return std::isfinite(v);})) {
+        publishStatus("held handoff refused: requires fresh stopped joints and closed gripper", true);
+        return;
+      }
     }
 
     active_ = true;
@@ -924,6 +953,7 @@ private:
     handoff_place_controller_target_.reset();
     handoff_stay_controller_target_.reset();
     handoff_retract_start_joint_positions_.reset();
+    handoff_grasp_controller_pose_.reset();
     handoff_joint1_target_rad_.reset();
     handoff_joint1_centering_ = false;
     handoff_joint1_centered_for_rotate_ = false;
@@ -942,6 +972,11 @@ private:
     handoff_pick_sequence_index_ += 1;
     assignCargoId();
     publishCargoEvent("assigned", true);
+    if (resume_held) {
+      close_sent_ = true;
+      startHandoffSequence("operator confirmed held object; resuming without opening or regrasping");
+      return;
+    }
     if (open_gripper_on_start_) {
       sendGripperOpenForObject();
       open_sent_ = true;
@@ -5156,7 +5191,9 @@ private:
     handoff_last_publish_stamp_ = rclcpp::Time(0, 0, RCL_ROS_TIME);
 
     publishStatus(
-      grasp_status + "; starting handoff sequence: close -> wait -> joint1 rotate -> wait -> open",
+      grasp_status + (handoff_restore_grasp_pose_ ?
+        "; starting handoff: lift -> joint1 rotate -> restore grasp height -> open -> Stay" :
+        "; starting handoff sequence: close -> wait -> joint1 rotate -> wait -> open"),
       true);
   }
 
@@ -5330,7 +5367,7 @@ private:
     target[2] = clampValue(current[2] + handoff_retract_joint3_delta_rad_,
       joint_pregrasp_min_positions_[2], joint_pregrasp_max_positions_[2]);
     target = clampHandoffTarget(target);
-    if (handoff_retract_joint3_delta_rad_ > 0.0)
+    if (handoff_restore_grasp_pose_ || handoff_retract_joint3_delta_rad_ > 0.0)
       target[3] = joint4ForPreservedGripperRoll(current, target);
     return clampHandoffTarget(target);
   }
@@ -5347,7 +5384,7 @@ private:
     std::array<double, 4> low{}, high{};
     std::copy_n(joint_pregrasp_min_positions_.begin(), 4, low.begin());
     std::copy_n(joint_pregrasp_max_positions_.begin(), 4, high.begin());
-    return level_retraction::plan(current, handoff_retract_joint3_delta_rad_,
+    return level_retraction::plan(current, handoff_retract_distance_m_,
       handoff_lift_duration_s_, 36, levelRetractionGeometry(), low, high);
   }
 
@@ -5376,6 +5413,7 @@ private:
       publishBaseStop();
 
       publishStatus(
+        handoff_restore_grasp_pose_ ? "handoff lift settle: gripper closed; waiting before lifting" :
         "handoff grasp settle: gripper closed; waiting before inward retraction",
         true);
       return;
@@ -5400,6 +5438,7 @@ private:
         publishStatus("handoff retract waiting for joint states");
         return;
       }
+      handoff_grasp_controller_pose_ = *current;
 
       try {
         if (handoff_retract_hold_z_) {
@@ -5415,7 +5454,7 @@ private:
           handoff_joint_trajectory_pub_->publish(trajectory);
         } else {
           handoff_lift_controller_target_ = handoffRetractTarget(*current);
-          publishHandoffJointTrajectory(*handoff_lift_controller_target_, false, handoff_lift_duration_s_);
+          publishHandoffJointTrajectory(*handoff_lift_controller_target_, handoff_restore_grasp_pose_, handoff_lift_duration_s_);
         }
       } catch (const std::exception & error) {
         abortLevelRetraction(std::string("no constant-Z retract path: ") + error.what());
@@ -5427,7 +5466,8 @@ private:
       handoff_last_publish_stamp_ = stamp;
 
       publishStatus(
-        "handoff retract: moving toward body before joint1 turn; target=" +
+        std::string(handoff_restore_grasp_pose_ ? "handoff lift: raising before joint1 turn; target=" :
+          "handoff retract: moving toward body before joint1 turn; target=") +
         formatJointArray(*handoff_lift_controller_target_) +
         " joint2_delta_rad=" + std::to_string(handoff_lift_joint2_delta_rad_),
         true);
@@ -5439,31 +5479,44 @@ private:
       const auto measured = latestArmJointPositions();
       if (!measured) return;
       const auto geometry = levelRetractionGeometry();
-      const double z_error = level_retraction::forward(*measured, geometry).z -
-        level_retraction::forward(*handoff_retract_start_joint_positions_, geometry).z;
+      const auto actual = level_retraction::forward(*measured, geometry);
+      const auto origin = level_retraction::forward(*handoff_retract_start_joint_positions_, geometry);
+      const double z_error = actual.z - origin.z;
       if (!std::isfinite(z_error) || std::abs(z_error) > handoff_retract_z_tolerance_m_) {
         abortLevelRetraction("constant-Z retract tracking deviation=" + std::to_string(z_error));
+        return;
+      }
+      if (!std::isfinite(actual.radius) || actual.radius > origin.radius + handoff_retract_z_tolerance_m_) {
+        abortLevelRetraction("Cartesian retraction moved outward instead of toward body");
         return;
       }
     }
     if (lift_elapsed_s < handoff_lift_duration_s_ + handoff_joint_settle_s_) {
       publishStatus(
-        "handoff retract: waiting for inward motion elapsed=" +
+        std::string(handoff_restore_grasp_pose_ ? "handoff lift: waiting for upward motion elapsed=" :
+          "handoff retract: waiting for inward motion elapsed=") +
         std::to_string(lift_elapsed_s) +
         "/" + std::to_string(handoff_lift_duration_s_ + handoff_joint_settle_s_));
       return;
     }
 
     double max_error = -1.0;
-    if (!handoffTargetReached(handoff_lift_controller_target_, &max_error) || !armStopped()) {
+    const bool exact_target_reached = handoffTargetReached(handoff_lift_controller_target_, &max_error);
+    // A stationary loaded arm can stop a few degrees short of a lift target.
+    // Accept its measured lifted pose; rotation will freeze those actual pitch
+    // joints. An explicit continue request also advances a stopped lift.
+    const bool measured_lift_ready = handoff_restore_grasp_pose_ && max_error >= 0.0 &&
+      (max_error <= handoff_lift_joint_tolerance_rad_ || handoff_resume_requested_);
+    if ((!exact_target_reached && !measured_lift_ready) || !armStopped()) {
       handoff_retract_stable_since_.reset();
       if (handoff_retract_hold_z_ && lift_elapsed_s > handoff_lift_duration_s_ + handoff_joint_settle_s_ + 3.0) {
         abortLevelRetraction("constant-Z retraction did not settle; gripper remains closed");
         return;
       }
       if (!handoff_retract_hold_z_ && max_error > joint_pregrasp_tolerance_rad_)
-        maybeRepublishHandoffJointTrajectory(handoff_lift_controller_target_, false, 1.0);
-      publishStatus("handoff retract: waiting for compact pose and stopped joints; max_error=" + std::to_string(max_error));
+        maybeRepublishHandoffJointTrajectory(handoff_lift_controller_target_, handoff_restore_grasp_pose_, 1.0);
+      publishStatus(std::string(handoff_restore_grasp_pose_ ? "handoff lift: waiting for lifted pose and stopped joints; max_error=" :
+        "handoff retract: waiting for compact pose and stopped joints; max_error=") + std::to_string(max_error));
       return;
     }
     if (!handoff_retract_stable_since_) handoff_retract_stable_since_ = stamp;
@@ -5478,6 +5531,7 @@ private:
     handoff_last_publish_stamp_ = rclcpp::Time(0, 0, RCL_ROS_TIME);
 
     publishStatus(
+      handoff_restore_grasp_pose_ ? "handoff rotate: measured lift complete; starting joint1 turn" :
       "handoff rotate: measured inward retraction complete; starting joint1 turn",
       true);
   }
@@ -5614,10 +5668,10 @@ private:
       return;
     }
 
+    if (!armStopped()) {handoff_rotation_stable_since_.reset(); return;}
+    if (!handoff_rotation_stable_since_) handoff_rotation_stable_since_ = stamp;
+    if ((stamp - *handoff_rotation_stable_since_).seconds() < .2) return;
     if (!handoff_lower_before_release_) {
-      if (!armStopped()) {handoff_rotation_stable_since_.reset(); return;}
-      if (!handoff_rotation_stable_since_) handoff_rotation_stable_since_ = stamp;
-      if ((stamp - *handoff_rotation_stable_since_).seconds() < .2) return;
       stage_ = GraspStage::HANDOFF_RELEASE;
       handoff_stage_start_stamp_ = stamp;
       handoff_last_publish_stamp_ = rclcpp::Time(0, 0, RCL_ROS_TIME);
@@ -5637,7 +5691,14 @@ private:
     const auto stamp = now();
     if (handoff_stage_start_stamp_.nanoseconds() == 0) {
       std::array<double, 4> target{};
-      if (handoff_lift_controller_target_) {
+      if (handoff_restore_grasp_pose_) {
+        if (!handoff_grasp_controller_pose_ || !handoff_joint1_target_rad_) {
+          publishStatus("handoff lower waiting for captured grasp pose and completed turn");
+          return;
+        }
+        target = *handoff_grasp_controller_pose_;
+        target[0] = *handoff_joint1_target_rad_;
+      } else if (handoff_lift_controller_target_) {
         target = *handoff_lift_controller_target_;
       } else if (handoff_joint1_target_rad_) {
         const auto current = latestArmJointPositions();
@@ -5655,12 +5716,12 @@ private:
         }
         target = *current;
       }
-      target[1] += handoff_place_joint2_delta_rad_;
+      if (!handoff_restore_grasp_pose_) target[1] += handoff_place_joint2_delta_rad_;
       handoff_place_controller_target_ = clampHandoffTarget(target);
       handoff_place_stable_since_.reset();
       publishHandoffJointTrajectory(
         *handoff_place_controller_target_,
-        std::abs(handoff_place_joint2_delta_rad_) <= 1.0e-9,
+        handoff_restore_grasp_pose_ || std::abs(handoff_place_joint2_delta_rad_) <= 1.0e-9,
         handoff_place_duration_s_);
       handoff_stage_start_stamp_ = stamp;
       publishStatus(
@@ -5677,7 +5738,7 @@ private:
     if (!handoffTargetReached(handoff_place_controller_target_, &max_error) || !armStopped()) {
       handoff_place_stable_since_.reset();
       if (max_error > joint_pregrasp_tolerance_rad_)
-        maybeRepublishHandoffJointTrajectory(handoff_place_controller_target_, false, 1.0);
+        maybeRepublishHandoffJointTrajectory(handoff_place_controller_target_, handoff_restore_grasp_pose_, 1.0);
       publishStatus("handoff place: waiting for measured lowered pose and stopped joints; max_error=" + std::to_string(max_error));
       return;
     }
@@ -5698,7 +5759,7 @@ private:
       publishStatus("handoff release: waiting for gripper open settle");
       return;
     }
-    if (!handoff_lower_before_release_) {
+    {
       std::lock_guard<std::mutex> lock(data_mutex_);
       if (!latest_gripper_position_ || latest_joint_state_stamp_.nanoseconds() == 0 ||
         (now() - latest_joint_state_stamp_).seconds() > .2 ||
@@ -6330,7 +6391,10 @@ private:
   bool handoff_after_grasp_{false};
   double handoff_lift_joint2_delta_rad_{0.25};
   double handoff_retract_joint3_delta_rad_{0.0};
+  double handoff_retract_distance_m_{0.05};
   bool handoff_retract_hold_z_{false};
+  bool handoff_restore_grasp_pose_{false};
+  double handoff_lift_joint_tolerance_rad_{0.10};
   bool handoff_lower_before_release_{true};
   double handoff_retract_z_tolerance_m_{0.005};
   double handoff_place_duration_s_{1.0};
@@ -6394,6 +6458,7 @@ private:
 	  rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr eef_camera_info_sub_;
 	  rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr start_sub_;
+  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr resume_held_sub_;
 	  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr cancel_sub_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr continue_grasp_sub_;
   rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr continue_handoff_sub_;
@@ -6490,6 +6555,7 @@ private:
   std::optional<rclcpp::Time> handoff_retract_stable_since_;
   std::optional<rclcpp::Time> handoff_rotation_stable_since_;
   std::optional<std::array<double, 4>> handoff_retract_start_joint_positions_;
+  std::optional<std::array<double, 4>> handoff_grasp_controller_pose_;
   std::optional<std::array<double, 4>> handoff_stay_controller_target_;
   std::optional<double> handoff_joint1_target_rad_;
   bool handoff_joint1_centering_{false};

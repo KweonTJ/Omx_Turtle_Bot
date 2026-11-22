@@ -2,9 +2,10 @@ from collections import deque
 from types import SimpleNamespace
 import time
 import numpy as np
+import pytest
 from sensor_msgs.msg import Image, CameraInfo
 from omx_turtlebot3_runtime import ros_policy_observer as module
-from omx_turtlebot3_runtime.core import PoseCache, RobotSample, Phase
+from omx_turtlebot3_runtime.core import PoseCache, RobotSample, ObjectPose, Phase
 
 
 class Publisher:
@@ -29,9 +30,11 @@ def camera_observer(monkeypatch,selected,detections):
     return node,image,info,events
 
 
-def test_id_one_publishes_only_its_pose_and_goal(monkeypatch):
+@pytest.mark.parametrize('include_other',[False,True])
+def test_id_one_publishes_only_its_pose_and_goal(monkeypatch,include_other):
     zero=np.array([-.03,.01,.25]);one=np.array([.03,.01,.25])
-    detections=[(0,zero,np.eye(3),.1),(1,one,np.eye(3),.1)]
+    detections=[(1,one,np.eye(3),.1)]
+    if include_other:detections.insert(0,(0,zero,np.eye(3),.1))
     node,image,info,events=camera_observer(monkeypatch,1,detections)
     module.Observer.camera(node,image,info)
     assert not any(event=='VISION_REJECTED' for event,_ in events)
@@ -50,12 +53,50 @@ def test_unselected_marker_cannot_create_a_grasp_target(monkeypatch):
     assert not node.aruco_pose.messages and not node.close_ready.messages
 
 
-def test_policy_requested_object_slot_changes_to_one():
+def tick_observer(selected):
     now=time.monotonic();sample=RobotSample(now,np.zeros(4),np.zeros(4),.019,0.,np.nan,np.nan,(0.,0.),0)
     node=SimpleNamespace(history=deque([sample]),planner=SimpleNamespace(forward=lambda *a:np.array([0.,0.,.2])),
         goal=None,cfg={'estimation':{'deck_center_xy':[-.052,-.320],'deck_top_z':.07}},
-        phase=Phase.REACH,cache=PoseCache(),selected=1,previous=np.zeros(4),planned=now,
+        phase=Phase.REACH,cache=PoseCache(),selected=selected,previous=np.zeros(4),planned=now,
         obs=Publisher(),input_ready=Publisher(),target_base=None,emit=lambda *a,**k:None)
-    module.Observer.tick(node)
+    return node,now
+
+
+def cache_marker(node,marker,stamp):
+    node.cache.begin_frame(stamp)
+    node.cache.update(ObjectPose(marker,stamp,np.array([.03,.01,.25]),np.array([0.,0.,0.,1.]),.1),stamp)
+
+
+def test_policy_requested_object_slot_changes_to_one():
+    node,_=tick_observer(1);module.Observer.tick(node)
     assert len(node.obs.messages)==1
     assert list(node.obs.messages[0].data[35:37])==[0.,1.]
+    assert not node.input_ready.messages[-1].data
+
+
+@pytest.mark.parametrize('selected',[0,1])
+def test_selected_marker_alone_is_ready_with_finite_missing_other_slot(selected):
+    node,now=tick_observer(selected);cache_marker(node,selected,now-.05)
+    module.Observer.tick(node)
+    assert node.input_ready.messages[-1].data
+    assert node.cache.items[1-selected] is None
+    obs=np.asarray(node.obs.messages[-1].data)
+    assert obs.shape==(69,) and np.isfinite(obs).all()
+    assert obs[33+selected]==1. and obs[33+1-selected]==0.
+    assert obs[35+selected]==1. and obs[35+1-selected]==0.
+    np.testing.assert_array_equal(obs[27+3*(1-selected):30+3*(1-selected)],np.zeros(3))
+
+
+@pytest.mark.parametrize('selected',[0,1])
+def test_only_unselected_marker_does_not_make_ready(selected):
+    node,now=tick_observer(selected);cache_marker(node,1-selected,now-.05)
+    module.Observer.tick(node)
+    assert not node.input_ready.messages[-1].data
+    assert node.obs.messages[-1].data[35+selected]==1.
+
+
+@pytest.mark.parametrize('selected',[0,1])
+def test_selected_marker_still_has_to_be_fresh(selected):
+    node,now=tick_observer(selected);cache_marker(node,selected,now-.6)
+    module.Observer.tick(node)
+    assert not node.input_ready.messages[-1].data

@@ -18,6 +18,8 @@ def build(context):
     execute=value('execute')=='true'
     selected=int(value('marker_id'))
     if selected not in (0,1):raise ValueError('Unsupported marker ID')
+    retract_mode=value('retract_mode')
+    if retract_mode not in ('cartesian','joint','lift'):raise ValueError('Unsupported handoff mode')
     runtime=Path(get_package_share_directory('omx_turtlebot3_runtime'))
     mp=Path(get_package_share_directory('mp_control'))
     policy=Path(get_package_share_directory('omx_turtlebot3_policy'))/'models/omx_turtlebot3_v6'
@@ -36,8 +38,11 @@ def build(context):
     params.update(auto_start=False,auto_start_on_bbox=False,hold_joint4_during_extension=False,
         pause_before_grasp=value('pause_before_grasp')=='true',
         pause_before_rotate=value('pause_before_rotate')=='true',
-        handoff_lift_joint2_delta_rad=0.,handoff_retract_joint3_delta_rad=.65,
-        handoff_retract_hold_z=True,handoff_lower_before_release=False,
+        handoff_lift_joint2_delta_rad=-.55 if retract_mode=='lift' else 0.,
+        handoff_retract_joint3_delta_rad=0. if retract_mode=='lift' else .65,
+        handoff_retract_hold_z=retract_mode=='cartesian',handoff_retract_distance_m=.05,
+        handoff_restore_grasp_pose=retract_mode=='lift',handoff_lower_before_release=retract_mode=='lift',
+        handoff_lift_joint_tolerance_rad=.10,
         handoff_lift_duration_s=1.8,handoff_place_duration_s=2.,
         pregrasp_preserve_gripper_roll=True,
         pregrasp_move_duration_s=.35,pregrasp_settle_s=.05,pregrasp_republish_period_s=.4,
@@ -60,8 +65,9 @@ def build(context):
         output='screen',additional_env=env)
     gate_command=[python,'-m','omx_turtlebot3_runtime.ros_trial_gate',
         '--output',str(logs/'gate.jsonl'),'--startup-timeout','45','--mission-timeout',value('mission_timeout_s'),
-        '--selected-id',str(selected)]
+        '--selected-id',str(selected),'--retract-mode',retract_mode]
     if execute:gate_command.append('--execute')
+    if value('resume_held')=='true':gate_command.append('--resume-held')
     gate=ExecuteProcess(cmd=gate_command,output='screen',additional_env=env)
     children=[mp_node,relay,observer,gate]
     camera=None
@@ -100,6 +106,8 @@ def generate_launch_description():
     return LaunchDescription([
         DeclareLaunchArgument('execute',default_value='false',choices=['true','false']),
         DeclareLaunchArgument('marker_id',default_value='0',choices=['0','1']),
+        DeclareLaunchArgument('resume_held',default_value='false',choices=['true','false']),
+        DeclareLaunchArgument('retract_mode',default_value='lift',choices=['lift','cartesian','joint']),
         DeclareLaunchArgument('start_camera',default_value='true',choices=['true','false']),
         DeclareLaunchArgument('video_device',default_value='/dev/v4l/by-id/usb-Jieli_Technology_USB_Composite_Device-video-index0'),
         DeclareLaunchArgument('python_executable',default_value=''),

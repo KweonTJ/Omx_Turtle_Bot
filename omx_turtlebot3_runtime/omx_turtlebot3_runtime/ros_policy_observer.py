@@ -150,12 +150,13 @@ class Observer(Node):
         obs=observation(sample,eef,goal,self.phase,0,1,self.cache,self.selected,place,
             False,False,self.previous,self.planned,0,now)
         # A live observation may contain aged/occluded marker slots, exactly as
-        # in the model contract. Starting the trial separately requires both IDs.
+        # in the model contract. Starting requires only the selected marker;
+        # an unobserved other slot retains its invalid/occluded observation.
         self.obs.publish(Float32MultiArray(data=obs.tolist()))
         if self.target_base is not None:
             p=PointStamped();p.header.stamp=self.get_clock().now().to_msg();p.header.frame_id='base_link'
             p.point.x,p.point.y,p.point.z=map(float,self.target_base);self.point.publish(p)
-        self.input_ready.publish(Bool(data=all(self.cache.fresh(i,now,.4) for i in (0,1))))
+        self.input_ready.publish(Bool(data=self.cache.fresh(self.selected,now,.4)))
         self.emit('OBSERVATION',observation=obs,q=sample.q,dq=sample.dq,finger=sample.finger,phase=self.phase.name)
 
 

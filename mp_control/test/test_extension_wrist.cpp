@@ -46,6 +46,7 @@ struct ExtensionWristTestAccess {
     node.handoff_stage_start_stamp_=node.now()-rclcpp::Duration::from_seconds(8.);
     node.handoff_last_publish_stamp_=node.now();
     node.handoff_joint1_target_rad_=q[0];node.handoff_lift_controller_target_=q;
+    node.handoff_rotation_stable_since_=node.now()-rclcpp::Duration::from_seconds(.3);
     node.handoff_joint1_centering_=false;node.updateHandoffRotate();
   }
   static void placeReady(MpControlNode &node,const Joints &target) {
@@ -100,12 +101,33 @@ struct ExtensionWristTestAccess {
   static bool hasStep(MpControlNode &node) {return node.joint_pregrasp_controller_step_target_.has_value();}
   static void cancel(MpControlNode &node) {node.cancelSequence("test operator cancel");}
   static bool active(MpControlNode &node) {return node.active_;}
+  static void resumeHeld(MpControlNode &node,double finger) {
+    node.latest_gripper_position_=finger;node.startSequence(true);
+  }
+  static bool opened(MpControlNode &node) {return node.open_sent_;}
+  static void startCartesian(MpControlNode &node) {
+    node.handoff_after_grasp_=true;node.handoff_retract_hold_z_=true;
+    node.handoff_retract_distance_m_=.05;node.handoff_lift_duration_s_=1.8;
+    node.hold_joint4_during_extension_=false;node.startSequence();
+  }
   static void uncommit(MpControlNode &node) {node.joint_pregrasp_sent_=false;}
   static void releaseWithoutLowering(MpControlNode &node) {
     node.handoff_lower_before_release_=false;
     node.handoff_rotation_stable_since_=node.now()-rclcpp::Duration::from_seconds(.3);
   }
   static bool hasPlaceTarget(MpControlNode &node) {return node.handoff_place_controller_target_.has_value();}
+  static Joints liftTarget(MpControlNode &node,const Joints &q) {
+    node.handoff_restore_grasp_pose_=true;node.handoff_retract_hold_z_=false;
+    node.handoff_lift_joint2_delta_rad_=-.55;node.handoff_retract_joint3_delta_rad_=0.;
+    return node.handoffRetractTarget(q);
+  }
+  static Joints lowerTarget(MpControlNode &node,const Joints &grasp,const Joints &carried) {
+    node.handoff_grasp_controller_pose_=grasp;node.handoff_lift_controller_target_=carried;
+    node.handoff_joint1_target_rad_=carried[0];node.handoff_restore_grasp_pose_=true;
+    node.handoff_stage_start_stamp_=rclcpp::Time(0,0,RCL_ROS_TIME);
+    measured(node,carried,Joints{});node.updateHandoffPlace();
+    return *node.handoff_place_controller_target_;
+  }
   static void holdZ(MpControlNode &node,const Joints &origin) {
     node.active_=true;node.handoff_retract_hold_z_=true;node.handoff_retract_start_joint_positions_=origin;
   }
@@ -129,6 +151,49 @@ class ExtensionWrist : public ::testing::Test {
   using Access=mp_control::ExtensionWristTestAccess;
   std::shared_ptr<mp_control::MpControlNode> node;
 };
+TEST_F(ExtensionWrist, HeldRecoveryDoesNotOpenOrRegraspAndRejectsMovingFeedback) {
+  Access::measured(*node,{.1,1.24,-2.62,-.36},Access::Joints{0.,.1,0.,0.});
+  Access::resumeHeld(*node,.005);EXPECT_FALSE(Access::active(*node));
+  Access::measured(*node,{.1,1.24,-2.62,-.36},Access::Joints{});
+  Access::resumeHeld(*node,.019);EXPECT_FALSE(Access::active(*node));
+  Access::resumeHeld(*node,.005);EXPECT_TRUE(Access::active(*node));
+  EXPECT_TRUE(Access::isRetract(*node));EXPECT_FALSE(Access::opened(*node));
+}
+TEST_F(ExtensionWrist, CartesianRetractionIsNotAnAdmissionGateForExplicitGrasp) {
+  Access::measured(*node,{.104311,.027612,-.001534,-1.638291},Access::Joints{});
+  Access::startCartesian(*node);
+  EXPECT_TRUE(Access::active(*node));EXPECT_TRUE(Access::opened(*node));
+  EXPECT_FALSE(Access::hasStep(*node));
+}
+TEST_F(ExtensionWrist, LiftTurnsShoulderAndWristWithoutAnyElbowRetraction) {
+  const Access::Joints grasp{.1,1.224,-2.614,-.354};
+  const auto lifted=Access::liftTarget(*node,grasp);
+  EXPECT_DOUBLE_EQ(lifted[0],grasp[0]);EXPECT_DOUBLE_EQ(lifted[2],grasp[2]);
+  EXPECT_NEAR(lifted[1],grasp[1]-.55,1e-12);
+  EXPECT_NEAR(lifted[3],grasp[3]+.55,1e-12);
+  EXPECT_NEAR(lifted[1]+lifted[2]+lifted[3],grasp[1]+grasp[2]+grasp[3],1e-12);
+}
+TEST_F(ExtensionWrist, LowerAfterTurnRestoresCapturedGraspJointsAtRotatedYaw) {
+  const Access::Joints grasp{.1,1.224,-2.614,-.354};
+  auto lifted=Access::liftTarget(*node,grasp);lifted[0]-=M_PI/2;
+  lifted[1]+=.02;lifted[3]-=.01; // Do not accumulate tracking drift when lowering.
+  const auto lowered=Access::lowerTarget(*node,grasp,lifted);
+  EXPECT_DOUBLE_EQ(lowered[0],lifted[0]);
+  for(size_t j=1;j<4;++j)EXPECT_DOUBLE_EQ(lowered[j],grasp[j]);
+}
+TEST_F(ExtensionWrist, LoadedLiftAdvancesFromStoppedMeasuredPoseWithinItsOwnTolerance) {
+  const Access::Joints grasp{.1,1.224,-2.614,-.354};const auto goal=Access::liftTarget(*node,grasp);
+  auto measured=goal;measured[1]+=.068;
+  Access::retractReady(*node,goal);Access::measured(*node,measured,Access::Joints{});
+  Access::retract(*node,true);EXPECT_TRUE(Access::isRotate(*node));
+}
+TEST_F(ExtensionWrist, OperatorCanAdvanceStoppedLiftButNotMissingFeedback) {
+  const Access::Joints grasp{.1,1.224,-2.614,-.354};const auto goal=Access::liftTarget(*node,grasp);
+  auto measured=goal;measured[1]+=.13;
+  Access::retractReady(*node,goal);Access::measured(*node,measured,Access::Joints{});
+  Access::retract(*node,true);EXPECT_TRUE(Access::isRetract(*node));
+  Access::retract(*node,true,true);EXPECT_TRUE(Access::isRotate(*node));
+}
 TEST_F(ExtensionWrist, HoldsCapturedWristInFinalStepAndRawTargets) {
   Access::Joints current{.2,.1,-.2,-1.6};
   const auto goal=Access::goal(*node,current);
