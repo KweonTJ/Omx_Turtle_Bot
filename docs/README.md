@@ -5,6 +5,15 @@
 번호를 붙이지 않는다. DynamixelSDK와 TurtleBot3 upstream 문서는 이 목록의
 정리 대상에서 제외한다.
 
+## 최종 실제 로봇 결과
+
+최종 배포본은 실제 로봇에서 정상 동작을 확인했다.
+[메인 README의 최종 시현 영상 2개](../README.md#최종-시현-영상)와
+[v6 실기 성공 설정·재현 명령](../omx_turtlebot3_control_cpp/docs/robot_validation_20261123_lift.md)에서 시작한다.
+현재 실기 팔 진입점은 `omx_turtlebot3_runtime/ros_policy_pick_place.launch.py`이며,
+기존 ROS 하드웨어 + C++ `mp_control` + v6 ONNX relay의 `lift` 모드를 사용한다.
+아래 번호 문서는 개발 당시의 계획·기존 구현도 포함한다.
+
 ## 문서 목록
 
 | 문서 | 역할 | 상태 |
@@ -40,7 +49,8 @@
 ## 문서 관리 원칙
 
 - 프로젝트 기준 로봇은 **TurtleBot3 Waffle Pi + OpenMANIPULATOR-X**로 통일한다.
-- 최종 통합 실행 진입점은 `turtlebot3_control/launch/omx_turtle.launch.py`로 유지한다.
+- 현재 v6 실기 팔 실행 진입점은 `omx_turtlebot3_runtime/launch/ros_policy_pick_place.launch.py`다.
+  `turtlebot3_control/launch/omx_turtle.launch.py`는 기존 v4 배송 통합 경로로 보존한다.
 - 모델 파일, 파라미터, 마커 크기, 좌표계가 바뀌면 문서의 기준값과 checksum을 함께 갱신한다.
 - 코드, 설정, launch, world 또는 시험 결과가 바뀌면 같은 작업에서
   `9. 변경 이력.md`를 갱신한다.

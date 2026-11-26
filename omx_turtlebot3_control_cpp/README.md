@@ -1,5 +1,20 @@
 # v6 C++ ONNX 제어
 
+## 최종 실기 배포 상태
+
+`ros_policy_pick_place.launch.py`의 **기존 ROS 하드웨어 + C++ ONNX relay 구성은
+실제 로봇 배포와 정상 동작 확인을 완료했다.** 최종 시현 영상은
+[메인 README](../README.md#최종-시현-영상)에 있다.
+기록된 성공 run은 `lift_near_id0_20261123_0320`이며,
+ID 0 집기 → 들어올리기 → 오른쪽 90° 회전 → 내려놓기 → 열기 → Stay를 자동 수행했다.
+기본값은 `retract_mode:=lift`, `hold_joint4_during_extension:=false`이며 joint4를 연동한다.
+기존 ROS 하드웨어 드라이버가 OpenCR을 소유하고 relay는 직렬 포트를 열지 않는다.
+성공 설정과 재현 명령은 [실물 성공 기준](docs/robot_validation_20261123_lift.md)을 따른다.
+
+아래 직접 OpenCR 런타임은 별도 실행 경로이며 자체 보정·시작 조건을 유지한다.
+
+## 추론과 실행 경로
+
 `actor.onnx` 원본을 OpenCV DNN CPU로 직접 실행한다. ONNX Runtime나 TorchScript로
 자동 대체하지 않는다. 입력 69개와 출력 4개는 그대로이며 원본 모델 파일은 수정하지 않는다.
 
@@ -65,8 +80,8 @@ OpenCV ArUco가 필요하다. 실행 스크립트는 사용자 전역 패키지 
 OpenCR 테이블의 약 20 ms 갱신 사이에 중복 카운터를 읽으면 최대 100 ms 안에서 새 값을
 기다린다. 중복 값을 새 피드백으로 재사용하지 않으며 카운터 역행·실제 정지는 거부한다.
 
-ROS, 기구학과 단계 관리는 Python에 남아 있다. 이것을 전체 임무의 완전한 C++ 이식이나
-실제 집기 성공으로 해석하지 않는다. 시험 결과와 로봇용 소스 묶음 생성·배포 방법은
+직접 OpenCR 런타임의 ROS, 기구학과 단계 관리는 Python에 남아 있다.
+이 경로의 로컬 시험 결과와 로봇용 소스 묶음 생성·배포 방법은
 [로컬 검증 및 배포 준비](docs/local_validation.md)에 기록한다.
 
 통합 런치 진입점과 현재 남은 실물 조건은

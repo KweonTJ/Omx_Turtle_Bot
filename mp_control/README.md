@@ -1,5 +1,15 @@
 # mp_control
 
+## 최종 배포: v6 ROS relay 픽앤플레이스
+
+최종 실제 로봇은 `omx_turtlebot3_runtime/ros_policy_pick_place.launch.py`에서
+이 패키지의 기준 경로와 C++ v6 ONNX relay를 함께 실행해 정상 동작을 확인했다.
+ID 0 집기 → 들어올리기 → 오른쪽 90° 회전 → 내려놓기 → 그리퍼 열기 → Stay 순서다.
+`mp_control_aruco_params.yaml`에 launch의 성공 설정을 적용하며,
+기존 ROS 하드웨어 드라이버가 OpenCR 통신을 유지한다.
+[최종 시현·실행 안내](../README.md)와
+[성공 설정](../omx_turtlebot3_control_cpp/docs/robot_validation_20261123_lift.md)을 참고한다.
+
 팔 전개 중에는 `hold_joint4_during_extension: false`로 기존 joint4 자세 보상을 사용한다.
 joint2·joint3 움직임에 맞춰 joint4가 함께 움직인다. `true`는 joint4 관절각 자체를
 고정하는 별도 옵션이며 카메라 방향 보상과 다르다. ONNX의 joint4 보정도 적용한다.
@@ -10,7 +20,7 @@ joint2·joint3 움직임에 맞춰 joint4가 함께 움직인다. `true`는 join
 이 패키지는 전면 RGB-D 추적기, EEF RGB 카메라, MoveIt Servo, 그리퍼 액션을
 하나의 파지 시퀀스로 연결한다.
 
-## 현재 실제 로봇 파지 흐름
+## 기존 RGB-D·YOLO 기반 파지 흐름
 
 실제 로봇에서 사용하는 주요 설정은 아래 두 파일이다.
 
